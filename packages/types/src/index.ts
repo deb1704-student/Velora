@@ -163,6 +163,58 @@ export interface ServiceAddon {
   isActive: boolean;
 }
 
+export interface ServicePackage {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  price: number;
+  currency: string;
+  discountPercentage?: number | null;
+  durationMinutes: number;
+  imageUrl?: string | null;
+  isActive: boolean;
+  items?: ServicePackageItem[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ServicePackageItem {
+  id: string;
+  packageId: string;
+  serviceId: string;
+  sortOrder: number;
+  service?: ServiceItem;
+}
+
+export interface SalonService {
+  id: string;
+  salonId: string;
+  serviceId: string;
+  customPrice?: number | null;
+  customDuration?: number | null;
+  isActive: boolean;
+  createdAt: string;
+  service?: ServiceItem;
+}
+
+export interface ProviderService {
+  id: string;
+  providerId: string;
+  serviceId: string;
+  isCertified: boolean;
+  createdAt: string;
+  service?: ServiceItem;
+}
+
+export interface BookingAddon {
+  id: string;
+  bookingId: string;
+  addonId: string;
+  price: number;
+  addon?: ServiceAddon;
+}
+
 // ==========================================
 // 6. AVAILABILITY & SCHEDULING (D6)
 // ==========================================

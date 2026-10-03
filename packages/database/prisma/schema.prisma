@@ -114,6 +114,7 @@ model ProviderProfile {
 
   schedules              ProviderSchedule[]
   assignedBookings       Booking[]                  @relation("AssignedProvider")
+  qualifiedServices      ProviderService[]
   reviews                Review[]
   settlements            Settlement[]
 
@@ -153,6 +154,7 @@ model Salon {
 
   staff              SalonStaff[]
   providers          ProviderProfile[]
+  salonServices      SalonService[]
   bookings           Booking[]
   inventoryProducts  InventoryProduct[]
   settlements        Settlement[]
@@ -219,6 +221,9 @@ model ServiceItem {
   updatedAt       DateTime            @updatedAt
 
   addons          ServiceAddon[]
+  packageItems    ServicePackageItem[]
+  salonServices   SalonService[]
+  providerServices ProviderService[]
   bookings        Booking[]
 
   @@index([categoryId, isActive])
@@ -226,16 +231,85 @@ model ServiceItem {
 }
 
 model ServiceAddon {
-  id                   String       @id @default(uuid())
+  id                   String         @id @default(uuid())
   serviceId            String
-  service              ServiceItem  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  service              ServiceItem    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
   name                 String
   description          String?
-  extraDurationMinutes Int          @default(15)
-  price                Decimal      @db.Decimal(10, 2)
-  isActive             Boolean      @default(true)
+  extraDurationMinutes Int            @default(15)
+  price                Decimal        @db.Decimal(10, 2)
+  isActive             Boolean        @default(true)
+
+  bookingAddons        BookingAddon[]
 
   @@index([serviceId])
+}
+
+model ServicePackage {
+  id                 String               @id @default(uuid())
+  name               String
+  slug               String               @unique
+  description        String
+  price              Decimal              @db.Decimal(10, 2)
+  currency           String               @default("INR")
+  discountPercentage Decimal?             @db.Decimal(5, 2)
+  durationMinutes    Int
+  imageUrl           String?
+  isActive           Boolean              @default(true)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  items              ServicePackageItem[]
+
+  @@index([slug])
+}
+
+model ServicePackageItem {
+  id         String         @id @default(uuid())
+  packageId  String
+  package    ServicePackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  serviceId  String
+  service    ServiceItem    @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  sortOrder  Int            @default(0)
+
+  @@unique([packageId, serviceId])
+}
+
+model SalonService {
+  id              String      @id @default(uuid())
+  salonId         String
+  salon           Salon       @relation(fields: [salonId], references: [id], onDelete: Cascade)
+  serviceId       String
+  service         ServiceItem @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  customPrice     Decimal?    @db.Decimal(10, 2)
+  customDuration  Int?
+  isActive        Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+
+  @@unique([salonId, serviceId])
+}
+
+model ProviderService {
+  id          String          @id @default(uuid())
+  providerId  String
+  provider    ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  serviceId   String
+  service     ServiceItem     @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  isCertified Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+
+  @@unique([providerId, serviceId])
+}
+
+model BookingAddon {
+  id        String       @id @default(uuid())
+  bookingId String
+  booking   Booking      @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  addonId   String
+  addon     ServiceAddon @relation(fields: [addonId], references: [id], onDelete: Restrict)
+  price     Decimal      @db.Decimal(10, 2)
+
+  @@unique([bookingId, addonId])
 }
 
 // ==========================================
@@ -323,6 +397,7 @@ model Booking {
   updatedAt          DateTime            @updatedAt
 
   statusHistory      BookingStatusLog[]
+  selectedAddons     BookingAddon[]
   payments           PaymentTransaction[]
   reviews            Review[]
   settlement         Settlement?

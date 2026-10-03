@@ -138,3 +138,50 @@ export const authApi = {
     }
   },
 };
+
+export const catalogApi = {
+  async getCategories(includeInactive = false) {
+    return apiRequest<{ success: boolean; data: any[] }>(
+      `/catalog/categories${includeInactive ? '?includeInactive=true' : ''}`
+    );
+  },
+
+  async getServices(params?: {
+    categoryId?: string;
+    search?: string;
+    deliveryType?: string;
+    salonId?: string;
+    providerId?: string;
+    page?: number;
+    limit?: number;
+  }) {
+    const searchParams = new URLSearchParams();
+    if (params?.categoryId) searchParams.set('categoryId', params.categoryId);
+    if (params?.search) searchParams.set('search', params.search);
+    if (params?.deliveryType) searchParams.set('deliveryType', params.deliveryType);
+    if (params?.salonId) searchParams.set('salonId', params.salonId);
+    if (params?.providerId) searchParams.set('providerId', params.providerId);
+    if (params?.page) searchParams.set('page', params.page.toString());
+    if (params?.limit) searchParams.set('limit', params.limit.toString());
+
+    const qs = searchParams.toString();
+    return apiRequest<{
+      success: boolean;
+      data: any[];
+      meta: { page: number; limit: number; total: number; totalPages: number };
+    }>(`/catalog/services${qs ? `?${qs}` : ''}`);
+  },
+
+  async getServiceBySlug(slug: string) {
+    return apiRequest<{ success: boolean; data: any }>(`/catalog/services/slug/${slug}`);
+  },
+
+  async getPackages() {
+    return apiRequest<{ success: boolean; data: any[] }>('/catalog/packages');
+  },
+
+  async getSalonServices(salonId: string) {
+    return apiRequest<{ success: boolean; data: any[] }>(`/catalog/salons/${salonId}/services`);
+  },
+};
+
