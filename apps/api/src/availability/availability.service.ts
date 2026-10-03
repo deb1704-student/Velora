@@ -228,7 +228,10 @@ export class AvailabilityService {
       );
     }
 
-    const serviceDuration = service.durationMinutes;
+    const serviceDuration =
+      query.durationMinutes && query.durationMinutes > 0
+        ? query.durationMinutes
+        : service.durationMinutes;
     const turnaroundBuffer = 15; // 15 mins prep/sanitization buffer between bookings
     const totalSlotLength = serviceDuration + turnaroundBuffer;
 

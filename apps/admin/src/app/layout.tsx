@@ -10,6 +10,7 @@ import {
   AlertCircle,
   ShieldAlert,
   Settings,
+  Clock,
 } from 'lucide-react';
 
 export const metadata: Metadata = {
@@ -61,6 +62,14 @@ export default function AdminLayout({
               >
                 <CalendarDays className="w-4 h-4" />
                 <span>Bookings Lifecycle</span>
+              </Link>
+
+              <Link
+                href="/capacity"
+                className="flex items-center gap-2.5 px-3 py-2 rounded-md hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-800/60 dark:hover:text-white transition-colors"
+              >
+                <Clock className="w-4 h-4" />
+                <span>Capacity & Schedules</span>
               </Link>
 
               <Link

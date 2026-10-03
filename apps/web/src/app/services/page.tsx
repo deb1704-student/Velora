@@ -19,6 +19,7 @@ import {
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { catalogApi } from '../../lib/api';
+import { SlotBookingDrawer, ServiceForBooking } from '../../components/SlotBookingDrawer';
 
 interface ServiceItem {
   id: string;
@@ -81,6 +82,7 @@ function ServicesContent() {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [selectedCategory, setSelectedCategory] = React.useState<string>('ALL');
   const [selectedDelivery, setSelectedDelivery] = React.useState<'ALL' | 'SALON' | 'HOME'>('ALL');
+  const [bookingService, setBookingService] = React.useState<ServiceForBooking | null>(null);
 
   React.useEffect(() => {
     let mounted = true;
@@ -98,7 +100,14 @@ function ServicesContent() {
 
         if (mounted) {
           if (catsRes?.data) setCategories(catsRes.data);
-          if (srvsRes?.data) setServices(srvsRes.data);
+          if (srvsRes?.data) {
+            setServices(srvsRes.data);
+            const selectedParam = searchParams.get('selected');
+            if (selectedParam) {
+              const matched = srvsRes.data.find((s: any) => s.id === selectedParam);
+              if (matched) setBookingService(matched);
+            }
+          }
           if (pkgsRes?.data) setPackages(pkgsRes.data);
         }
       } finally {
@@ -110,7 +119,7 @@ function ServicesContent() {
     return () => {
       mounted = false;
     };
-  }, [salonFilter]);
+  }, [salonFilter, searchParams]);
 
   const filteredServices = React.useMemo(() => {
     return services.filter((service) => {
@@ -325,13 +334,14 @@ function ServicesContent() {
                     </div>
                   </div>
 
-                  <Link
-                    href={`/services?selected=${service.id}`}
+                  <button
+                    type="button"
+                    onClick={() => setBookingService(service)}
                     className="px-3.5 py-2 text-xs font-semibold rounded-md bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 transition-colors flex items-center gap-1"
                   >
                     <span>Select Service</span>
                     <ChevronRight className="w-3.5 h-3.5" />
-                  </Link>
+                  </button>
                 </div>
               </div>
             ))}
@@ -409,13 +419,25 @@ function ServicesContent() {
                   </div>
                 </div>
 
-                <Link
-                  href={`/services?packageId=${pkg.id}`}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setBookingService({
+                      id: pkg.id,
+                      name: pkg.name,
+                      slug: pkg.slug,
+                      description: pkg.description,
+                      durationMinutes: pkg.durationMinutes,
+                      basePrice: pkg.price,
+                      deliveryType: 'SALON',
+                      category: { id: 'pkg', name: 'Curated Ritual Suite' },
+                    })
+                  }
                   className="px-4 py-2 text-xs font-semibold rounded-md bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 transition-colors flex items-center gap-1"
                 >
                   <span>Book Package Ritual</span>
                   <ChevronRight className="w-3.5 h-3.5" />
-                </Link>
+                </button>
               </div>
             </div>
           ))}
@@ -429,6 +451,14 @@ function ServicesContent() {
           onAction={() => setSearchQuery('')}
         />
       )}
+
+      {/* Real-time Slot Booking Drawer (Phase 6) */}
+      <SlotBookingDrawer
+        isOpen={bookingService !== null}
+        onClose={() => setBookingService(null)}
+        service={bookingService}
+        initialSalonId={salonFilter || undefined}
+      />
     </div>
   );
 }

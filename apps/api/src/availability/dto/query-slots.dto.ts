@@ -1,4 +1,5 @@
-import { IsDateString, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ServiceDeliveryType } from '@velora/types';
 
@@ -29,4 +30,10 @@ export class QuerySlotsDto {
   @IsOptional()
   @IsString()
   providerId?: string;
+
+  @ApiPropertyOptional({ example: 150, description: 'Total service duration including addons in minutes' })
+  @IsOptional()
+  @IsNumber()
+  @Type(() => Number)
+  durationMinutes?: number;
 }

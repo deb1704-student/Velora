@@ -192,6 +192,7 @@ export const availabilityApi = {
     deliveryType: 'SALON' | 'HOME';
     salonId?: string;
     providerId?: string;
+    durationMinutes?: number;
   }) {
     const searchParams = new URLSearchParams();
     searchParams.set('serviceId', params.serviceId);
@@ -199,6 +200,7 @@ export const availabilityApi = {
     searchParams.set('deliveryType', params.deliveryType);
     if (params.salonId) searchParams.set('salonId', params.salonId);
     if (params.providerId) searchParams.set('providerId', params.providerId);
+    if (params.durationMinutes) searchParams.set('durationMinutes', params.durationMinutes.toString());
 
     return apiRequest<{
       success: boolean;
@@ -232,9 +234,78 @@ export const availabilityApi = {
   },
 
   async getSalonCapacity(salonId: string, date: string) {
-    return apiRequest<{ success: boolean; data: any }>(
-      `/availability/salon-capacity/${salonId}?date=${date}`
-    );
+    return apiRequest<{
+      success: boolean;
+      data: {
+        salonId: string;
+        salonName: string;
+        totalCapacity: number;
+        date: string;
+        operatingHours: { openingTime: string; closingTime: string };
+        capacityByHour: Array<{
+          hour: string;
+          totalChairs: number;
+          occupiedChairs: number;
+          availableChairs: number;
+          utilizationPercentage: number;
+        }>;
+      };
+    }>(`/availability/salon-capacity/${salonId}?date=${date}`);
+  },
+};
+
+export const salonsApi = {
+  async getSalons(params?: { city?: string; search?: string; page?: number; limit?: number }) {
+    const searchParams = new URLSearchParams();
+    if (params?.city) searchParams.set('city', params.city);
+    if (params?.search) searchParams.set('search', params.search);
+    if (params?.page) searchParams.set('page', params.page.toString());
+    if (params?.limit) searchParams.set('limit', params.limit.toString());
+
+    const qs = searchParams.toString();
+    return apiRequest<{
+      success: boolean;
+      data: any[];
+      meta: { page: number; limit: number; total: number; totalPages: number };
+    }>(`/salons${qs ? `?${qs}` : ''}`);
+  },
+
+  async getSalonById(id: string) {
+    return apiRequest<{ success: boolean; data: any }>(`/salons/${id}`);
+  },
+
+  async getSalonBySlug(slug: string) {
+    return apiRequest<{ success: boolean; data: any }>(`/salons/slug/${slug}`);
+  },
+};
+
+export const providersApi = {
+  async getProviders(params?: {
+    search?: string;
+    isHomeService?: boolean;
+    isSalonService?: boolean;
+    page?: number;
+    limit?: number;
+  }) {
+    const searchParams = new URLSearchParams();
+    if (params?.search) searchParams.set('search', params.search);
+    if (params?.isHomeService !== undefined)
+      searchParams.set('isHomeService', String(params.isHomeService));
+    if (params?.isSalonService !== undefined)
+      searchParams.set('isSalonService', String(params.isSalonService));
+    if (params?.page) searchParams.set('page', params.page.toString());
+    if (params?.limit) searchParams.set('limit', params.limit.toString());
+
+    const qs = searchParams.toString();
+    return apiRequest<{
+      success: boolean;
+      data: any[];
+      meta: { page: number; limit: number; total: number; totalPages: number };
+    }>(`/providers${qs ? `?${qs}` : ''}`);
+  },
+
+  async getProviderById(id: string) {
+    return apiRequest<{ success: boolean; data: any }>(`/providers/${id}`);
   },
 };
 
