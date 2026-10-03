@@ -1,0 +1,24 @@
+{
+  "name": "@velora/database",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "type-check": "tsc --noEmit",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.4.1"
+  },
+  "devDependencies": {
+    "@velora/typescript-config": "workspace:*",
+    "prisma": "^6.4.1",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.7.3"
+  }
+}

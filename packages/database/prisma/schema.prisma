@@ -1,0 +1,683 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ==========================================
+// 1. IDENTITY & USER (D1)
+// ==========================================
+
+enum UserRole {
+  CUSTOMER
+  PROVIDER
+  SALON_OWNER
+  SALON_MANAGER
+  SALON_STAFF
+  SUPPORT_AGENT
+  FINANCE_ADMIN
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  SUSPENDED
+  DEACTIVATED
+}
+
+model User {
+  id               String       @id @default(uuid())
+  email            String       @unique
+  phoneNumber      String?      @unique
+  passwordHash     String
+  firstName        String
+  lastName         String
+  role             UserRole     @default(CUSTOMER)
+  status           UserStatus   @default(ACTIVE)
+  isEmailVerified  Boolean      @default(false)
+  isPhoneVerified  Boolean      @default(false)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  customerProfile  CustomerProfile?
+  providerProfile  ProviderProfile?
+  ownedSalons      Salon[]          @relation("SalonOwner")
+  staffAssignments SalonStaff[]
+  addresses        Address[]
+  notifications    Notification[]
+  auditLogs        AuditLog[]
+  supportTickets   SupportTicket[]
+
+  @@index([email])
+  @@index([role, status])
+}
+
+// ==========================================
+// 2. CUSTOMER DOMAIN (D2)
+// ==========================================
+
+model CustomerProfile {
+  id                 String               @id @default(uuid())
+  userId             String               @unique
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dateOfBirth        DateTime?
+  gender             String?
+  preferredLanguage  String?              @default("en")
+  walletBalance      Decimal              @default(0.00) @db.Decimal(12, 2)
+  loyaltyPoints      Int                  @default(0)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  bookings           Booking[]
+  reviews            Review[]
+  memberships        CustomerMembership[]
+  loyaltyHistory     LoyaltyTransaction[]
+  referralsMade      Referral[]           @relation("ReferrerCustomer")
+
+  @@index([userId])
+}
+
+// ==========================================
+// 3. PROVIDER DOMAIN (D3)
+// ==========================================
+
+enum ProviderVerificationStatus {
+  UNVERIFIED
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model ProviderProfile {
+  id                     String                     @id @default(uuid())
+  userId                 String                     @unique
+  user                   User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  salonId                String?
+  salon                  Salon?                     @relation(fields: [salonId], references: [id], onDelete: SetNull)
+  bio                    String?
+  experienceYears        Int                        @default(0)
+  ratingAverage          Decimal                    @default(0.00) @db.Decimal(3, 2)
+  ratingCount            Int                        @default(0)
+  verificationStatus     ProviderVerificationStatus @default(UNVERIFIED)
+  rejectionReason        String?
+  serviceRadiusKm        Int                        @default(15)
+  isHomeServiceAvailable Boolean                    @default(true)
+  isSalonServiceAvailable Boolean                   @default(true)
+  isActive               Boolean                    @default(true)
+  createdAt              DateTime                   @default(now())
+  updatedAt              DateTime                   @updatedAt
+
+  schedules              ProviderSchedule[]
+  assignedBookings       Booking[]                  @relation("AssignedProvider")
+  reviews                Review[]
+  settlements            Settlement[]
+
+  @@index([userId])
+  @@index([salonId])
+  @@index([verificationStatus, isActive])
+}
+
+// ==========================================
+// 4. SALON MANAGEMENT (D4)
+// ==========================================
+
+enum SalonVerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model Salon {
+  id                 String                  @id @default(uuid())
+  ownerId            String
+  owner              User                    @relation("SalonOwner", fields: [ownerId], references: [id], onDelete: Restrict)
+  name               String
+  slug               String                  @unique
+  description        String?
+  phoneNumber        String
+  email              String
+  addressId          String                  @unique
+  address            Address                 @relation("SalonAddress", fields: [addressId], references: [id], onDelete: Restrict)
+  verificationStatus SalonVerificationStatus @default(PENDING)
+  isActive           Boolean                 @default(true)
+  capacity           Int                     @default(5)
+  openingTime        String                  @default("09:00") // HH:mm
+  closingTime        String                  @default("20:00") // HH:mm
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @updatedAt
+
+  staff              SalonStaff[]
+  providers          ProviderProfile[]
+  bookings           Booking[]
+  inventoryProducts  InventoryProduct[]
+  settlements        Settlement[]
+
+  @@index([slug])
+  @@index([verificationStatus, isActive])
+}
+
+model SalonStaff {
+  id        String   @id @default(uuid())
+  salonId   String
+  salon     Salon    @relation(fields: [salonId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roleTitle String   @default("Stylist")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([salonId, userId])
+}
+
+// ==========================================
+// 5. SERVICE CATALOG (D5)
+// ==========================================
+
+enum ServiceDeliveryType {
+  SALON
+  HOME
+  BOTH
+}
+
+model ServiceCategory {
+  id          String            @id @default(uuid())
+  name        String
+  slug        String            @unique
+  description String?
+  parentId    String?
+  parent      ServiceCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children    ServiceCategory[] @relation("CategoryHierarchy")
+  sortOrder   Int               @default(0)
+  isActive    Boolean           @default(true)
+  createdAt   DateTime          @default(now())
+
+  services    ServiceItem[]
+
+  @@index([slug])
+}
+
+model ServiceItem {
+  id              String              @id @default(uuid())
+  categoryId      String
+  category        ServiceCategory     @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  name            String
+  slug            String              @unique
+  description     String
+  durationMinutes Int
+  basePrice       Decimal             @db.Decimal(10, 2)
+  currency        String              @default("INR")
+  deliveryType    ServiceDeliveryType @default(BOTH)
+  requirements    String?
+  imageUrl        String?
+  isActive        Boolean             @default(true)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  addons          ServiceAddon[]
+  bookings        Booking[]
+
+  @@index([categoryId, isActive])
+  @@index([slug])
+}
+
+model ServiceAddon {
+  id                   String       @id @default(uuid())
+  serviceId            String
+  service              ServiceItem  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  name                 String
+  description          String?
+  extraDurationMinutes Int          @default(15)
+  price                Decimal      @db.Decimal(10, 2)
+  isActive             Boolean      @default(true)
+
+  @@index([serviceId])
+}
+
+// ==========================================
+// 6. AVAILABILITY & SCHEDULING (D6)
+// ==========================================
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model ProviderSchedule {
+  id             String          @id @default(uuid())
+  providerId     String
+  provider       ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  dayOfWeek      DayOfWeek
+  startTime      String          // HH:mm
+  endTime        String          // HH:mm
+  breakStartTime String?
+  breakEndTime   String?
+  isActive       Boolean         @default(true)
+
+  @@unique([providerId, dayOfWeek])
+}
+
+// ==========================================
+// 7. BOOKING & LIFECYCLE (D7)
+// ==========================================
+
+enum BookingStatus {
+  REQUESTED
+  PENDING_ASSIGNMENT
+  ASSIGNED
+  PROVIDER_ACCEPTED
+  CONFIRMED
+  PROVIDER_EN_ROUTE
+  PROVIDER_ARRIVED
+  SERVICE_STARTED
+  SERVICE_COMPLETED
+  PAYMENT_COMPLETED
+  CLOSED
+  // Terminal / Exception states
+  CANCELLED
+  REJECTED
+  FAILED
+  NO_SHOW
+  RESCHEDULED
+  DISPUTED
+  REFUNDED
+}
+
+model Booking {
+  id                 String              @id @default(uuid())
+  bookingReference   String              @unique
+  customerId         String
+  customer           CustomerProfile     @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  serviceId          String
+  service            ServiceItem         @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  salonId            String?
+  salon              Salon?              @relation(fields: [salonId], references: [id], onDelete: SetNull)
+  providerId         String?
+  provider           ProviderProfile?    @relation("AssignedProvider", fields: [providerId], references: [id], onDelete: SetNull)
+  deliveryType       ServiceDeliveryType
+  addressId          String?
+  address            Address?            @relation("BookingAddress", fields: [addressId], references: [id], onDelete: SetNull)
+  appointmentDate    DateTime            @db.Date
+  startTime          String              // HH:mm
+  endTime            String              // HH:mm
+  status             BookingStatus       @default(REQUESTED)
+  baseAmount         Decimal             @db.Decimal(10, 2)
+  addonsAmount       Decimal             @default(0.00) @db.Decimal(10, 2)
+  discountAmount     Decimal             @default(0.00) @db.Decimal(10, 2)
+  taxAmount          Decimal             @default(0.00) @db.Decimal(10, 2)
+  platformFee        Decimal             @default(0.00) @db.Decimal(10, 2)
+  totalAmount        Decimal             @db.Decimal(10, 2)
+  currency           String              @default("INR")
+  cancellationReason String?
+  customerNotes      String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  statusHistory      BookingStatusLog[]
+  payments           PaymentTransaction[]
+  reviews            Review[]
+  settlement         Settlement?
+
+  @@index([customerId])
+  @@index([providerId, appointmentDate])
+  @@index([salonId, appointmentDate])
+  @@index([status])
+}
+
+model BookingStatusLog {
+  id        String        @id @default(uuid())
+  bookingId String
+  booking   Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  fromStatus BookingStatus?
+  toStatus  BookingStatus
+  changedBy String?       // User ID or SYSTEM
+  notes     String?
+  createdAt DateTime      @default(now())
+
+  @@index([bookingId])
+}
+
+// ==========================================
+// 8. PAYMENT & FINANCIAL LIFECYCLE (D8, D9)
+// ==========================================
+
+enum PaymentStatus {
+  PAYMENT_PENDING
+  PAYMENT_INITIATED
+  AUTHORIZED
+  SUCCESSFUL
+  FAILED
+  REFUND_REQUESTED
+  PARTIALLY_REFUNDED
+  REFUNDED
+  SETTLEMENT_PENDING
+  SETTLED
+}
+
+enum PaymentMethod {
+  CARD
+  ONLINE_BANKING
+  UPI
+  WALLET
+  CASH
+}
+
+model PaymentTransaction {
+  id                   String        @id @default(uuid())
+  bookingId            String
+  booking              Booking       @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  amount               Decimal       @db.Decimal(10, 2)
+  currency             String        @default("INR")
+  method               PaymentMethod
+  status               PaymentStatus @default(PAYMENT_PENDING)
+  gatewayTransactionId String?       @unique
+  gatewayResponse      Json?
+  refundedAmount       Decimal       @default(0.00) @db.Decimal(10, 2)
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+
+  refunds              Refund[]
+
+  @@index([bookingId])
+  @@index([status])
+}
+
+model Refund {
+  id            String             @id @default(uuid())
+  paymentId     String
+  payment       PaymentTransaction @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+  amount        Decimal            @db.Decimal(10, 2)
+  reason        String
+  gatewayRefundId String?
+  status        String             @default("COMPLETED")
+  createdAt     DateTime           @default(now())
+
+  @@index([paymentId])
+}
+
+model Settlement {
+  id                 String          @id @default(uuid())
+  bookingId          String          @unique
+  booking            Booking         @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  providerId         String?
+  provider           ProviderProfile? @relation(fields: [providerId], references: [id], onDelete: SetNull)
+  salonId            String?
+  salon              Salon?          @relation(fields: [salonId], references: [id], onDelete: SetNull)
+  grossAmount        Decimal         @db.Decimal(10, 2)
+  platformCommission Decimal         @db.Decimal(10, 2)
+  taxDeducted        Decimal         @default(0.00) @db.Decimal(10, 2)
+  netPayoutAmount    Decimal         @db.Decimal(10, 2)
+  currency           String          @default("INR")
+  status             String          @default("PENDING") // PENDING, PROCESSED, FAILED
+  settledAt          DateTime?
+  createdAt          DateTime        @default(now())
+
+  @@index([providerId])
+  @@index([salonId])
+}
+
+// ==========================================
+// 9. REVIEWS & RATINGS (D10)
+// ==========================================
+
+enum ReviewModerationStatus {
+  PENDING
+  PUBLISHED
+  REJECTED
+  FLAGGED
+}
+
+model Review {
+  id               String                 @id @default(uuid())
+  bookingId        String
+  booking          Booking                @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+  customerId       String
+  customer         CustomerProfile        @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  providerId       String?
+  provider         ProviderProfile?       @relation(fields: [providerId], references: [id], onDelete: SetNull)
+  rating           Int                    // 1 to 5
+  comment          String
+  moderationStatus ReviewModerationStatus @default(PUBLISHED)
+  providerResponse String?
+  respondedAt      DateTime?
+  createdAt        DateTime               @default(now())
+  updatedAt        DateTime               @updatedAt
+
+  @@index([providerId])
+  @@index([bookingId])
+}
+
+// ==========================================
+// 10. NOTIFICATIONS (D11)
+// ==========================================
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  SMS
+  PUSH
+}
+
+model Notification {
+  id                String              @id @default(uuid())
+  userId            String
+  user              User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title             String
+  message           String
+  channel           NotificationChannel @default(IN_APP)
+  isRead            Boolean             @default(false)
+  relatedEntityType String?
+  relatedEntityId   String?
+  createdAt         DateTime            @default(now())
+
+  @@index([userId, isRead])
+}
+
+// ==========================================
+// 11. PROMOTIONS, COUPONS, MEMBERSHIPS & LOYALTY (D12, D13, D14)
+// ==========================================
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED_AMOUNT
+}
+
+model Coupon {
+  id                String       @id @default(uuid())
+  code              String       @unique
+  description       String?
+  discountType      DiscountType
+  discountValue     Decimal      @db.Decimal(10, 2)
+  minBookingAmount  Decimal?     @db.Decimal(10, 2)
+  maxDiscountAmount Decimal?     @db.Decimal(10, 2)
+  validFrom         DateTime
+  validTo           DateTime
+  usageLimit        Int?
+  usageCount        Int          @default(0)
+  isActive          Boolean      @default(true)
+  createdAt         DateTime     @default(now())
+
+  @@index([code])
+}
+
+model MembershipPlan {
+  id             String               @id @default(uuid())
+  name           String
+  description    String?
+  price          Decimal              @db.Decimal(10, 2)
+  durationDays   Int                  @default(30)
+  discountPercent Decimal             @default(0.00) @db.Decimal(5, 2)
+  isActive       Boolean              @default(true)
+  createdAt      DateTime             @default(now())
+
+  memberships    CustomerMembership[]
+}
+
+model CustomerMembership {
+  id        String         @id @default(uuid())
+  planId    String
+  plan      MembershipPlan @relation(fields: [planId], references: [id], onDelete: Restrict)
+  customerId String
+  customer  CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  startDate DateTime       @default(now())
+  endDate   DateTime
+  isActive  Boolean        @default(true)
+
+  @@index([customerId])
+}
+
+model LoyaltyTransaction {
+  id          String          @id @default(uuid())
+  customerId  String
+  customer    CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  points      Int
+  type        String          // EARNED, REDEEMED, EXPIRED
+  description String?
+  createdAt   DateTime        @default(now())
+
+  @@index([customerId])
+}
+
+model Referral {
+  id         String          @id @default(uuid())
+  referrerId String
+  referrer   CustomerProfile @relation("ReferrerCustomer", fields: [referrerId], references: [id], onDelete: Cascade)
+  code       String          @unique
+  rewardEarned Decimal       @default(0.00) @db.Decimal(10, 2)
+  createdAt  DateTime        @default(now())
+
+  @@index([code])
+}
+
+// ==========================================
+// 12. SUPPORT & DISPUTES (D15)
+// ==========================================
+
+enum DisputeStatus {
+  OPEN
+  UNDER_INVESTIGATION
+  RESOLVED
+  CLOSED
+}
+
+model SupportTicket {
+  id              String        @id @default(uuid())
+  ticketNumber    String        @unique
+  userId          String
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject         String
+  description     String
+  priority        String        @default("MEDIUM")
+  status          DisputeStatus @default(OPEN)
+  resolutionNotes String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  messages        TicketMessage[]
+
+  @@index([userId])
+}
+
+model TicketMessage {
+  id        String        @id @default(uuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  senderId  String
+  message   String
+  createdAt DateTime      @default(now())
+
+  @@index([ticketId])
+}
+
+// ==========================================
+// 13. INVENTORY MANAGEMENT (D16)
+// ==========================================
+
+model InventoryProduct {
+  id           String          @id @default(uuid())
+  salonId      String
+  salon        Salon           @relation(fields: [salonId], references: [id], onDelete: Cascade)
+  name         String
+  category     String
+  supplier     String?
+  quantity     Int             @default(0)
+  reorderLevel Int             @default(5)
+  costPrice    Decimal         @db.Decimal(10, 2)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+
+  movements    StockMovement[]
+
+  @@index([salonId])
+}
+
+model StockMovement {
+  id           String           @id @default(uuid())
+  productId    String
+  product      InventoryProduct @relation(fields: [productId], references: [id], onDelete: Cascade)
+  movementType String           // STOCK_IN, STOCK_OUT, ADJUSTMENT
+  quantity     Int
+  reason       String?
+  createdAt    DateTime         @default(now())
+
+  @@index([productId])
+}
+
+// ==========================================
+// 14. LOCATION & ADDRESS (D17)
+// ==========================================
+
+model Address {
+  id          String   @id @default(uuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label       String?  // 'Home', 'Work'
+  streetLine1 String
+  streetLine2 String?
+  city        String
+  state       String
+  postalCode  String
+  country     String   @default("IN")
+  latitude    Decimal? @db.Decimal(10, 8)
+  longitude   Decimal? @db.Decimal(11, 8)
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  salon       Salon?   @relation("SalonAddress")
+  bookings    Booking[] @relation("BookingAddress")
+
+  @@index([userId])
+  @@index([city, postalCode])
+}
+
+// ==========================================
+// 15. AUDIT LOG (D18)
+// ==========================================
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  role         String?
+  eventType    String
+  targetEntity String
+  targetId     String?
+  action       String
+  result       String   @default("SUCCESS")
+  ipAddress    String?
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  @@index([userId])
+  @@index([targetEntity, targetId])
+  @@index([createdAt])
+}
