@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Input,
   Button,
@@ -12,10 +13,12 @@ import {
   CardContent,
   CardFooter,
 } from '@velora/ui';
-import { ShieldCheck, User, Sparkles, Building2, ArrowRight } from 'lucide-react';
+import { User, Sparkles, Building2, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { UserRole } from '@velora/types';
+import { authApi } from '../../lib/api';
 
 export default function RegisterPage() {
+  const router = useRouter();
   const [selectedRole, setSelectedRole] = React.useState<UserRole>(UserRole.CUSTOMER);
   const [firstName, setFirstName] = React.useState('');
   const [lastName, setLastName] = React.useState('');
@@ -25,11 +28,15 @@ export default function RegisterPage() {
   const [confirmPassword, setConfirmPassword] = React.useState('');
   const [termsAgreed, setTermsAgreed] = React.useState(false);
   const [errors, setErrors] = React.useState<Record<string, string>>({});
+  const [apiError, setApiError] = React.useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [feedbackMessage, setFeedbackMessage] = React.useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setApiError(null);
+    setSuccessMessage(null);
+
     const newErrors: Record<string, string> = {};
 
     if (!firstName.trim()) newErrors.firstName = 'First name is required';
@@ -69,12 +76,33 @@ export default function RegisterPage() {
     setErrors({});
     setIsLoading(true);
 
-    setTimeout(() => {
+    try {
+      const response = await authApi.register({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        email: email.trim(),
+        phoneNumber: phoneNumber.trim(),
+        password,
+        role: selectedRole,
+      });
+
+      const user = response.data.user;
+      setSuccessMessage(`Account created successfully for ${user.firstName}! Redirecting...`);
+
+      setTimeout(() => {
+        if (selectedRole === UserRole.SALON_OWNER) {
+          router.push('/salons');
+        } else if (selectedRole === UserRole.PROVIDER) {
+          router.push('/providers');
+        } else {
+          router.push('/services');
+        }
+      }, 1000);
+    } catch (err: any) {
+      setApiError(err.message || 'Registration failed. Please try again.');
+    } finally {
       setIsLoading(false);
-      setFeedbackMessage(
-        `Registration baseline ready. In Phase 3 (Auth), this request submits to /api/v1/auth/register as a ${selectedRole} account.`
-      );
-    }, 800);
+    }
   };
 
   return (
@@ -149,6 +177,20 @@ export default function RegisterPage() {
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+              {apiError && (
+                <div className="p-3 rounded-md bg-rose-50 border border-rose-200 text-xs text-rose-800 dark:bg-rose-950/40 dark:border-rose-900/60 dark:text-rose-200 flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-rose-600 mt-0.5 shrink-0" />
+                  <span>{apiError}</span>
+                </div>
+              )}
+
+              {successMessage && (
+                <div className="p-3 rounded-md bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-900/60 dark:text-emerald-200 flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                  <span>{successMessage}</span>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Input
                   label="First Name"
@@ -241,15 +283,6 @@ export default function RegisterPage() {
                   </p>
                 )}
               </div>
-
-              {feedbackMessage && (
-                <div className="p-3 rounded bg-zinc-100 border border-zinc-200 text-xs text-zinc-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300 leading-relaxed">
-                  <div className="flex items-start gap-2">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                    <span>{feedbackMessage}</span>
-                  </div>
-                </div>
-              )}
 
               <Button
                 type="submit"

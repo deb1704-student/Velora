@@ -1,0 +1,140 @@
+import { UserRole } from '@velora/types';
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+
+export interface UserSession {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string | null;
+  role: UserRole;
+  status: string;
+}
+
+export interface AuthResponse {
+  success: boolean;
+  message?: string;
+  data: {
+    user: UserSession;
+    tokens: {
+      accessToken: string;
+      refreshToken: string;
+      expiresIn: number;
+      tokenType: string;
+    };
+  };
+}
+
+export class ApiError extends Error {
+  statusCode: number;
+  details?: any;
+
+  constructor(message: string, statusCode: number, details?: any) {
+    super(message);
+    this.name = 'ApiError';
+    this.statusCode = statusCode;
+    this.details = details;
+  }
+}
+
+export async function apiRequest<T = any>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+  
+  let token: string | null = null;
+  if (typeof window !== 'undefined') {
+    token = localStorage.getItem('velora_access_token');
+  }
+
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options.headers as Record<string, string>),
+  };
+
+  if (token && !headers['Authorization']) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(url, {
+    ...options,
+    headers,
+  });
+
+  const data = await res.json().catch(() => null);
+
+  if (!res.ok) {
+    const errorMessage =
+      Array.isArray(data?.message)
+        ? data.message.join(', ')
+        : data?.message || data?.error || `HTTP error ${res.status}`;
+    throw new ApiError(errorMessage, res.status, data);
+  }
+
+  return data as T;
+}
+
+export const authApi = {
+  async login(credentials: { email: string; password: string }): Promise<AuthResponse> {
+    const res = await apiRequest<AuthResponse>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(credentials),
+    });
+
+    if (typeof window !== 'undefined' && res?.data?.tokens) {
+      localStorage.setItem('velora_access_token', res.data.tokens.accessToken);
+      localStorage.setItem('velora_refresh_token', res.data.tokens.refreshToken);
+      localStorage.setItem('velora_user', JSON.stringify(res.data.user));
+    }
+
+    return res;
+  },
+
+  async register(payload: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    phoneNumber?: string;
+    role: UserRole;
+  }): Promise<AuthResponse> {
+    const res = await apiRequest<AuthResponse>('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+
+    if (typeof window !== 'undefined' && res?.data?.tokens) {
+      localStorage.setItem('velora_access_token', res.data.tokens.accessToken);
+      localStorage.setItem('velora_refresh_token', res.data.tokens.refreshToken);
+      localStorage.setItem('velora_user', JSON.stringify(res.data.user));
+    }
+
+    return res;
+  },
+
+  async getMe() {
+    return apiRequest<{ success: boolean; data: UserSession }>('/auth/me');
+  },
+
+  logout() {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('velora_access_token');
+      localStorage.removeItem('velora_refresh_token');
+      localStorage.removeItem('velora_user');
+      window.location.href = '/login';
+    }
+  },
+
+  getCurrentUser(): UserSession | null {
+    if (typeof window === 'undefined') return null;
+    const userStr = localStorage.getItem('velora_user');
+    if (!userStr) return null;
+    try {
+      return JSON.parse(userStr) as UserSession;
+    } catch {
+      return null;
+    }
+  },
+};

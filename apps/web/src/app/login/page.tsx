@@ -2,18 +2,35 @@
 
 import * as React from 'react';
 import Link from 'next/link';
-import { Input, Button, Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@velora/ui';
-import { Lock, Mail, ArrowRight, ShieldCheck } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import {
+  Input,
+  Button,
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from '@velora/ui';
+import { ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { authApi } from '../../lib/api';
+import { UserRole } from '@velora/types';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [errors, setErrors] = React.useState<{ email?: string; password?: string }>({});
+  const [apiError, setApiError] = React.useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
-  const [loginMessage, setLoginMessage] = React.useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setApiError(null);
+    setSuccessMessage(null);
+
     const newErrors: { email?: string; password?: string } = {};
 
     if (!email) {
@@ -36,13 +53,26 @@ export default function LoginPage() {
     setErrors({});
     setIsLoading(true);
 
-    // Development mock feedback demonstrating authentication state
-    setTimeout(() => {
+    try {
+      const response = await authApi.login({ email, password });
+      const user = response.data.user;
+
+      setSuccessMessage(`Welcome back, ${user.firstName}! Redirecting...`);
+
+      setTimeout(() => {
+        if (user.role === UserRole.SALON_OWNER) {
+          router.push('/salons');
+        } else if (user.role === UserRole.PROVIDER) {
+          router.push('/providers');
+        } else {
+          router.push('/services');
+        }
+      }, 800);
+    } catch (err: any) {
+      setApiError(err.message || 'Authentication failed. Please verify your credentials.');
+    } finally {
       setIsLoading(false);
-      setLoginMessage(
-        'Authentication baseline active. Once Phase 3 (Auth Module) is executed, credentials will authenticate directly against NestJS API /api/v1/auth/login.'
-      );
-    }, 800);
+    }
   };
 
   return (
@@ -56,7 +86,7 @@ export default function LoginPage() {
             Log in to Velora
           </h1>
           <p className="text-xs text-zinc-500">
-            Access your customer appointments, provider dashboard, or salon management console.
+            Access your customer appointments, specialist roster, or studio management console.
           </p>
         </div>
 
@@ -70,6 +100,20 @@ export default function LoginPage() {
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              {apiError && (
+                <div className="p-3 rounded-md bg-rose-50 border border-rose-200 text-xs text-rose-800 dark:bg-rose-950/40 dark:border-rose-900/60 dark:text-rose-200 flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-rose-600 mt-0.5 shrink-0" />
+                  <span>{apiError}</span>
+                </div>
+              )}
+
+              {successMessage && (
+                <div className="p-3 rounded-md bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-900/60 dark:text-emerald-200 flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
+                  <span>{successMessage}</span>
+                </div>
+              )}
+
               <Input
                 label="Email Address"
                 type="email"
@@ -103,15 +147,6 @@ export default function LoginPage() {
                   autoComplete="current-password"
                 />
               </div>
-
-              {loginMessage && (
-                <div className="p-3 rounded bg-zinc-100 border border-zinc-200 text-xs text-zinc-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-300 leading-relaxed">
-                  <div className="flex items-start gap-2">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                    <span>{loginMessage}</span>
-                  </div>
-                </div>
-              )}
 
               <Button
                 type="submit"
