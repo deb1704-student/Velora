@@ -18,10 +18,10 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         {label && (
           <label
             htmlFor={textareaId}
-            className="block text-xs font-medium text-zinc-700 dark:text-zinc-300"
+            className="block text-xs font-medium text-[#44403c] dark:text-[#d6d3d1] tracking-tight"
           >
             {label}
-            {props.required && <span className="text-rose-500 ml-0.5">*</span>}
+            {props.required && <span className="text-[#dc2626] ml-0.5">*</span>}
           </label>
         )}
         <textarea
@@ -29,18 +29,18 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           ref={ref}
           disabled={disabled}
           className={cn(
-            'flex min-h-[80px] w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus-visible:ring-zinc-400',
-            error && 'border-rose-500 focus-visible:ring-rose-500',
+            'flex min-h-[80px] w-full rounded-[5px] border border-[#d6d3cb] bg-white px-3 py-2 text-xs sm:text-sm text-[#1c1917] placeholder:text-[#a8a29e] shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] transition-colors focus-visible:outline-none focus-visible:border-[#78716c] focus-visible:ring-1 focus-visible:ring-[#78716c] disabled:cursor-not-allowed disabled:opacity-40 dark:border-[#383532] dark:bg-[#161412] dark:text-[#f5f5f4] dark:placeholder:text-[#78716c] dark:focus-visible:border-[#a8a29e] dark:focus-visible:ring-[#a8a29e]',
+            error && 'border-[#dc2626] focus-visible:border-[#dc2626] focus-visible:ring-[#dc2626] dark:border-[#ef4444]',
             className
           )}
           {...props}
         />
         {error ? (
-          <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">
+          <p className="text-[11px] text-[#dc2626] dark:text-[#ef4444] font-medium leading-tight">
             {error}
           </p>
         ) : helperText ? (
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">{helperText}</p>
+          <p className="text-[11px] text-[#78716c] dark:text-[#a8a29e] leading-tight">{helperText}</p>
         ) : null}
       </div>
     );

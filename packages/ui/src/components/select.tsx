@@ -41,10 +41,10 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         {label && (
           <label
             htmlFor={selectId}
-            className="block text-xs font-medium text-zinc-700 dark:text-zinc-300"
+            className="block text-xs font-medium text-[#44403c] dark:text-[#d6d3d1] tracking-tight"
           >
             {label}
-            {props.required && <span className="text-rose-500 ml-0.5">*</span>}
+            {props.required && <span className="text-[#dc2626] ml-0.5">*</span>}
           </label>
         )}
         <div className="relative">
@@ -53,8 +53,8 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             ref={ref}
             disabled={disabled}
             className={cn(
-              'flex h-10 w-full appearance-none rounded-md border border-zinc-300 bg-white px-3 py-2 pr-8 text-sm text-zinc-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus-visible:ring-zinc-400',
-              error && 'border-rose-500 focus-visible:ring-rose-500',
+              'flex h-9 sm:h-10 w-full appearance-none rounded-[5px] border border-[#d6d3cb] bg-white px-3 py-2 pr-8 text-xs sm:text-sm text-[#1c1917] shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)] transition-colors focus-visible:outline-none focus-visible:border-[#78716c] focus-visible:ring-1 focus-visible:ring-[#78716c] disabled:cursor-not-allowed disabled:opacity-40 dark:border-[#383532] dark:bg-[#161412] dark:text-[#f5f5f4] dark:focus-visible:border-[#a8a29e] dark:focus-visible:ring-[#a8a29e]',
+              error && 'border-[#dc2626] focus-visible:border-[#dc2626] focus-visible:ring-[#dc2626] dark:border-[#ef4444]',
               className
             )}
             {...props}
@@ -76,15 +76,20 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                 ))
               : children}
           </select>
-          <ChevronDown className="pointer-events-none absolute right-2.5 top-3 w-4 h-4 text-zinc-400 dark:text-zinc-500" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2.5 text-[#78716c] dark:text-[#a8a29e]">
+            <ChevronDown className="h-3.5 w-3.5 stroke-[2]" />
+          </div>
         </div>
-        {error ? (
-          <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">
+        {error && (
+          <p className="text-[11px] text-[#dc2626] dark:text-[#ef4444] font-medium leading-tight">
             {error}
           </p>
-        ) : helperText ? (
-          <p className="text-xs text-zinc-500 dark:text-zinc-400">{helperText}</p>
-        ) : null}
+        )}
+        {!error && helperText && (
+          <p className="text-[11px] text-[#78716c] dark:text-[#a8a29e] leading-tight">
+            {helperText}
+          </p>
+        )}
       </div>
     );
   }

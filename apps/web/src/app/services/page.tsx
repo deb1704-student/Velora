@@ -6,6 +6,7 @@ import {
   Input,
   Badge,
   EmptyState,
+  Button,
 } from '@velora/ui';
 import {
   Clock,
@@ -15,6 +16,10 @@ import {
   Layers,
   ChevronRight,
   Package,
+  Search,
+  Filter,
+  ArrowRight,
+  CheckCircle2,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -72,6 +77,8 @@ interface CategoryItem {
 function ServicesContent() {
   const searchParams = useSearchParams();
   const salonFilter = searchParams.get('salonId');
+  const initialCategoryParam = searchParams.get('categoryId') || 'ALL';
+  const initialDeliveryParam = (searchParams.get('deliveryType') as any) || 'ALL';
 
   const [activeTab, setActiveTab] = React.useState<'SERVICES' | 'PACKAGES'>('SERVICES');
   const [categories, setCategories] = React.useState<CategoryItem[]>([]);
@@ -79,9 +86,9 @@ function ServicesContent() {
   const [packages, setPackages] = React.useState<PackageItem[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
 
-  const [searchQuery, setSearchQuery] = React.useState('');
-  const [selectedCategory, setSelectedCategory] = React.useState<string>('ALL');
-  const [selectedDelivery, setSelectedDelivery] = React.useState<'ALL' | 'SALON' | 'HOME'>('ALL');
+  const [searchQuery, setSearchQuery] = React.useState(searchParams.get('search') || '');
+  const [selectedCategory, setSelectedCategory] = React.useState<string>(initialCategoryParam);
+  const [selectedDelivery, setSelectedDelivery] = React.useState<'ALL' | 'SALON' | 'HOME'>(initialDeliveryParam);
   const [bookingService, setBookingService] = React.useState<ServiceForBooking | null>(null);
 
   React.useEffect(() => {
@@ -152,37 +159,38 @@ function ServicesContent() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      {/* Editorial Breadcrumbs */}
       <Breadcrumbs
         items={[
-          { label: 'Home', href: '/' },
+          { label: 'Marketplace', href: '/' },
           { label: 'Service Catalog' },
         ]}
       />
 
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800 text-[11px] font-semibold text-zinc-700 dark:text-zinc-300">
-            <Sparkles className="w-3.5 h-3.5 text-zinc-500" />
-            <span>Master Catalog & Atelier Offerings</span>
+      {/* Header & View Mode Switcher */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 border-b border-[#e5e0d5] dark:border-[#2e2a26] pb-6">
+        <div className="space-y-2 max-w-2xl">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] bg-[#f4f1ea] dark:bg-[#221f1c] border border-[#e2ded5] dark:border-[#38332d] text-[11px] font-semibold text-[#44403c] dark:text-[#d6d3d1]">
+            <Sparkles className="w-3.5 h-3.5 text-[#b3592c]" />
+            <span>Master Catalog & Verified Procedures</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-950 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#1a1816] dark:text-white font-editorial">
             Curated Beauty & Wellness Catalog
           </h1>
-          <p className="text-xs sm:text-sm text-zinc-500 max-w-2xl leading-relaxed">
-            Standardized procedures with transparent durations and audited hygiene protocol.
-            Select in-salon chair sessions or certified specialist home appointments.
+          <p className="text-xs sm:text-sm text-[#615b53] dark:text-[#b5ada1] leading-relaxed">
+            Standardized treatments with transparent durations, sterile protocols, and snapshot pricing. Reserve chair time at partner salons or request certified specialist home dispatch.
           </p>
         </div>
 
-        {/* View Mode Switcher */}
-        <div className="inline-flex p-1 rounded-lg border border-zinc-200 bg-zinc-50 dark:border-zinc-800 dark:bg-zinc-900 self-start md:self-auto">
+        {/* Tactile Tab Switcher */}
+        <div className="inline-flex p-1 rounded-[6px] border border-[#ded8cb] bg-[#f5f2eb] dark:border-[#2e2a26] dark:bg-[#181614] self-start md:self-auto shrink-0 shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]">
           <button
             type="button"
             onClick={() => setActiveTab('SERVICES')}
-            className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all ${
+            className={`px-4 py-1.5 rounded-[4px] text-xs font-semibold transition-all ${
               activeTab === 'SERVICES'
-                ? 'bg-white text-zinc-950 shadow-sm dark:bg-zinc-800 dark:text-white'
-                : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'
+                ? 'bg-white text-[#1a1816] shadow-[0_1px_2px_rgba(0,0,0,0.06)] dark:bg-[#262320] dark:text-white font-bold'
+                : 'text-[#736d65] hover:text-[#1a1816] dark:text-[#a69f95] dark:hover:text-white'
             }`}
           >
             Individual Treatments ({services.length})
@@ -190,10 +198,10 @@ function ServicesContent() {
           <button
             type="button"
             onClick={() => setActiveTab('PACKAGES')}
-            className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition-all ${
+            className={`px-4 py-1.5 rounded-[4px] text-xs font-semibold transition-all ${
               activeTab === 'PACKAGES'
-                ? 'bg-white text-zinc-950 shadow-sm dark:bg-zinc-800 dark:text-white'
-                : 'text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300'
+                ? 'bg-white text-[#1a1816] shadow-[0_1px_2px_rgba(0,0,0,0.06)] dark:bg-[#262320] dark:text-white font-bold'
+                : 'text-[#736d65] hover:text-[#1a1816] dark:text-[#a69f95] dark:hover:text-white'
             }`}
           >
             Curated Suites ({packages.length})
@@ -201,40 +209,40 @@ function ServicesContent() {
         </div>
       </div>
 
-      {/* Filter Toolbar */}
-      <div className="p-4 rounded-lg border border-zinc-200 bg-white space-y-4 dark:border-zinc-800 dark:bg-zinc-900">
+      {/* Filter & Search Toolbar */}
+      <div className="p-4 sm:p-5 rounded-[8px] border border-[#ded8cb] bg-white dark:border-[#2e2a26] dark:bg-[#181614] space-y-4 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div className="sm:col-span-2">
             <Input
               placeholder="Search by procedure name, technique, or formula..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-10"
+              className="h-10 text-xs sm:text-sm"
             />
           </div>
           <div>
             <select
               value={selectedDelivery}
               onChange={(e) => setSelectedDelivery(e.target.value as 'ALL' | 'SALON' | 'HOME')}
-              className="h-10 w-full rounded-md border border-zinc-300 bg-white px-3 text-xs font-medium text-zinc-800 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200 focus:outline-none"
+              className="h-10 w-full rounded-[5px] border border-[#d6d3cb] bg-white px-3 text-xs font-medium text-[#1c1917] dark:border-[#383532] dark:bg-[#161412] dark:text-[#f5f5f4] focus:outline-none cursor-pointer shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]"
             >
               <option value="ALL">All Delivery Modes</option>
-              <option value="SALON">In-Salon Atelier</option>
-              <option value="HOME">At-Home Consultation</option>
+              <option value="SALON">Atelier Salon Visit Only</option>
+              <option value="HOME">At-Home Consultation Only</option>
             </select>
           </div>
         </div>
 
         {/* Dynamic Category Filter Pills */}
         {activeTab === 'SERVICES' && (
-          <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+          <div className="flex flex-wrap items-center gap-1.5 pt-3 border-t border-[#f0ebe1] dark:border-[#272421]">
             <button
               type="button"
               onClick={() => setSelectedCategory('ALL')}
-              className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+              className={`px-3 py-1.5 rounded-[4px] text-xs font-medium transition-colors ${
                 selectedCategory === 'ALL'
-                  ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
-                  : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300'
+                  ? 'bg-[#1a1816] text-[#fafaf9] dark:bg-[#f5f5f4] dark:text-[#1c1917] font-semibold'
+                  : 'bg-[#f4f1ea] text-[#57524b] hover:bg-[#ebe6dc] dark:bg-[#221f1c] dark:text-[#c4bdb2]'
               }`}
             >
               All Categories
@@ -244,10 +252,10 @@ function ServicesContent() {
                 key={cat.id}
                 type="button"
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`px-3 py-1.5 rounded text-xs font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-[4px] text-xs font-medium transition-colors ${
                   selectedCategory === cat.id
-                    ? 'bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900'
-                    : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300'
+                    ? 'bg-[#1a1816] text-[#fafaf9] dark:bg-[#f5f5f4] dark:text-[#1c1917] font-semibold'
+                    : 'bg-[#f4f1ea] text-[#57524b] hover:bg-[#ebe6dc] dark:bg-[#221f1c] dark:text-[#c4bdb2]'
                 }`}
               >
                 {cat.name}
@@ -257,100 +265,107 @@ function ServicesContent() {
         )}
       </div>
 
-      {/* Main Content Area */}
+      {/* Services Grid Content */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
-              className="p-5 rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 space-y-4 animate-pulse"
-            >
-              <div className="h-4 bg-zinc-200 dark:bg-zinc-800 rounded w-1/3" />
-              <div className="h-6 bg-zinc-200 dark:bg-zinc-800 rounded w-3/4" />
-              <div className="h-12 bg-zinc-200 dark:bg-zinc-800 rounded" />
-              <div className="h-8 bg-zinc-200 dark:bg-zinc-800 rounded" />
-            </div>
+              className="h-64 rounded-[8px] bg-[#f0eee6] dark:bg-[#221f1c] animate-pulse border border-[#e2ded5]"
+            />
           ))}
         </div>
       ) : activeTab === 'SERVICES' ? (
         filteredServices.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredServices.map((service) => (
-              <div
-                key={service.id}
-                className="p-5 rounded-lg border border-zinc-200 bg-white flex flex-col justify-between space-y-4 dark:border-zinc-800 dark:bg-zinc-900 hover:border-zinc-300 transition-colors"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
-                      {service.category?.name || 'General Treatment'}
-                    </span>
-                    <Badge variant="neutral" className="text-[10px]">
-                      {service.deliveryType === 'BOTH' ? (
-                        <span className="flex items-center gap-1">
-                          <Building2 className="w-3 h-3" />
-                          <Home className="w-3 h-3" />
-                          <span>Salon / Home</span>
+            {filteredServices.map((service) => {
+              const basePrice = Number(service.basePrice);
+              const duration = service.durationMinutes;
+
+              return (
+                <div
+                  key={service.id}
+                  className="rounded-[8px] border border-[#ded8cb] bg-white dark:border-[#2e2a26] dark:bg-[#181614] p-5 sm:p-6 shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col justify-between space-y-4 hover:border-[#b8b3a7] transition-all"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8c857b]">
+                        {service.category?.name || 'Treatment'}
+                      </span>
+                      <Badge
+                        variant={
+                          service.deliveryType === 'HOME'
+                            ? 'warning'
+                            : service.deliveryType === 'SALON'
+                            ? 'neutral'
+                            : 'success'
+                        }
+                      >
+                        {service.deliveryType === 'HOME'
+                          ? 'Home Service'
+                          : service.deliveryType === 'SALON'
+                          ? 'Atelier Salon'
+                          : 'Salon & Home'}
+                      </Badge>
+                    </div>
+
+                    <h3 className="font-bold text-base sm:text-lg text-[#1a1816] dark:text-[#fafaf9] leading-snug">
+                      {service.name}
+                    </h3>
+
+                    <p className="text-xs text-[#615b53] dark:text-[#b5ada1] line-clamp-3 leading-relaxed">
+                      {service.description}
+                    </p>
+
+                    {/* Add-ons Available */}
+                    {service.addons && service.addons.length > 0 && (
+                      <div className="pt-2 border-t border-[#f0ebe1] dark:border-[#272421] space-y-1">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8c857b] block">
+                          Compatible Boosters ({service.addons.length})
                         </span>
-                      ) : service.deliveryType === 'SALON' ? (
-                        <span className="flex items-center gap-1">
-                          <Building2 className="w-3 h-3" />
-                          <span>Salon Only</span>
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-1">
-                          <Home className="w-3 h-3" />
-                          <span>Home Visit</span>
-                        </span>
-                      )}
-                    </Badge>
+                        <div className="flex flex-wrap gap-1">
+                          {service.addons.map((a) => (
+                            <span
+                              key={a.id}
+                              className="inline-flex items-center text-[10px] px-1.5 py-0.5 rounded-[3px] bg-[#f4f1ea] dark:bg-[#221f1c] text-[#57524b] dark:text-[#c4bdb2]"
+                            >
+                              +{a.name} (+₹{a.price})
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
-                  <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
-                    {service.name}
-                  </h3>
-
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2 leading-relaxed">
-                    {service.description}
-                  </p>
-
-                  {/* Addon preview tag */}
-                  {service.addons && service.addons.length > 0 && (
-                    <div className="flex items-center gap-1 text-[11px] text-zinc-500 pt-1">
-                      <Layers className="w-3 h-3 text-zinc-400" />
-                      <span>{service.addons.length} Add-on Boosters Available</span>
+                  <div className="pt-4 border-t border-[#f0ebe1] dark:border-[#272421] flex items-center justify-between gap-3">
+                    <div>
+                      <div className="flex items-center gap-1.5 text-xs text-[#736d65] dark:text-[#a69f95] font-mono">
+                        <Clock className="w-3.5 h-3.5" />
+                        <span>{duration}m duration</span>
+                      </div>
+                      <div className="text-lg font-bold text-[#1a1816] dark:text-white mt-0.5">
+                        ₹{basePrice.toLocaleString('en-IN')}
+                      </div>
                     </div>
-                  )}
-                </div>
 
-                <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-                  <div>
-                    <div className="flex items-center gap-1 text-xs text-zinc-500">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span>{service.durationMinutes} mins</span>
-                    </div>
-                    <div className="text-sm font-bold text-zinc-900 dark:text-white mt-0.5">
-                      ₹{Number(service.basePrice).toLocaleString('en-IN')}
-                    </div>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => setBookingService(service)}
+                      className="text-xs font-semibold h-9 px-4"
+                    >
+                      Reserve Slot
+                    </Button>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setBookingService(service)}
-                    className="px-3.5 py-2 text-xs font-semibold rounded-md bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 transition-colors flex items-center gap-1"
-                  >
-                    <span>Select Service</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </button>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <EmptyState
             icon={Sparkles}
-            title="No Matching Treatments"
-            description="We could not find services matching your active filters. Try searching with different keywords or reset category filters."
+            title="No Services Found"
+            description="No catalog procedures match your current search query or filter configuration."
             actionLabel="Reset Filters"
             onAction={() => {
               setSearchQuery('');
@@ -361,98 +376,103 @@ function ServicesContent() {
         )
       ) : filteredPackages.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredPackages.map((pkg) => (
-            <div
-              key={pkg.id}
-              className="p-6 rounded-lg border border-zinc-200 bg-white flex flex-col justify-between space-y-5 dark:border-zinc-800 dark:bg-zinc-900 hover:border-zinc-300 transition-colors"
-            >
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Badge variant="success" className="text-[10px]">
-                    <Package className="w-3 h-3 mr-1" />
-                    <span>Curated Ritual Package</span>
-                  </Badge>
-                  {pkg.discountPercentage && (
-                    <span className="text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded dark:bg-emerald-950 dark:border-emerald-900">
-                      Save {pkg.discountPercentage}%
+          {filteredPackages.map((pkg) => {
+            const price = Number(pkg.price);
+            const discount = pkg.discountPercentage ? Number(pkg.discountPercentage) : 0;
+
+            return (
+              <div
+                key={pkg.id}
+                className="rounded-[8px] border border-[#ded8cb] bg-white dark:border-[#2e2a26] dark:bg-[#181614] p-6 shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col justify-between space-y-5"
+              >
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-semibold uppercase tracking-wider text-[#b3592c]">
+                      Curated Multi-Procedure Suite
                     </span>
+                    {discount > 0 && (
+                      <Badge variant="success">Save {discount}% Bundle</Badge>
+                    )}
+                  </div>
+
+                  <h3 className="font-bold text-lg text-[#1a1816] dark:text-[#fafaf9] font-editorial">
+                    {pkg.name}
+                  </h3>
+
+                  <p className="text-xs text-[#615b53] dark:text-[#b5ada1] leading-relaxed">
+                    {pkg.description}
+                  </p>
+
+                  {pkg.items && pkg.items.length > 0 && (
+                    <div className="space-y-1.5 pt-2 border-t border-[#f0ebe1] dark:border-[#272421]">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8c857b]">
+                        Included Procedures ({pkg.items.length})
+                      </span>
+                      <div className="space-y-1">
+                        {pkg.items.map((pi, idx) => (
+                          <div
+                            key={pi.id || idx}
+                            className="flex items-center justify-between text-xs text-[#57524b] dark:text-[#c4bdb2]"
+                          >
+                            <span className="flex items-center gap-1.5">
+                              <CheckCircle2 className="w-3.5 h-3.5 text-[#274c3a]" />
+                              {pi.service?.name}
+                            </span>
+                            <span className="font-mono text-[11px] text-[#8c857b]">
+                              {pi.service?.durationMinutes}m
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </div>
 
-                <div>
-                  <h3 className="text-base font-bold text-zinc-900 dark:text-white">
-                    {pkg.name}
-                  </h3>
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-1 leading-relaxed">
-                    {pkg.description}
-                  </p>
-                </div>
-
-                {/* Bundled Services List */}
-                {pkg.items && pkg.items.length > 0 && (
-                  <div className="space-y-1.5 pt-2 border-t border-zinc-100 dark:border-zinc-800">
-                    <span className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">
-                      Included Procedures:
+                <div className="pt-4 border-t border-[#f0ebe1] dark:border-[#272421] flex items-center justify-between gap-3">
+                  <div>
+                    <span className="block text-[10px] uppercase font-bold text-[#8c857b]">
+                      Total Runtime ~{pkg.durationMinutes}m
                     </span>
-                    <ul className="space-y-1 text-xs text-zinc-700 dark:text-zinc-300">
-                      {pkg.items.map((item) => (
-                        <li key={item.id} className="flex items-center justify-between">
-                          <span>• {item.service.name}</span>
-                          <span className="text-zinc-400 text-[11px] font-mono">
-                            {item.service.durationMinutes}m
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
+                    <span className="text-xl font-bold text-[#1a1816] dark:text-white">
+                      ₹{price.toLocaleString('en-IN')}
+                    </span>
                   </div>
-                )}
-              </div>
 
-              <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-                <div>
-                  <div className="flex items-center gap-1 text-xs text-zinc-500">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>Total {pkg.durationMinutes} mins</span>
-                  </div>
-                  <div className="text-base font-bold text-zinc-900 dark:text-white mt-0.5">
-                    ₹{Number(pkg.price).toLocaleString('en-IN')}
-                  </div>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    onClick={() => {
+                      // Map package to booking drawer format
+                      setBookingService({
+                        id: pkg.id,
+                        name: pkg.name,
+                        slug: pkg.slug,
+                        description: pkg.description,
+                        durationMinutes: pkg.durationMinutes,
+                        basePrice: pkg.price,
+                        deliveryType: 'SALON',
+                      });
+                    }}
+                    className="text-xs font-semibold h-9 px-4"
+                  >
+                    Reserve Suite Slot
+                  </Button>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setBookingService({
-                      id: pkg.id,
-                      name: pkg.name,
-                      slug: pkg.slug,
-                      description: pkg.description,
-                      durationMinutes: pkg.durationMinutes,
-                      basePrice: pkg.price,
-                      deliveryType: 'SALON',
-                      category: { id: 'pkg', name: 'Curated Ritual Suite' },
-                    })
-                  }
-                  className="px-4 py-2 text-xs font-semibold rounded-md bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 transition-colors flex items-center gap-1"
-                >
-                  <span>Book Package Ritual</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
         <EmptyState
-          icon={Package}
-          title="No Bundled Packages Found"
-          description="There are currently no multi-service packages matching your query."
+          icon={Layers}
+          title="No Curated Suites Found"
+          description="No ritual packages match your current search query."
           actionLabel="Clear Search"
           onAction={() => setSearchQuery('')}
         />
       )}
 
-      {/* Real-time Slot Booking Drawer (Phase 6) */}
+      {/* Real-time Slot Booking Drawer */}
       <SlotBookingDrawer
         isOpen={bookingService !== null}
         onClose={() => setBookingService(null)}
@@ -468,11 +488,11 @@ export default function ServicesPage() {
     <React.Suspense
       fallback={
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-          <div className="h-8 bg-zinc-100 rounded w-1/4 animate-pulse dark:bg-zinc-800" />
-          <div className="h-24 bg-zinc-100 rounded-lg animate-pulse dark:bg-zinc-800" />
+          <div className="h-8 bg-[#f0eee6] rounded w-1/4 animate-pulse dark:bg-[#221f1c]" />
+          <div className="h-24 bg-[#f0eee6] rounded-[8px] animate-pulse dark:bg-[#221f1c]" />
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-48 bg-zinc-100 rounded-lg animate-pulse dark:bg-zinc-800" />
+              <div key={i} className="h-48 bg-[#f0eee6] rounded-[8px] animate-pulse dark:bg-[#221f1c]" />
             ))}
           </div>
         </div>

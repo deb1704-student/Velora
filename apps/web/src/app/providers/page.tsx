@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Breadcrumbs, Badge, Input, EmptyState } from '@velora/ui';
+import { Breadcrumbs, Badge, Input, EmptyState, Button } from '@velora/ui';
 import {
   UserCheck,
   ShieldCheck,
@@ -12,6 +12,9 @@ import {
   ChevronRight,
   Clock,
   Calendar,
+  Sparkles,
+  ArrowRight,
+  Users,
 } from 'lucide-react';
 import Link from 'next/link';
 import { providersApi } from '../../lib/api';
@@ -89,7 +92,8 @@ export default function ProvidersPage() {
     return specialists.filter((prov) => {
       const matchesSearch =
         prov.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        prov.specialty.toLowerCase().includes(searchQuery.toLowerCase());
+        prov.specialty.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (prov.salonName && prov.salonName.toLowerCase().includes(searchQuery.toLowerCase()));
       const matchesMode =
         selectedMode === 'ALL' ||
         (selectedMode === 'HOME' && prov.isHomeService) ||
@@ -100,130 +104,126 @@ export default function ProvidersPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      {/* Editorial Breadcrumbs */}
       <Breadcrumbs
         items={[
-          { label: 'Home', href: '/' },
+          { label: 'Marketplace', href: '/' },
           { label: 'Verified Specialists' },
         ]}
       />
 
-      <div className="space-y-2">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-950 dark:text-white">
-          Verified Beauty Specialists
-        </h1>
-        <p className="text-xs sm:text-sm text-zinc-500 max-w-2xl">
-          Accredited trichologists, master colorists, and clinical aestheticians with audited certifications
-          and KYC approval. Check open appointment windows for in-salon ateliers or private residence visits.
-        </p>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 border-b border-[#e5e0d5] dark:border-[#2e2a26] pb-6">
+        <div className="space-y-2 max-w-2xl">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] bg-[#f4f1ea] dark:bg-[#221f1c] border border-[#e2ded5] dark:border-[#38332d] text-[11px] font-semibold text-[#44403c] dark:text-[#d6d3d1]">
+            <UserCheck className="w-3.5 h-3.5 text-[#274c3a]" />
+            <span>KYC Audited & Trade Accredited</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#1a1816] dark:text-white font-editorial">
+            Verified Beauty Specialists
+          </h1>
+          <p className="text-xs sm:text-sm text-[#615b53] dark:text-[#b5ada1] leading-relaxed">
+            Independent masters and studio stylists verified by identity, trade certifications, and practical evaluation. Book private residence visits or atelier workstation sessions.
+          </p>
+        </div>
       </div>
 
-      <div className="p-4 rounded-lg border border-zinc-200 bg-white flex flex-col sm:flex-row gap-3 dark:border-zinc-800 dark:bg-zinc-900">
+      {/* Filter Toolbar */}
+      <div className="p-4 sm:p-5 rounded-[8px] border border-[#ded8cb] bg-white dark:border-[#2e2a26] dark:bg-[#181614] shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row gap-3">
         <div className="flex-1">
           <Input
-            placeholder="Search specialist by name or expertise..."
+            placeholder="Search by specialist name, specialty, or atelier..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-10"
+            className="h-10 text-xs sm:text-sm"
           />
         </div>
         <div className="sm:w-56">
           <select
             value={selectedMode}
             onChange={(e) => setSelectedMode(e.target.value)}
-            className="h-10 w-full rounded-md border border-zinc-300 bg-white px-3 text-xs font-medium text-zinc-800 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200 focus:outline-none"
+            className="h-10 w-full rounded-[5px] border border-[#d6d3cb] bg-white px-3 text-xs font-medium text-[#1c1917] dark:border-[#383532] dark:bg-[#161412] dark:text-[#f5f5f4] focus:outline-none cursor-pointer shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]"
           >
             <option value="ALL">All Service Modes</option>
-            <option value="HOME">Home Service Available</option>
-            <option value="SALON">Salon Appointments Only</option>
+            <option value="HOME">At-Home Service Ready</option>
+            <option value="SALON">Atelier Salon Workstations</option>
           </select>
         </div>
       </div>
 
+      {/* Specialists Grid */}
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="p-5 rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 space-y-4 animate-pulse"
-            >
-              <div className="h-10 w-10 bg-zinc-100 dark:bg-zinc-800 rounded-md" />
-              <div className="h-5 bg-zinc-100 dark:bg-zinc-800 rounded w-1/2" />
-              <div className="h-10 bg-zinc-100 dark:bg-zinc-800 rounded" />
-            </div>
+              className="h-64 rounded-[8px] bg-[#f0eee6] dark:bg-[#221f1c] animate-pulse border border-[#e2ded5]"
+            />
           ))}
         </div>
       ) : filteredSpecialists.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filteredSpecialists.map((prov) => (
+          {filteredSpecialists.map((specialist) => (
             <div
-              key={prov.id}
-              className="p-5 rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 flex flex-col justify-between space-y-4 hover:border-zinc-300 transition-colors shadow-sm"
+              key={specialist.id}
+              className="rounded-[8px] border border-[#ded8cb] bg-white dark:border-[#2e2a26] dark:bg-[#181614] p-6 shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col justify-between space-y-5 hover:border-[#b8b3a7] transition-all"
             >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="w-10 h-10 rounded-md bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 flex items-center justify-center font-bold text-xs tracking-wider">
-                    {prov.name
-                      .split(' ')
-                      .map((n) => n[0])
-                      .join('')}
+              <div className="space-y-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="space-y-1">
+                    <h3 className="font-bold text-lg text-[#1a1816] dark:text-[#fafaf9] font-editorial leading-tight">
+                      {specialist.name}
+                    </h3>
+                    <p className="text-xs text-[#b3592c] font-medium">
+                      {specialist.specialty}
+                    </p>
                   </div>
-                  <Badge variant="success" className="text-[10px]">
-                    <ShieldCheck className="w-3 h-3 mr-1" />
-                    <span>KYC Verified</span>
+                  <Badge variant={specialist.verificationStatus === 'APPROVED' ? 'success' : 'neutral'}>
+                    <ShieldCheck className="w-3 h-3 text-[#274c3a]" />
+                    <span>Accredited</span>
                   </Badge>
                 </div>
 
-                <div>
-                  <h3 className="text-sm font-bold text-zinc-900 dark:text-white">
-                    {prov.name}
-                  </h3>
-                  <p className="text-xs text-zinc-500 mt-0.5 line-clamp-2 leading-relaxed">
-                    {prov.specialty}
+                <div className="space-y-2 text-xs text-[#615b53] dark:text-[#b5ada1]">
+                  <p className="flex items-center gap-1.5 font-mono text-[11px]">
+                    <Award className="w-3.5 h-3.5 text-[#8c857b] shrink-0" />
+                    <span>Trade Experience: {specialist.experienceYears}+ Professional Years</span>
                   </p>
+                  {specialist.salonName && (
+                    <p className="flex items-center gap-1.5 leading-snug">
+                      <Building2 className="w-3.5 h-3.5 text-[#8c857b] shrink-0" />
+                      <span>Resident Atelier: {specialist.salonName}</span>
+                    </p>
+                  )}
+                  {specialist.isHomeService && (
+                    <p className="flex items-center gap-1.5 font-mono text-[11px]">
+                      <MapPin className="w-3.5 h-3.5 text-[#8c857b] shrink-0" />
+                      <span>At-Home Dispatch Radius: Up to {specialist.serviceRadiusKm} km</span>
+                    </p>
+                  )}
                 </div>
 
-                {prov.salonName && (
-                  <div className="text-[11px] text-zinc-600 dark:text-zinc-400 flex items-center gap-1.5">
-                    <Building2 className="w-3 h-3 text-zinc-400" />
-                    <span>Atelier: {prov.salonName}</span>
-                  </div>
-                )}
-
-                <div className="pt-2 flex flex-wrap items-center gap-3 text-xs text-zinc-600 dark:text-zinc-400 border-t border-zinc-100 dark:border-zinc-800">
-                  <div className="flex items-center gap-1">
-                    <Award className="w-3.5 h-3.5 text-zinc-400" />
-                    <span>{prov.experienceYears} yrs experience</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <MapPin className="w-3.5 h-3.5 text-zinc-400" />
-                    <span>{prov.serviceRadiusKm} km radius</span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-1.5 pt-1">
-                  {prov.isSalonService && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
-                      <Building2 className="w-2.5 h-2.5" />
-                      Salon
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {specialist.isHomeService && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[3px] bg-[#f4f1ea] dark:bg-[#221f1c] text-[10px] font-medium text-[#57524b] dark:text-[#c4bdb2]">
+                      <Home className="w-2.5 h-2.5" />
+                      Home Dispatch
                     </span>
                   )}
-                  {prov.isHomeService && (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
-                      <Home className="w-2.5 h-2.5" />
-                      Home Visit
+                  {specialist.isSalonService && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[3px] bg-[#f4f1ea] dark:bg-[#221f1c] text-[10px] font-medium text-[#57524b] dark:text-[#c4bdb2]">
+                      <Building2 className="w-2.5 h-2.5" />
+                      Atelier Sessions
                     </span>
                   )}
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between">
-                <span className="text-[11px] text-zinc-500">Mon–Sat 09:00–19:00</span>
-                <Link
-                  href={`/services?providerId=${prov.id}`}
-                  className="px-3.5 py-1.5 text-xs font-semibold rounded bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 transition-colors flex items-center gap-1"
-                >
-                  <span>Book with {prov.name.split(' ')[0]}</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
+              <div className="pt-4 border-t border-[#f0ebe1] dark:border-[#272421]">
+                <Link href={`/services?providerId=${specialist.id}`}>
+                  <Button variant="primary" size="sm" className="w-full text-xs h-8 font-semibold">
+                    Reserve Specialist Services
+                  </Button>
                 </Link>
               </div>
             </div>
@@ -231,10 +231,10 @@ export default function ProvidersPage() {
         </div>
       ) : (
         <EmptyState
-          icon={UserCheck}
+          icon={Users}
           title="No Specialists Found"
-          description="We could not find beauty specialists matching your active filters. Try searching with different keywords."
-          actionLabel="View All Specialists"
+          description="No certified professionals match your current search query."
+          actionLabel="Reset Search"
           onAction={() => {
             setSearchQuery('');
             setSelectedMode('ALL');

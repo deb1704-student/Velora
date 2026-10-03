@@ -32,6 +32,7 @@ import {
   Check,
   UserX,
   XCircle,
+  Search,
 } from 'lucide-react';
 import { BookingStatus, ServiceDeliveryType } from '@velora/types';
 
@@ -121,7 +122,7 @@ export default function BookingsMonitorPage() {
       if (res.success) {
         setActionMessage({
           type: 'success',
-          text: `Booking updated to ${targetStatus.replace(/_/g, ' ')}.`,
+          text: `Booking state transitioned to ${targetStatus.replace(/_/g, ' ')}.`,
         });
         fetchBookings();
       } else {
@@ -221,13 +222,16 @@ export default function BookingsMonitorPage() {
   return (
     <div className="space-y-6 max-w-7xl">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#e2e8f0] pb-5">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Authoritative Booking Lifecycle Monitor
+          <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#64748b] block mb-1">
+            Authoritative Dispatch Engine
+          </span>
+          <h1 className="text-xl font-bold tracking-tight text-[#090d16]">
+            Booking Lifecycle Monitor
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Strict transactional management across Velora&apos;s 11-stage canonical workflow.
+          <p className="text-xs text-[#64748b] mt-0.5">
+            Strict transactional governance across Velora&apos;s 11-stage canonical lifecycle.
           </p>
         </div>
 
@@ -236,34 +240,34 @@ export default function BookingsMonitorPage() {
           variant="outline"
           onClick={fetchBookings}
           disabled={isLoading}
-          className="flex items-center gap-1.5 self-start sm:self-auto"
+          className="flex items-center gap-1.5 self-start sm:self-auto h-8 px-3 text-xs"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-          <span>Refresh Live Bookings</span>
+          <span>Refresh Bookings</span>
         </Button>
       </div>
 
       {/* Action Notification */}
       {actionMessage && (
         <div
-          className={`p-3.5 rounded-lg border text-xs flex items-center justify-between ${
+          className={`p-3.5 rounded-[4px] border text-xs flex items-center justify-between ${
             actionMessage.type === 'success'
-              ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-900 text-emerald-800 dark:text-emerald-200'
-              : 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-900 text-rose-800 dark:text-rose-200'
+              ? 'bg-[#f0fdf4] border-[#bbf7d0] text-[#166534]'
+              : 'bg-[#fff1f2] border-[#fecdd3] text-[#9f1239]'
           }`}
         >
           <div className="flex items-center gap-2">
             {actionMessage.type === 'success' ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-[#16a34a] shrink-0" />
             ) : (
-              <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+              <AlertTriangle className="w-4 h-4 text-[#e11d48] shrink-0" />
             )}
-            <span>{actionMessage.text}</span>
+            <span className="font-medium">{actionMessage.text}</span>
           </div>
           <button
             type="button"
             onClick={() => setActionMessage(null)}
-            className="text-slate-400 hover:text-slate-600"
+            className="text-[#64748b] hover:text-[#090d16]"
           >
             <X className="w-4 h-4" />
           </button>
@@ -271,22 +275,23 @@ export default function BookingsMonitorPage() {
       )}
 
       {/* Filter Bar */}
-      <div className="p-4 rounded-lg border border-slate-200 bg-white flex flex-col sm:flex-row gap-3 dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex-1">
+      <div className="p-3.5 rounded-[4px] border border-[#e2e8f0] bg-white flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="w-4 h-4 absolute left-3 top-3 text-[#94a3b8]" />
           <Input
-            placeholder="Search by reference (VEL-...), customer name, or service..."
+            placeholder="Search by reference (VEL-...), customer name, or treatment..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-10 text-xs"
+            className="h-9 pl-9 text-xs"
           />
         </div>
         <div className="sm:w-64">
           <select
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="h-10 w-full rounded-md border border-slate-300 bg-white px-3 text-xs font-medium text-slate-800 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 focus:outline-none"
+            className="h-9 w-full rounded-[4px] border border-[#cbd5e1] bg-white px-3 text-xs font-medium text-[#090d16] focus:outline-none focus:border-[#090d16]"
           >
-            <option value="ALL">All Lifecycle States</option>
+            <option value="ALL">All Lifecycle States ({bookings.length})</option>
             <option value={BookingStatus.REQUESTED}>1. Requested</option>
             <option value={BookingStatus.PENDING_ASSIGNMENT}>2. Pending Assignment</option>
             <option value={BookingStatus.ASSIGNED}>3. Assigned</option>
@@ -307,24 +312,24 @@ export default function BookingsMonitorPage() {
 
       {/* Table */}
       {isLoading ? (
-        <div className="space-y-3">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-14 rounded-lg bg-slate-100 dark:bg-slate-800 animate-pulse" />
+        <div className="space-y-2">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-12 rounded-[4px] bg-[#f1f5f9] animate-pulse" />
           ))}
         </div>
       ) : filtered.length > 0 ? (
-        <div className="rounded-lg border border-slate-200 dark:border-slate-800 overflow-hidden bg-white dark:bg-slate-900 shadow-xs">
+        <div className="rounded-[4px] border border-[#e2e8f0] overflow-hidden bg-white shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Reference</TableHead>
-                <TableHead>Customer</TableHead>
-                <TableHead>Service & Mode</TableHead>
-                <TableHead>Specialist / Salon</TableHead>
-                <TableHead>Date & Time</TableHead>
-                <TableHead>Snapshot Amount</TableHead>
-                <TableHead>Lifecycle Stage</TableHead>
-                <TableHead className="text-right">Canonical Action</TableHead>
+              <TableRow className="bg-[#f8fafc] border-b border-[#e2e8f0]">
+                <TableHead className="text-[11px] font-mono uppercase tracking-wider text-[#64748b]">Reference</TableHead>
+                <TableHead className="text-[11px] font-mono uppercase tracking-wider text-[#64748b]">Customer</TableHead>
+                <TableHead className="text-[11px] font-mono uppercase tracking-wider text-[#64748b]">Service & Mode</TableHead>
+                <TableHead className="text-[11px] font-mono uppercase tracking-wider text-[#64748b]">Specialist / Salon</TableHead>
+                <TableHead className="text-[11px] font-mono uppercase tracking-wider text-[#64748b]">Date & Time</TableHead>
+                <TableHead className="text-[11px] font-mono uppercase tracking-wider text-[#64748b]">Price Snapshot</TableHead>
+                <TableHead className="text-[11px] font-mono uppercase tracking-wider text-[#64748b]">Lifecycle Stage</TableHead>
+                <TableHead className="text-right text-[11px] font-mono uppercase tracking-wider text-[#64748b]">Authoritative Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -342,60 +347,60 @@ export default function BookingsMonitorPage() {
                   .split('T')[0];
 
                 return (
-                  <TableRow key={item.id}>
-                    <TableCell className="font-mono font-bold text-slate-900 dark:text-white text-xs">
+                  <TableRow key={item.id} className="border-b border-[#f1f5f9] hover:bg-[#f8fafc]/80 transition-colors">
+                    <TableCell className="font-mono font-bold text-[#090d16] text-xs">
                       {item.bookingReference}
                     </TableCell>
 
                     <TableCell>
-                      <div className="font-medium text-xs text-slate-900 dark:text-white">
+                      <div className="font-medium text-xs text-[#090d16]">
                         {custName}
                       </div>
-                      <div className="text-[10px] text-slate-500">
+                      <div className="text-[10px] text-[#64748b] font-mono">
                         {item.customer?.user?.email}
                       </div>
                     </TableCell>
 
                     <TableCell>
-                      <div className="font-medium text-xs text-slate-900 dark:text-white">
+                      <div className="font-medium text-xs text-[#090d16]">
                         {serviceTitle}
                       </div>
-                      <div className="text-[10px] text-slate-500 flex items-center gap-1">
+                      <div className="text-[10px] text-[#64748b] flex items-center gap-1">
                         {item.deliveryType === 'SALON' ? (
                           <>
-                            <Building2 className="w-3 h-3 text-slate-400" />
-                            <span>Salon Appointment</span>
+                            <Building2 className="w-3 h-3 text-[#64748b]" />
+                            <span>Salon Atelier</span>
                           </>
                         ) : (
                           <>
-                            <Home className="w-3 h-3 text-amber-500" />
-                            <span>Home Service</span>
+                            <Home className="w-3 h-3 text-[#b45309]" />
+                            <span className="text-[#b45309] font-medium">In-Home Specialist</span>
                           </>
                         )}
                       </div>
                     </TableCell>
 
-                    <TableCell className="text-xs text-slate-600 dark:text-slate-300">
+                    <TableCell className="text-xs text-[#475569]">
                       <div>
                         {item.provider?.user
                           ? `${item.provider.user.firstName} ${item.provider.user.lastName}`
                           : item.salon?.name || 'Unassigned'}
                       </div>
                       {item.salon && item.provider && (
-                        <div className="text-[10px] text-slate-400">{item.salon.name}</div>
+                        <div className="text-[10px] text-[#94a3b8]">{item.salon.name}</div>
                       )}
                     </TableCell>
 
                     <TableCell>
-                      <div className="font-mono text-xs text-slate-800 dark:text-slate-200">
+                      <div className="font-mono text-xs text-[#090d16]">
                         {appointmentDateStr}
                       </div>
-                      <div className="text-[10px] text-slate-500">
+                      <div className="text-[10px] text-[#64748b] font-mono">
                         {item.startTime} – {item.endTime}
                       </div>
                     </TableCell>
 
-                    <TableCell className="font-semibold text-xs text-slate-900 dark:text-white">
+                    <TableCell className="font-mono font-bold text-xs text-[#090d16]">
                       ₹{Number(item.totalAmount).toLocaleString('en-IN')}
                     </TableCell>
 
@@ -411,7 +416,7 @@ export default function BookingsMonitorPage() {
                             variant="primary"
                             disabled={isProcessingTransition}
                             onClick={() => handleTransition(item.id, nextAction.next)}
-                            className="text-[11px] h-7 px-2.5 flex items-center gap-1"
+                            className="text-[11px] h-7 px-2.5 flex items-center gap-1 rounded-[3px]"
                           >
                             <span>{nextAction.label}</span>
                             <ChevronRight className="w-3 h-3" />
@@ -424,7 +429,7 @@ export default function BookingsMonitorPage() {
                             variant="outline"
                             disabled={isProcessingTransition}
                             onClick={() => handleMarkNoShow(item.id)}
-                            className="text-[11px] h-7 px-2 text-rose-600 hover:text-rose-700"
+                            className="text-[11px] h-7 px-2 text-[#e11d48] hover:text-[#be123c] rounded-[3px]"
                             title="Mark No-Show"
                           >
                             <UserX className="w-3 h-3" />
@@ -434,7 +439,7 @@ export default function BookingsMonitorPage() {
                         <button
                           type="button"
                           onClick={() => setSelectedAuditBooking(item)}
-                          className="p-1.5 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                          className="p-1.5 rounded-[3px] hover:bg-[#f1f5f9] text-[#64748b] hover:text-[#090d16] transition-colors border border-transparent hover:border-[#e2e8f0]"
                           title="View Transition History"
                         >
                           <History className="w-4 h-4" />
@@ -462,22 +467,22 @@ export default function BookingsMonitorPage() {
 
       {/* Transition History Modal */}
       {selectedAuditBooking && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="relative w-full max-w-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-2xl p-6 space-y-4 max-h-[80vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#090d16]/60 backdrop-blur-xs p-4">
+          <div className="relative w-full max-w-xl bg-white border border-[#e2e8f0] rounded-[6px] shadow-2xl p-6 space-y-4 max-h-[82vh] overflow-y-auto">
+            <div className="flex items-center justify-between border-b border-[#f1f5f9] pb-3">
               <div>
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <h3 className="text-sm font-bold text-[#090d16] flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-[#16a34a]" />
                   <span>State Transition Audit Trail</span>
                 </h3>
-                <p className="text-[11px] text-slate-500 font-mono">
+                <p className="text-[11px] text-[#64748b] font-mono">
                   {selectedAuditBooking.bookingReference}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedAuditBooking(null)}
-                className="text-xs text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                className="text-xs text-[#64748b] hover:text-[#090d16] px-2 py-1 rounded-[3px] border border-[#e2e8f0]"
               >
                 Close
               </button>
@@ -485,13 +490,13 @@ export default function BookingsMonitorPage() {
 
             <div className="space-y-4 pt-2">
               {selectedAuditBooking.statusHistory && selectedAuditBooking.statusHistory.length > 0 ? (
-                <div className="relative pl-6 border-l-2 border-slate-200 dark:border-slate-800 space-y-5">
+                <div className="relative pl-6 border-l-2 border-[#e2e8f0] space-y-5">
                   {selectedAuditBooking.statusHistory.map((log: any, idx: number) => (
                     <div key={log.id || idx} className="relative space-y-1">
-                      <span className="absolute -left-[31px] top-1 w-3.5 h-3.5 rounded-full bg-slate-900 dark:bg-slate-100 ring-4 ring-white dark:ring-slate-900" />
+                      <span className="absolute -left-[31px] top-1 w-3 h-3 rounded-full bg-[#090d16] ring-4 ring-white" />
                       <div className="flex items-center gap-2">
                         <BookingStatusBadge status={log.toStatus} />
-                        <span className="text-[10px] text-slate-400">
+                        <span className="text-[10px] text-[#64748b] font-mono">
                           {new Date(log.createdAt).toLocaleString('en-IN', {
                             dateStyle: 'medium',
                             timeStyle: 'short',
@@ -499,24 +504,24 @@ export default function BookingsMonitorPage() {
                         </span>
                       </div>
                       {log.fromStatus && (
-                        <p className="text-[11px] text-slate-500">
-                          Transition: <span className="font-semibold">{log.fromStatus}</span> →{' '}
-                          <span className="font-semibold">{log.toStatus}</span>
+                        <p className="text-[11px] text-[#64748b]">
+                          Transition: <span className="font-semibold text-[#090d16]">{log.fromStatus}</span> →{' '}
+                          <span className="font-semibold text-[#090d16]">{log.toStatus}</span>
                         </p>
                       )}
                       {log.notes && (
-                        <p className="text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950 p-2 rounded border border-slate-100 dark:border-slate-800">
+                        <p className="text-xs text-[#090d16] bg-[#f8fafc] p-2 rounded-[3px] border border-[#e2e8f0]">
                           {log.notes}
                         </p>
                       )}
                       {log.reason && (
-                        <p className="text-[11px] text-rose-600 italic">Reason: {log.reason}</p>
+                        <p className="text-[11px] text-[#e11d48] italic">Reason: {log.reason}</p>
                       )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-slate-500">No transition history logged yet.</p>
+                <p className="text-xs text-[#64748b]">No transition history logged yet.</p>
               )}
             </div>
           </div>

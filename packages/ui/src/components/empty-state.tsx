@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { cn } from '../utils';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, Sparkles } from 'lucide-react';
 import { Button } from './button';
 
 export interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
-  icon: LucideIcon;
+  icon?: LucideIcon;
   title: string;
   description: string;
   actionLabel?: string;
@@ -14,7 +14,7 @@ export interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function EmptyState({
-  icon: Icon,
+  icon: Icon = Sparkles,
   title,
   description,
   actionLabel,
@@ -27,18 +27,18 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        'flex flex-col items-center justify-center p-8 text-center rounded-lg border border-dashed border-zinc-300 bg-white/50 dark:border-zinc-800 dark:bg-zinc-900/30',
+        'flex flex-col items-center justify-center p-10 text-center rounded-[6px] border border-dashed border-[#ded8cb] bg-[#faf8f5]',
         className
       )}
       {...props}
     >
-      <div className="w-12 h-12 rounded-lg bg-zinc-100 flex items-center justify-center text-zinc-500 mb-4 dark:bg-zinc-800 dark:text-zinc-400">
-        <Icon className="w-6 h-6 stroke-[1.5]" />
+      <div className="w-12 h-12 rounded-[5px] bg-[#f0ece1] border border-[#ded8cb] flex items-center justify-center text-[#1a1816] mb-4">
+        <Icon className="w-5 h-5 stroke-[1.5]" />
       </div>
-      <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 mb-1">
+      <h3 className="font-serif text-lg font-normal text-[#1a1816] mb-1">
         {title}
       </h3>
-      <p className="text-xs text-zinc-500 max-w-sm mb-6 leading-relaxed">
+      <p className="text-xs text-[#736b63] max-w-sm mb-6 leading-relaxed">
         {description}
       </p>
       {(actionLabel || secondaryActionLabel) && (
@@ -48,6 +48,7 @@ export function EmptyState({
               variant="outline"
               size="sm"
               onClick={onSecondaryAction}
+              className="h-8 text-xs px-3"
             >
               {secondaryActionLabel}
             </Button>
@@ -57,6 +58,7 @@ export function EmptyState({
               variant="primary"
               size="sm"
               onClick={onAction}
+              className="h-8 text-xs px-3 uppercase tracking-wider font-semibold"
             >
               {actionLabel}
             </Button>

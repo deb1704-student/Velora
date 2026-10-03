@@ -12,6 +12,9 @@ import {
   Activity,
   X,
   Calendar,
+  Sparkles,
+  ArrowRight,
+  Layers,
 } from 'lucide-react';
 import Link from 'next/link';
 import { salonsApi, availabilityApi } from '../../lib/api';
@@ -32,9 +35,9 @@ const FALLBACK_SALONS: SalonItem[] = [
   {
     id: '06eb1d81-749c-44b7-ab2c-4fe060413a6c',
     name: 'Maison de Velora',
-    city: 'Beverly Hills',
-    area: 'Rodeo Drive',
-    address: '450 Rodeo Drive, Beverly Hills, CA 90210',
+    city: 'Bengaluru',
+    area: 'Indiranagar',
+    address: '100ft Road, Indiranagar, Bengaluru, KA 560038',
     capacity: 12,
     openingTime: '09:00',
     closingTime: '20:00',
@@ -48,7 +51,7 @@ export default function SalonsPage() {
   const [selectedCity, setSelectedCity] = React.useState('ALL');
   const [searchQuery, setSearchQuery] = React.useState('');
 
-  // Capacity Modal State
+  // Station Capacity Modal State
   const [inspectingSalon, setInspectingSalon] = React.useState<SalonItem | null>(null);
   const [capacityDate, setCapacityDate] = React.useState(
     new Date().toISOString().split('T')[0]
@@ -68,8 +71,8 @@ export default function SalonsPage() {
           const mapped: SalonItem[] = res.data.map((item: any) => ({
             id: item.id,
             name: item.name,
-            city: item.address?.city || 'Beverly Hills',
-            area: item.address?.state || 'California',
+            city: item.address?.city || 'Bengaluru',
+            area: item.address?.state || 'Karnataka',
             address: item.address
               ? `${item.address.streetLine1}, ${item.address.city}, ${item.address.postalCode}`
               : 'Atelier Suites',
@@ -95,7 +98,7 @@ export default function SalonsPage() {
     };
   }, []);
 
-  // Fetch capacity when modal is open and date changes
+  // Fetch live station capacity when modal is active
   React.useEffect(() => {
     if (!inspectingSalon) return;
     let mounted = true;
@@ -104,11 +107,8 @@ export default function SalonsPage() {
     availabilityApi
       .getSalonCapacity(inspectingSalon.id, capacityDate)
       .then((res) => {
-        if (!mounted) return;
-        if (res.success && res.data) {
+        if (mounted && res.success) {
           setCapacityData(res.data);
-        } else {
-          setCapacityData(null);
         }
       })
       .catch(() => {
@@ -123,138 +123,134 @@ export default function SalonsPage() {
     };
   }, [inspectingSalon, capacityDate]);
 
-  const cities = React.useMemo(() => {
-    const set = new Set(salons.map((s) => s.city));
-    return Array.from(set);
-  }, [salons]);
-
   const filteredSalons = React.useMemo(() => {
-    return salons.filter((salon) => {
-      const matchesCity = selectedCity === 'ALL' || salon.city === selectedCity;
+    return salons.filter((s) => {
       const matchesSearch =
-        salon.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        salon.area.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        salon.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        salon.address.toLowerCase().includes(searchQuery.toLowerCase());
-      return matchesCity && matchesSearch;
+        s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.city.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCity = selectedCity === 'ALL' || s.city.toLowerCase() === selectedCity.toLowerCase();
+      return matchesSearch && matchesCity;
     });
-  }, [salons, selectedCity, searchQuery]);
+  }, [salons, searchQuery, selectedCity]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      {/* Editorial Breadcrumbs */}
       <Breadcrumbs
         items={[
-          { label: 'Home', href: '/' },
-          { label: 'Partner Salons' },
+          { label: 'Marketplace', href: '/' },
+          { label: 'Partner Ateliers' },
         ]}
       />
 
-      <div className="space-y-2">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-950 dark:text-white">
-          Partner Salons & Studios
-        </h1>
-        <p className="text-xs sm:text-sm text-zinc-500 max-w-2xl">
-          Accredited studios with audited hygiene protocols, private treatment booths, and guaranteed
-          workstation capacity. Inspect live chair availability to reserve without waiting queues.
-        </p>
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-5 border-b border-[#e5e0d5] dark:border-[#2e2a26] pb-6">
+        <div className="space-y-2 max-w-2xl">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] bg-[#f4f1ea] dark:bg-[#221f1c] border border-[#e2ded5] dark:border-[#38332d] text-[11px] font-semibold text-[#44403c] dark:text-[#d6d3d1]">
+            <Building2 className="w-3.5 h-3.5 text-[#b3592c]" />
+            <span>Accredited Workstations & Studios</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-[#1a1816] dark:text-white font-editorial">
+            Licensed Partner Salon Ateliers
+          </h1>
+          <p className="text-xs sm:text-sm text-[#615b53] dark:text-[#b5ada1] leading-relaxed">
+            Browse inspected salon facilities with verified workstation chair capacities. Book chair sessions directly with zero walk-in uncertainty.
+          </p>
+        </div>
       </div>
 
-      <div className="p-4 rounded-lg border border-zinc-200 bg-white flex flex-col sm:flex-row gap-3 dark:border-zinc-800 dark:bg-zinc-900">
+      {/* Filter Toolbar */}
+      <div className="p-4 sm:p-5 rounded-[8px] border border-[#ded8cb] bg-white dark:border-[#2e2a26] dark:bg-[#181614] shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col sm:flex-row gap-3">
         <div className="flex-1">
           <Input
-            placeholder="Search by atelier name, locality, or address..."
+            placeholder="Search by salon name, street, or city..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-10"
+            className="h-10 text-xs sm:text-sm"
           />
         </div>
-        <div className="sm:w-52">
+        <div className="sm:w-56">
           <select
             value={selectedCity}
             onChange={(e) => setSelectedCity(e.target.value)}
-            className="h-10 w-full rounded-md border border-zinc-300 bg-white px-3 text-xs font-medium text-zinc-800 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-200 focus:outline-none"
+            className="h-10 w-full rounded-[5px] border border-[#d6d3cb] bg-white px-3 text-xs font-medium text-[#1c1917] dark:border-[#383532] dark:bg-[#161412] dark:text-[#f5f5f4] focus:outline-none cursor-pointer shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]"
           >
-            <option value="ALL">All Cities</option>
-            {cities.map((city) => (
-              <option key={city} value={city}>
-                {city}
-              </option>
-            ))}
+            <option value="ALL">All Territories</option>
+            <option value="Bengaluru">Bengaluru</option>
+            <option value="Mumbai">Mumbai</option>
+            <option value="Delhi NCR">Delhi NCR</option>
           </select>
         </div>
       </div>
 
+      {/* Salons Grid */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {[1, 2].map((i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="p-6 rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 space-y-4 animate-pulse"
-            >
-              <div className="h-5 bg-zinc-100 dark:bg-zinc-800 rounded w-1/3" />
-              <div className="h-7 bg-zinc-100 dark:bg-zinc-800 rounded w-2/3" />
-              <div className="h-10 bg-zinc-100 dark:bg-zinc-800 rounded" />
-            </div>
+              className="h-72 rounded-[8px] bg-[#f0eee6] dark:bg-[#221f1c] animate-pulse border border-[#e2ded5]"
+            />
           ))}
         </div>
       ) : filteredSalons.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {filteredSalons.map((salon) => (
             <div
               key={salon.id}
-              className="p-6 rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900 flex flex-col justify-between space-y-5 hover:border-zinc-300 transition-colors shadow-sm"
+              className="rounded-[8px] border border-[#ded8cb] bg-white dark:border-[#2e2a26] dark:bg-[#181614] p-6 shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col justify-between space-y-5 hover:border-[#b8b3a7] transition-all"
             >
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5 text-xs text-zinc-500">
-                    <MapPin className="w-3.5 h-3.5 text-zinc-400" />
-                    <span>
-                      {salon.area}, {salon.city}
+              <div className="space-y-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="space-y-1">
+                    <span className="text-[10px] uppercase font-bold tracking-wider text-[#8c857b]">
+                      {salon.city}
                     </span>
+                    <h3 className="font-bold text-lg text-[#1a1816] dark:text-[#fafaf9] font-editorial leading-tight">
+                      {salon.name}
+                    </h3>
                   </div>
-                  <Badge variant="success" className="text-[10px]">
-                    <ShieldCheck className="w-3 h-3 mr-1" />
-                    <span>Accredited Atelier</span>
+                  <Badge variant={salon.verificationStatus === 'VERIFIED' ? 'success' : 'neutral'}>
+                    <ShieldCheck className="w-3 h-3 text-[#274c3a]" />
+                    <span>Verified Atelier</span>
                   </Badge>
                 </div>
 
-                <h3 className="text-lg font-bold text-zinc-900 dark:text-white">
-                  {salon.name}
-                </h3>
-
-                <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                  {salon.address}
-                </p>
-
-                <div className="pt-2 flex items-center gap-5 text-xs text-zinc-600 dark:text-zinc-400 border-t border-zinc-100 dark:border-zinc-800">
-                  <div className="flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-zinc-400" />
-                    <span>{salon.openingTime} – {salon.closingTime}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5 text-zinc-400" />
-                    <span>{salon.capacity} Workstations</span>
-                  </div>
+                <div className="space-y-2 text-xs text-[#615b53] dark:text-[#b5ada1]">
+                  <p className="flex items-start gap-1.5 leading-snug">
+                    <MapPin className="w-3.5 h-3.5 text-[#8c857b] shrink-0 mt-0.5" />
+                    <span>{salon.address}</span>
+                  </p>
+                  <p className="flex items-center gap-1.5 font-mono text-[11px]">
+                    <Clock className="w-3.5 h-3.5 text-[#8c857b] shrink-0" />
+                    <span>Operating Hours: {salon.openingTime} – {salon.closingTime}</span>
+                  </p>
+                  <p className="flex items-center gap-1.5 font-mono text-[11px]">
+                    <Users className="w-3.5 h-3.5 text-[#8c857b] shrink-0" />
+                    <span>Station Capacity: {salon.capacity} Dedicated Workstation Chairs</span>
+                  </p>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between gap-3">
-                <button
-                  type="button"
-                  onClick={() => setInspectingSalon(salon)}
-                  className="px-3 py-1.5 text-xs font-semibold rounded border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300"
-                >
-                  <Activity className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Check Station Capacity</span>
-                </button>
+              <div className="pt-4 border-t border-[#f0ebe1] dark:border-[#272421] space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setInspectingSalon(salon)}
+                    className="text-xs h-8 flex items-center justify-center gap-1"
+                  >
+                    <Activity className="w-3 h-3 text-[#b3592c]" />
+                    <span>Chair Matrix</span>
+                  </Button>
 
-                <Link
-                  href={`/services?salonId=${salon.id}`}
-                  className="px-3.5 py-1.5 text-xs font-semibold rounded bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 transition-colors flex items-center gap-1"
-                >
-                  <span>Book at Atelier</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </Link>
+                  <Link href={`/services?salonId=${salon.id}`}>
+                    <Button variant="primary" size="sm" className="w-full text-xs h-8">
+                      Book Services
+                    </Button>
+                  </Link>
+                </div>
               </div>
             </div>
           ))}
@@ -263,138 +259,111 @@ export default function SalonsPage() {
         <EmptyState
           icon={Building2}
           title="No Salons Found"
-          description="We could not find partner salons matching your current location or keywords. You can reset filters to view all accredited locations."
-          actionLabel="View All Salons"
+          description="No partner ateliers match your current search query."
+          actionLabel="Clear Filters"
           onAction={() => {
-            setSelectedCity('ALL');
             setSearchQuery('');
+            setSelectedCity('ALL');
           }}
         />
       )}
 
-      {/* Live Workstation Capacity Modal (Phase 6) */}
+      {/* Hourly Chair Capacity Modal */}
       {inspectingSalon && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-          <div className="relative w-full max-w-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl overflow-hidden my-8">
-            <div className="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/70 dark:bg-zinc-950/40">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="relative w-full max-w-2xl bg-white dark:bg-[#181614] border border-[#ded8cb] dark:border-[#2e2a26] rounded-[8px] shadow-2xl p-6 sm:p-8 space-y-5 max-h-[85vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-[#f0ebe1] dark:border-[#272421] pb-4">
               <div>
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-                  Real-time Workstation Utilization
+                <span className="text-[10px] uppercase font-bold tracking-wider text-[#b3592c]">
+                  Live Station Telemetry
                 </span>
-                <h2 className="text-base font-bold text-zinc-900 dark:text-white">
-                  {inspectingSalon.name}
-                </h2>
+                <h3 className="text-lg font-bold text-[#1a1816] dark:text-white font-editorial">
+                  Workstation Capacity Matrix: {inspectingSalon.name}
+                </h3>
+                <p className="text-xs text-[#736d65]">
+                  Total Chairs: {inspectingSalon.capacity} • Operating {inspectingSalon.openingTime} – {inspectingSalon.closingTime}
+                </p>
               </div>
               <button
                 type="button"
                 onClick={() => setInspectingSalon(null)}
-                className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                className="p-1 rounded text-[#8c857b] hover:text-[#1a1816] dark:hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-zinc-400" />
-                  <input
-                    type="date"
-                    value={capacityDate}
-                    onChange={(e) => setCapacityDate(e.target.value)}
-                    className="text-xs rounded border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 px-2.5 py-1 text-zinc-700 dark:text-zinc-300 focus:outline-none"
-                  />
-                </div>
-                <div className="text-xs font-medium text-zinc-500">
-                  Total Capacity: <span className="font-bold text-zinc-900 dark:text-white">{inspectingSalon.capacity} Chairs</span>
-                </div>
-              </div>
-
-              {isLoadingCapacity ? (
-                <div className="space-y-2 animate-pulse">
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <div key={i} className="h-10 bg-zinc-100 dark:bg-zinc-800 rounded" />
-                  ))}
-                </div>
-              ) : capacityData && capacityData.capacityByHour ? (
-                <div className="space-y-3">
-                  <div className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
-                    Hourly Workstation Availability
-                  </div>
-
-                  <div className="border border-zinc-200 dark:border-zinc-800 rounded-lg overflow-hidden divide-y divide-zinc-100 dark:divide-zinc-800 text-xs">
-                    {capacityData.capacityByHour.map((hourRow: any) => {
-                      const availPercent = 100 - hourRow.utilizationPercentage;
-                      return (
-                        <div
-                          key={hourRow.hour}
-                          className="p-3 flex items-center justify-between hover:bg-zinc-50 dark:hover:bg-zinc-800/40 transition-colors"
-                        >
-                          <div className="w-20 font-mono font-medium text-zinc-800 dark:text-zinc-200">
-                            {hourRow.hour}
-                          </div>
-
-                          <div className="flex-1 mx-4">
-                            <div className="flex items-center justify-between text-[11px] text-zinc-500 mb-1">
-                              <span>
-                                {hourRow.availableChairs} of {hourRow.totalChairs} chairs available
-                              </span>
-                              <span>{hourRow.utilizationPercentage}% occupied</span>
-                            </div>
-                            <div className="h-1.5 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                              <div
-                                className={`h-full transition-all duration-300 ${
-                                  hourRow.utilizationPercentage > 80
-                                    ? 'bg-red-500'
-                                    : hourRow.utilizationPercentage > 40
-                                    ? 'bg-amber-500'
-                                    : 'bg-emerald-500'
-                                }`}
-                                style={{ width: `${hourRow.utilizationPercentage}%` }}
-                              />
-                            </div>
-                          </div>
-
-                          <Badge
-                            variant={
-                              hourRow.availableChairs > 4
-                                ? 'success'
-                                : hourRow.availableChairs > 0
-                                ? 'warning'
-                                : 'destructive'
-                            }
-                            className="text-[10px]"
-                          >
-                            {hourRow.availableChairs > 0 ? `${hourRow.availableChairs} Free` : 'Fully Booked'}
-                          </Badge>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              ) : (
-                <div className="p-6 text-center text-xs text-zinc-500">
-                  No hourly capacity breakdown available for this date.
-                </div>
-              )}
+            {/* Date Selector */}
+            <div className="flex items-center justify-between gap-4 p-3 rounded-[6px] bg-[#faf8f5] dark:bg-[#141211] border border-[#e5e0d5] dark:border-[#2e2a26]">
+              <span className="text-xs font-semibold text-[#1a1816] dark:text-white flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-[#8c857b]" />
+                <span>Selected Schedule Date:</span>
+              </span>
+              <input
+                type="date"
+                value={capacityDate}
+                min={new Date().toISOString().split('T')[0]}
+                onChange={(e) => setCapacityDate(e.target.value)}
+                className="text-xs px-2.5 py-1.5 rounded-[4px] border border-[#d6d3cb] dark:border-[#383532] bg-white dark:bg-[#181614] text-[#1c1917] dark:text-white"
+              />
             </div>
 
-            <div className="px-6 py-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-950/40 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setInspectingSalon(null)}
-                className="text-xs font-medium text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
-              >
-                Close
-              </button>
+            {/* Hourly Capacity Breakdown */}
+            {isLoadingCapacity ? (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 py-4">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="h-16 rounded bg-[#f0eee6] dark:bg-[#221f1c] animate-pulse" />
+                ))}
+              </div>
+            ) : capacityData?.capacityByHour ? (
+              <div className="space-y-3">
+                <span className="text-[10px] uppercase font-bold tracking-wider text-[#8c857b] block">
+                  Hourly Chair Utilization & Free Slots
+                </span>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                  {capacityData.capacityByHour.map((slot: any) => {
+                    const isFull = slot.availableChairs === 0;
+                    return (
+                      <div
+                        key={slot.hour}
+                        className={`p-3 rounded-[5px] border text-left space-y-1 ${
+                          isFull
+                            ? 'border-[#fca5a5] bg-[#fdf2f2] dark:border-[#541616] dark:bg-[#2d0e0e]'
+                            : 'border-[#ded8cb] bg-white dark:border-[#2e2a26] dark:bg-[#181614]'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between text-xs font-bold font-mono">
+                          <span>{slot.hour}</span>
+                          <span
+                            className={
+                              isFull
+                                ? 'text-[#b91c1c] text-[10px]'
+                                : 'text-[#274c3a] dark:text-[#86efac] text-[10px]'
+                            }
+                          >
+                            {isFull ? 'Station Full' : `${slot.availableChairs} Available`}
+                          </span>
+                        </div>
+                        <div className="text-[10px] text-[#736d65] dark:text-[#a69f95] flex justify-between">
+                          <span>Occupied: {slot.occupiedChairs}/{slot.totalChairs}</span>
+                          <span>{slot.utilizationPercentage}% full</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-[#736d65] text-center py-4">
+                No capacity telemetry recorded for this schedule date.
+              </p>
+            )}
 
-              <Link
-                href={`/services?salonId=${inspectingSalon.id}`}
-                className="px-4 py-2 text-xs font-semibold rounded bg-zinc-900 text-white hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200 transition-colors flex items-center gap-1"
-              >
-                <span>View Atelier Services</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </Link>
+            <div className="pt-3 border-t border-[#f0ebe1] dark:border-[#272421] flex justify-end">
+              <Button variant="outline" size="sm" onClick={() => setInspectingSalon(null)}>
+                Close Matrix
+              </Button>
             </div>
           </div>
         </div>

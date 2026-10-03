@@ -15,12 +15,12 @@ export default function ErrorBoundary({
   }, [error]);
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center p-4">
+    <div className="min-h-[65vh] flex items-center justify-center p-4 bg-[#faf8f5]">
       <div className="max-w-md w-full">
         <ErrorState
-          title="Something went wrong"
-          description="We encountered an unexpected error while loading this page. Our service team has received the diagnostics."
-          errorDetails={error.message || 'Error digest: ' + error.digest}
+          title="Service Interface Disruption"
+          description="An unexpected condition interrupted page rendering. You may attempt to reload the interface or return to the main catalog."
+          errorDetails={error.message || 'Diagnostic digest: ' + error.digest}
           onRetry={() => reset()}
         />
       </div>

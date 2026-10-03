@@ -8,7 +8,7 @@ export function Card({
   return (
     <div
       className={cn(
-        'rounded-lg border border-zinc-200 bg-white text-zinc-950 shadow-sm dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-50',
+        'rounded-[8px] border border-[#e5e2da] bg-white text-[#1c1917] shadow-[0_1px_3px_rgba(0,0,0,0.03),0_1px_1px_rgba(0,0,0,0.02)] transition-all dark:border-[#2e2b27] dark:bg-[#181614] dark:text-[#f5f5f4]',
         className
       )}
       {...props}
@@ -22,7 +22,10 @@ export function CardHeader({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn('flex flex-col space-y-1.5 p-6 border-b border-zinc-100 dark:border-zinc-800/60', className)}
+      className={cn(
+        'flex flex-col space-y-1.5 p-5 sm:p-6 border-b border-[#f0eee6] dark:border-[#272421]',
+        className
+      )}
       {...props}
     />
   );
@@ -35,7 +38,7 @@ export function CardTitle({
   return (
     <h3
       className={cn(
-        'text-lg font-semibold leading-none tracking-tight text-zinc-900 dark:text-zinc-100',
+        'text-base sm:text-lg font-semibold leading-tight tracking-tight text-[#1c1917] dark:text-[#f5f5f4]',
         className
       )}
       {...props}
@@ -49,7 +52,7 @@ export function CardDescription({
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={cn('text-sm text-zinc-500 dark:text-zinc-400', className)}
+      className={cn('text-xs text-[#78716c] dark:text-[#a8a29e] leading-relaxed', className)}
       {...props}
     />
   );
@@ -59,7 +62,7 @@ export function CardContent({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn('p-6', className)} {...props} />;
+  return <div className={cn('p-5 sm:p-6', className)} {...props} />;
 }
 
 export function CardFooter({
@@ -69,7 +72,7 @@ export function CardFooter({
   return (
     <div
       className={cn(
-        'flex items-center p-6 pt-0 border-t border-zinc-100 dark:border-zinc-800/60 mt-4',
+        'flex items-center p-5 sm:p-6 pt-0 border-t border-[#f0eee6] dark:border-[#272421] mt-auto',
         className
       )}
       {...props}

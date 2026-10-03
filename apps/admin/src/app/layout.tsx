@@ -11,11 +11,19 @@ import {
   ShieldAlert,
   Settings,
   Clock,
+  Building2,
+  Users,
+  Activity,
+  Database,
+  Terminal,
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Velora Console — Administration & Operations',
-  description: 'Operations, Verification, Financial Settlement & Audit Console for Velora Platform',
+  title: 'Velora Operations Console — Mission Control',
+  description: 'Authoritative back-office, capacity management, lifecycle monitoring, and governance console for Velora Platform.',
+  icons: {
+    icon: '/icon.svg',
+  },
 };
 
 export default function AdminLayout({
@@ -25,113 +33,199 @@ export default function AdminLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100 flex">
+      <body className="min-h-screen bg-[#f8fafc] text-[#090d16] antialiased flex flex-col md:flex-row">
         {/* Admin Navigation Sidebar */}
-        <aside className="w-64 border-r border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 flex flex-col justify-between shrink-0">
+        <aside className="w-full md:w-64 border-b md:border-b-0 md:border-r border-[#e2e8f0] bg-white flex flex-col justify-between shrink-0">
           <div>
-            <div className="h-16 px-6 flex items-center gap-2.5 border-b border-slate-100 dark:border-slate-800">
-              <span className="w-7 h-7 rounded bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 flex items-center justify-center font-bold text-xs">
-                V
-              </span>
-              <div className="flex flex-col">
-                <span className="font-bold text-sm tracking-tight">Velora Console</span>
-                <span className="text-[10px] text-slate-500 font-medium">Operations & Governance</span>
+            {/* Header Brand */}
+            <div className="h-16 px-5 flex items-center justify-between border-b border-[#f1f5f9]">
+              <div className="flex items-center gap-2.5">
+                <span className="w-7 h-7 rounded-[4px] bg-[#090d16] text-white flex items-center justify-center font-bold font-serif text-sm shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
+                  V
+                </span>
+                <div className="flex flex-col">
+                  <span className="font-bold text-xs tracking-tight uppercase">Velora Console</span>
+                  <span className="text-[10px] text-[#64748b] font-mono">BACK-OFFICE & GOVERNANCE</span>
+                </div>
               </div>
+              <span className="px-1.5 py-0.5 text-[9px] font-mono bg-[#f1f5f9] text-[#475569] rounded-[3px] border border-[#e2e8f0]">
+                v1.0
+              </span>
             </div>
 
-            <nav className="p-4 space-y-1 text-xs font-medium text-slate-600 dark:text-slate-300">
-              <Link
-                href="/"
-                className="flex items-center gap-2.5 px-3 py-2 rounded-md bg-slate-100 text-slate-900 font-semibold dark:bg-slate-800 dark:text-white"
-              >
-                <LayoutDashboard className="w-4 h-4" />
-                <span>Overview</span>
-              </Link>
+            {/* Navigation Groups */}
+            <nav className="p-3 space-y-4 text-xs">
+              {/* Group 1: Core Operations */}
+              <div>
+                <span className="px-2.5 text-[10px] font-mono uppercase tracking-wider text-[#94a3b8] font-semibold block mb-1">
+                  Core Operations
+                </span>
+                <div className="space-y-0.5">
+                  <Link
+                    href="/"
+                    className="flex items-center gap-2.5 px-2.5 py-2 rounded-[4px] text-[#090d16] hover:bg-[#f1f5f9] font-medium transition-colors"
+                  >
+                    <LayoutDashboard className="w-4 h-4 text-[#475569]" />
+                    <span>Mission Overview</span>
+                  </Link>
 
-              <Link
-                href="/verifications"
-                className="flex items-center gap-2.5 px-3 py-2 rounded-md hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-800/60 dark:hover:text-white transition-colors"
-              >
-                <UserCheck className="w-4 h-4" />
-                <span>Verifications (KYC)</span>
-              </Link>
+                  <Link
+                    href="/bookings"
+                    className="flex items-center justify-between px-2.5 py-2 rounded-[4px] text-[#090d16] hover:bg-[#f1f5f9] font-medium transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <CalendarDays className="w-4 h-4 text-[#475569]" />
+                      <span>Bookings Lifecycle</span>
+                    </div>
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-[3px] bg-[#f1f5f9] text-[#64748b] border border-[#e2e8f0]">
+                      11 STAGES
+                    </span>
+                  </Link>
 
-              <Link
-                href="/bookings"
-                className="flex items-center gap-2.5 px-3 py-2 rounded-md hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-800/60 dark:hover:text-white transition-colors"
-              >
-                <CalendarDays className="w-4 h-4" />
-                <span>Bookings Lifecycle</span>
-              </Link>
+                  <Link
+                    href="/capacity"
+                    className="flex items-center gap-2.5 px-2.5 py-2 rounded-[4px] text-[#090d16] hover:bg-[#f1f5f9] font-medium transition-colors"
+                  >
+                    <Clock className="w-4 h-4 text-[#475569]" />
+                    <span>Workstations & Capacity</span>
+                  </Link>
 
-              <Link
-                href="/capacity"
-                className="flex items-center gap-2.5 px-3 py-2 rounded-md hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-800/60 dark:hover:text-white transition-colors"
-              >
-                <Clock className="w-4 h-4" />
-                <span>Capacity & Schedules</span>
-              </Link>
+                  <Link
+                    href="/verifications"
+                    className="flex items-center justify-between px-2.5 py-2 rounded-[4px] text-[#090d16] hover:bg-[#f1f5f9] font-medium transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <UserCheck className="w-4 h-4 text-[#475569]" />
+                      <span>Verifications (KYC)</span>
+                    </div>
+                    <span className="w-2 h-2 rounded-full bg-[#b45309]" />
+                  </Link>
+                </div>
+              </div>
 
-              <Link
-                href="/services"
-                className="flex items-center gap-2.5 px-3 py-2 rounded-md hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-800/60 dark:hover:text-white transition-colors"
-              >
-                <Scissors className="w-4 h-4" />
-                <span>Catalog & Salons</span>
-              </Link>
+              {/* Group 2: Catalog & Network */}
+              <div>
+                <span className="px-2.5 text-[10px] font-mono uppercase tracking-wider text-[#94a3b8] font-semibold block mb-1">
+                  Catalog & Network
+                </span>
+                <div className="space-y-0.5">
+                  <a
+                    href="http://localhost:3000/services"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center justify-between px-2.5 py-2 rounded-[4px] text-[#475569] hover:bg-[#f1f5f9] hover:text-[#090d16] font-medium transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Scissors className="w-4 h-4 text-[#64748b]" />
+                      <span>Service Catalog</span>
+                    </div>
+                    <span className="text-[10px] text-[#94a3b8]">Live ↗</span>
+                  </a>
 
-              <Link
-                href="/finance"
-                className="flex items-center gap-2.5 px-3 py-2 rounded-md hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-800/60 dark:hover:text-white transition-colors"
-              >
-                <CreditCard className="w-4 h-4" />
-                <span>Payments & Settlements</span>
-              </Link>
+                  <a
+                    href="http://localhost:3000/salons"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center justify-between px-2.5 py-2 rounded-[4px] text-[#475569] hover:bg-[#f1f5f9] hover:text-[#090d16] font-medium transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Building2 className="w-4 h-4 text-[#64748b]" />
+                      <span>Atelier Studios</span>
+                    </div>
+                    <span className="text-[10px] text-[#94a3b8]">Live ↗</span>
+                  </a>
 
-              <Link
-                href="/disputes"
-                className="flex items-center gap-2.5 px-3 py-2 rounded-md hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-800/60 dark:hover:text-white transition-colors"
-              >
-                <AlertCircle className="w-4 h-4" />
-                <span>Support & Disputes</span>
-              </Link>
+                  <a
+                    href="http://localhost:3000/providers"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center justify-between px-2.5 py-2 rounded-[4px] text-[#475569] hover:bg-[#f1f5f9] hover:text-[#090d16] font-medium transition-colors"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <Users className="w-4 h-4 text-[#64748b]" />
+                      <span>Specialist Roster</span>
+                    </div>
+                    <span className="text-[10px] text-[#94a3b8]">Live ↗</span>
+                  </a>
+                </div>
+              </div>
 
-              <Link
-                href="/audit"
-                className="flex items-center gap-2.5 px-3 py-2 rounded-md hover:bg-slate-50 hover:text-slate-900 dark:hover:bg-slate-800/60 dark:hover:text-white transition-colors"
-              >
-                <ShieldAlert className="w-4 h-4" />
-                <span>Audit & Security Logs</span>
-              </Link>
+              {/* Group 3: Governance */}
+              <div>
+                <span className="px-2.5 text-[10px] font-mono uppercase tracking-wider text-[#94a3b8] font-semibold block mb-1">
+                  Governance & Audit
+                </span>
+                <div className="space-y-0.5">
+                  <div className="flex items-center justify-between px-2.5 py-2 rounded-[4px] text-[#94a3b8] font-medium cursor-not-allowed">
+                    <div className="flex items-center gap-2.5">
+                      <CreditCard className="w-4 h-4" />
+                      <span>Settlements (Escrow)</span>
+                    </div>
+                    <span className="text-[9px] font-mono">Q4 Phase</span>
+                  </div>
+
+                  <div className="flex items-center justify-between px-2.5 py-2 rounded-[4px] text-[#94a3b8] font-medium cursor-not-allowed">
+                    <div className="flex items-center gap-2.5">
+                      <AlertCircle className="w-4 h-4" />
+                      <span>Dispute Mediation</span>
+                    </div>
+                    <span className="text-[9px] font-mono">Q4 Phase</span>
+                  </div>
+
+                  <div className="flex items-center justify-between px-2.5 py-2 rounded-[4px] text-[#94a3b8] font-medium cursor-not-allowed">
+                    <div className="flex items-center gap-2.5">
+                      <ShieldAlert className="w-4 h-4" />
+                      <span>Audit Logs (D19)</span>
+                    </div>
+                    <span className="text-[9px] font-mono">Active</span>
+                  </div>
+                </div>
+              </div>
             </nav>
           </div>
 
-          <div className="p-4 border-t border-slate-100 dark:border-slate-800">
-            <div className="flex items-center gap-2 px-3 py-2 text-xs text-slate-500">
-              <Settings className="w-4 h-4" />
-              <span>System v1.0.0 (Dev)</span>
+          {/* System Footer info */}
+          <div className="p-4 border-t border-[#f1f5f9] space-y-2">
+            <div className="flex items-center justify-between text-[11px] text-[#64748b] font-mono">
+              <span className="flex items-center gap-1.5">
+                <Database className="w-3.5 h-3.5 text-[#22c55e]" />
+                <span>PostgreSQL 16</span>
+              </span>
+              <span className="px-1.5 py-0.2 rounded-[3px] bg-[#dcfce7] text-[#15803d] font-semibold text-[10px]">
+                ONLINE
+              </span>
+            </div>
+            <div className="text-[10px] text-[#94a3b8] font-mono">
+              Port 4000 • Prisma 5.22.0
             </div>
           </div>
         </aside>
 
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0">
-          <header className="h-16 border-b border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 px-6 flex items-center justify-between">
-            <h1 className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-              Operations & Back-Office
-            </h1>
+          <header className="h-16 border-b border-[#e2e8f0] bg-white px-6 flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-3">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#090d16]">
+                Operational Command
+              </span>
+              <span className="text-[#cbd5e1]">/</span>
+              <span className="text-xs text-[#64748b] font-medium">
+                Authoritative State Controller
+              </span>
+            </div>
 
             <div className="flex items-center gap-3">
-              <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800">
-                Authoritative Mode
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] text-[11px] font-medium bg-[#f0fdf4] text-[#166534] border border-[#bbf7d0]">
+                <Activity className="w-3 h-3 text-[#16a34a]" />
+                <span>Lifecycle Engine Enforced</span>
               </span>
-              <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-bold text-slate-700 dark:text-slate-200">
-                AD
+              <div className="w-8 h-8 rounded-[4px] bg-[#090d16] flex items-center justify-center text-xs font-mono font-bold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
+                OPS
               </div>
             </div>
           </header>
 
-          <main className="flex-1 p-6 overflow-y-auto">{children}</main>
+          <main className="flex-1 p-6 md:p-8 overflow-y-auto">{children}</main>
         </div>
       </body>
     </html>

@@ -13,7 +13,7 @@ import {
   CardContent,
   CardFooter,
 } from '@velora/ui';
-import { User, Sparkles, Building2, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { User, Sparkles, Building2, ArrowRight, AlertCircle, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { UserRole } from '@velora/types';
 import { authApi } from '../../lib/api';
 
@@ -65,7 +65,7 @@ export default function RegisterPage() {
     }
 
     if (!termsAgreed) {
-      newErrors.terms = 'You must agree to the Terms & Conditions and Privacy Policy';
+      newErrors.terms = 'You must acknowledge the Terms of Service & Privacy Policy';
     }
 
     if (Object.keys(newErrors).length > 0) {
@@ -87,7 +87,7 @@ export default function RegisterPage() {
       });
 
       const user = response.data.user;
-      setSuccessMessage(`Account created successfully for ${user.firstName}! Redirecting...`);
+      setSuccessMessage(`Account initialized for ${user.firstName}. Preparing session...`);
 
       setTimeout(() => {
         if (selectedRole === UserRole.SALON_OWNER) {
@@ -97,34 +97,40 @@ export default function RegisterPage() {
         } else {
           router.push('/services');
         }
-      }, 1000);
+      }, 900);
     } catch (err: any) {
-      setApiError(err.message || 'Registration failed. Please try again.');
+      setApiError(err.message || 'Registration failed. Please verify submitted credentials.');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
+    <div className="min-h-[85vh] flex items-center justify-center px-4 py-16 bg-[#faf8f5]">
       <div className="w-full max-w-xl space-y-6">
+        {/* Architectural Monogram Header */}
         <div className="text-center space-y-2">
-          <div className="w-10 h-10 mx-auto rounded-md bg-zinc-900 text-white flex items-center justify-center font-bold text-sm dark:bg-zinc-100 dark:text-zinc-900">
+          <div className="w-11 h-11 mx-auto rounded-[5px] bg-[#1a1816] text-[#faf8f5] flex items-center justify-center font-serif text-lg font-bold shadow-[0_2px_4px_rgba(0,0,0,0.1),inset_0_1px_0_rgba(255,255,255,0.15)] border border-[#1a1816]">
             V
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
+          <span className="text-[10px] font-mono uppercase tracking-[0.2em] text-[#8c827a] block">
+            Account Registration
+          </span>
+          <h1 className="font-serif text-2xl sm:text-3xl font-normal tracking-tight text-[#1a1816]">
             Create your Velora Account
           </h1>
-          <p className="text-xs text-zinc-500">
-            Select your account type to configure your service access profile.
+          <p className="text-xs text-[#736b63] max-w-md mx-auto">
+            Choose your account classification to configure your verified service access.
           </p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">1. Select Account Type</CardTitle>
-            <CardDescription className="text-xs">
-              Determine your operational permissions on the platform.
+        <Card className="border-[#ded8cb] bg-white rounded-[6px] shadow-[0_2px_8px_rgba(0,0,0,0.04)]">
+          <CardHeader className="pb-3 border-b border-[#f0ece1]">
+            <CardTitle className="font-serif text-base font-normal text-[#1a1816]">
+              1. Operational Profile Classification
+            </CardTitle>
+            <CardDescription className="text-xs text-[#736b63]">
+              Select whether you are reserving services, offering certified treatments, or operating an atelier salon.
             </CardDescription>
 
             {/* Role Switcher */}
@@ -132,20 +138,20 @@ export default function RegisterPage() {
               {[
                 {
                   role: UserRole.CUSTOMER,
-                  title: 'Customer',
+                  title: 'Client',
                   desc: 'Book salon & home treatments',
                   icon: User,
                 },
                 {
                   role: UserRole.PROVIDER,
                   title: 'Specialist',
-                  desc: 'Offer certified beauty services',
+                  desc: 'Certified beauty provider',
                   icon: Sparkles,
                 },
                 {
                   role: UserRole.SALON_OWNER,
-                  title: 'Salon Partner',
-                  desc: 'Manage studio & staff chairs',
+                  title: 'Atelier Partner',
+                  desc: 'Studio & chair management',
                   icon: Building2,
                 },
               ].map((item) => {
@@ -156,17 +162,17 @@ export default function RegisterPage() {
                     key={item.role}
                     type="button"
                     onClick={() => setSelectedRole(item.role)}
-                    className={`p-3 text-left rounded-md border transition-all ${
+                    className={`p-3 text-left rounded-[5px] border transition-all ${
                       isSelected
-                        ? 'border-zinc-950 bg-zinc-50 dark:border-zinc-100 dark:bg-zinc-800/80 ring-1 ring-zinc-950 dark:ring-zinc-100'
-                        : 'border-zinc-200 bg-white hover:border-zinc-300 dark:border-zinc-800 dark:bg-zinc-950'
+                        ? 'border-[#1a1816] bg-[#f5f2eb] ring-1 ring-[#1a1816]'
+                        : 'border-[#ded8cb] bg-white hover:border-[#b8b0a2]'
                     }`}
                   >
-                    <Icon className="w-4 h-4 text-zinc-700 dark:text-zinc-300 mb-2" />
-                    <div className="text-xs font-bold text-zinc-900 dark:text-zinc-100">
+                    <Icon className="w-4 h-4 text-[#1a1816] mb-2" />
+                    <div className="text-xs font-bold text-[#1a1816]">
                       {item.title}
                     </div>
-                    <div className="text-[10px] text-zinc-500 mt-0.5 leading-snug">
+                    <div className="text-[10px] text-[#736b63] mt-0.5 leading-snug">
                       {item.desc}
                     </div>
                   </button>
@@ -175,19 +181,19 @@ export default function RegisterPage() {
             </div>
           </CardHeader>
 
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+          <CardContent className="pt-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {apiError && (
-                <div className="p-3 rounded-md bg-rose-50 border border-rose-200 text-xs text-rose-800 dark:bg-rose-950/40 dark:border-rose-900/60 dark:text-rose-200 flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 text-rose-600 mt-0.5 shrink-0" />
-                  <span>{apiError}</span>
+                <div className="p-3 rounded-[5px] bg-[#fdf5f4] border border-[#f1d0ce] text-xs text-[#a0382b] flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-[#a0382b] mt-0.5 shrink-0" />
+                  <span className="font-medium">{apiError}</span>
                 </div>
               )}
 
               {successMessage && (
-                <div className="p-3 rounded-md bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 dark:bg-emerald-950/40 dark:border-emerald-900/60 dark:text-emerald-200 flex items-start gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                  <span>{successMessage}</span>
+                <div className="p-3 rounded-[5px] bg-[#f2f7f3] border border-[#cadbc9] text-xs text-[#274c3a] flex items-start gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-[#274c3a] mt-0.5 shrink-0" />
+                  <span className="font-medium">{successMessage}</span>
                 </div>
               )}
 
@@ -214,7 +220,7 @@ export default function RegisterPage() {
                 <Input
                   label="Email Address"
                   type="email"
-                  placeholder="name@domain.com"
+                  placeholder="client@domain.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   error={errors.email}
@@ -258,27 +264,27 @@ export default function RegisterPage() {
 
               {/* Terms Checkbox */}
               <div className="pt-2 space-y-1">
-                <label className="flex items-start gap-2.5 text-xs text-zinc-600 dark:text-zinc-400 cursor-pointer">
+                <label className="flex items-start gap-2.5 text-xs text-[#59524c] cursor-pointer">
                   <input
                     type="checkbox"
                     checked={termsAgreed}
                     onChange={(e) => setTermsAgreed(e.target.checked)}
-                    className="mt-0.5 rounded border-zinc-300 text-zinc-900 focus:ring-zinc-950 dark:border-zinc-700"
+                    className="mt-0.5 rounded-[3px] border-[#ded8cb] text-[#1a1816] focus:ring-[#1a1816]"
                   />
                   <span>
-                    I agree to the{' '}
-                    <Link href="/terms" className="text-zinc-900 font-semibold underline dark:text-white">
-                      Terms & Conditions
+                    I accept the{' '}
+                    <Link href="/terms" className="text-[#1a1816] font-semibold underline underline-offset-2">
+                      Terms of Service
                     </Link>{' '}
                     and acknowledge the{' '}
-                    <Link href="/privacy-policy" className="text-zinc-900 font-semibold underline dark:text-white">
+                    <Link href="/privacy" className="text-[#1a1816] font-semibold underline underline-offset-2">
                       Privacy Policy
                     </Link>
                     .
                   </span>
                 </label>
                 {errors.terms && (
-                  <p className="text-xs text-rose-600 dark:text-rose-400 font-medium">
+                  <p className="text-xs text-[#a0382b] font-medium">
                     {errors.terms}
                   </p>
                 )}
@@ -288,26 +294,34 @@ export default function RegisterPage() {
                 type="submit"
                 variant="primary"
                 isLoading={isLoading}
-                className="w-full mt-4"
+                className="w-full mt-4 h-10 text-xs font-semibold uppercase tracking-wider"
               >
-                <span>Create {selectedRole === UserRole.CUSTOMER ? 'Customer' : selectedRole === UserRole.PROVIDER ? 'Specialist' : 'Partner'} Account</span>
-                <ArrowRight className="w-4 h-4 ml-1.5" />
+                <span>
+                  Register as {selectedRole === UserRole.CUSTOMER ? 'Client' : selectedRole === UserRole.PROVIDER ? 'Specialist' : 'Partner'}
+                </span>
+                <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
               </Button>
             </form>
           </CardContent>
 
-          <CardFooter className="justify-center border-t border-zinc-100 dark:border-zinc-800 pt-4">
-            <p className="text-xs text-zinc-500">
-              Already have an account?{' '}
+          <CardFooter className="justify-center border-t border-[#f0ece1] pt-4">
+            <p className="text-xs text-[#736b63]">
+              Already registered?{' '}
               <Link
                 href="/login"
-                className="font-semibold text-zinc-900 hover:underline dark:text-white"
+                className="font-semibold text-[#1a1816] hover:underline underline-offset-2"
               >
-                Sign In
+                Sign In to Existing Account
               </Link>
             </p>
           </CardFooter>
         </Card>
+
+        {/* Security Assurance Footer */}
+        <div className="text-center flex items-center justify-center gap-1.5 text-[11px] text-[#8c827a]">
+          <ShieldCheck className="w-3.5 h-3.5 text-[#274c3a]" />
+          <span>Specialist and salon credentials undergo manual administrative accreditation</span>
+        </div>
       </div>
     </div>
   );

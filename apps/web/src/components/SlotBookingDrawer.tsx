@@ -17,7 +17,7 @@ import {
   MapPin,
   FileText,
   ArrowRight,
-  ExternalLink,
+  Lock,
 } from 'lucide-react';
 import { Badge, Button } from '@velora/ui';
 import { availabilityApi, bookingsApi, authApi, usersApi } from '../lib/api';
@@ -82,7 +82,7 @@ export function SlotBookingDrawer({
   const [isAddingAddress, setIsAddingAddress] = React.useState(false);
   const [customerNotes, setCustomerNotes] = React.useState('');
 
-  // Flow & State Machine Execution
+  // Transaction State
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [bookingConfirmed, setBookingConfirmed] = React.useState<any | null>(null);
   const [currentUser, setCurrentUser] = React.useState<any | null>(null);
@@ -119,12 +119,12 @@ export function SlotBookingDrawer({
           }
         })
         .catch(() => {
-          // ignore if addresses cannot be fetched
+          // ignore error
         });
     }
   }, [isOpen]);
 
-  // Pricing and runtime calculations
+  // Pricing & Duration Calculations
   const basePrice = service ? Number(service.basePrice) : 0;
   const selectedAddons = React.useMemo(() => {
     if (!service?.addons) return [];
@@ -140,7 +140,7 @@ export function SlotBookingDrawer({
   const estimatedTax = Math.round(subtotal * 0.18); // 18% GST standard
   const estimatedTotal = subtotal + estimatedTax;
 
-  // Fetch slots whenever service, date, deliveryType, or duration changes
+  // Refresh Slots Function
   const refreshSlots = React.useCallback(() => {
     if (!isOpen || !service) return;
 
@@ -223,7 +223,6 @@ export function SlotBookingDrawer({
     };
   });
 
-  // Handle Save New Address
   const handleCreateAddress = async () => {
     if (!currentUser) return;
     if (!newStreetAddress.trim()) {
@@ -249,10 +248,9 @@ export function SlotBookingDrawer({
     }
   };
 
-  // Transactional Safe Booking Submission
   const handleConfirmBooking = async () => {
     if (!currentUser) {
-      setErrorMessage('Please log in with your Velora client account to confirm your reservation.');
+      setErrorMessage('Please log in with your Velora client account to confirm this reservation.');
       return;
     }
 
@@ -262,7 +260,7 @@ export function SlotBookingDrawer({
     }
 
     if (deliveryType === 'HOME' && !selectedAddressId) {
-      setErrorMessage('Please select or specify a destination delivery address for home service.');
+      setErrorMessage('Please specify a destination delivery address for home service.');
       return;
     }
 
@@ -294,10 +292,9 @@ export function SlotBookingDrawer({
         throw new Error(res.message || 'Booking creation failed');
       }
     } catch (err: any) {
-      // Honest Conflict Handling
       if (err.statusCode === 409 || err.message?.includes('already reserved') || err.message?.includes('capacity')) {
         setErrorMessage(
-          'Slot Conflict: This time window was just reserved by another client or salon capacity was reached. We have refreshed the live schedule for you.'
+          'Slot Conflict: This time window was just claimed by another client or chair capacity was reached. The schedule has been refreshed.'
         );
         refreshSlots();
       } else {
@@ -311,20 +308,28 @@ export function SlotBookingDrawer({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-2xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl overflow-hidden my-8">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/70 dark:bg-zinc-950/40">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto">
+      <div className="relative w-full max-w-2xl bg-[#faf8f5] dark:bg-[#181614] border border-[#ded8cb] dark:border-[#2e2a26] rounded-[8px] shadow-2xl overflow-hidden my-6">
+        {/* Drawer Header */}
+        <div className="px-6 py-4 border-b border-[#e5e0d5] dark:border-[#272421] flex items-center justify-between bg-white dark:bg-[#141211]">
           <div>
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-              {service.category?.name || 'Treatment Suite'}
-            </span>
-            <h2 className="text-lg font-bold text-zinc-900 dark:text-white">{service.name}</h2>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#b3592c]">
+                {service.category?.name || 'Treatment Suite'}
+              </span>
+              <span className="text-zinc-300 dark:text-zinc-700">•</span>
+              <span className="text-[10px] font-mono text-[#736d65]">
+                {totalDuration}m total runtime
+              </span>
+            </div>
+            <h2 className="text-lg sm:text-xl font-bold text-[#1a1816] dark:text-white font-editorial leading-tight mt-0.5">
+              {service.name}
+            </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            className="p-1.5 rounded-[4px] text-[#736d65] hover:text-[#1a1816] dark:hover:text-white hover:bg-[#f4f1ea] dark:hover:bg-[#221f1c] transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -332,47 +337,47 @@ export function SlotBookingDrawer({
 
         {/* Modal Body */}
         {bookingConfirmed ? (
-          /* Confirmation State View */
+          /* Confirmation Receipt View */
           <div className="p-8 text-center space-y-6">
-            <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 mx-auto flex items-center justify-center shadow-inner">
-              <ShieldCheck className="w-8 h-8" />
+            <div className="w-14 h-14 rounded-[4px] bg-[#f0f5f1] dark:bg-[#14261c] border border-[#c2ded0] dark:border-[#1e4630] text-[#1b4332] dark:text-[#86efac] mx-auto flex items-center justify-center shadow-xs">
+              <ShieldCheck className="w-7 h-7" />
             </div>
 
-            <div className="space-y-1.5">
-              <span className="text-xs uppercase tracking-widest font-semibold text-emerald-600 dark:text-emerald-400">
-                Reservation Confirmed
+            <div className="space-y-1">
+              <span className="text-[10px] uppercase tracking-widest font-bold text-[#274c3a] dark:text-[#86efac]">
+                Reservation Confirmed & Locked
               </span>
-              <h3 className="text-2xl font-bold tracking-tight text-zinc-900 dark:text-white">
+              <h3 className="text-2xl font-bold tracking-tight text-[#1a1816] dark:text-white font-mono">
                 {bookingConfirmed.bookingReference}
               </h3>
-              <p className="text-xs text-zinc-500">
-                Your appointment has been successfully scheduled and transactionally verified.
+              <p className="text-xs text-[#736d65] dark:text-[#a69f95]">
+                Your appointment has been transactionally validated across specialist shifts and capacity.
               </p>
             </div>
 
-            <div className="max-w-md mx-auto p-4 rounded-lg bg-zinc-50 dark:bg-zinc-950/70 border border-zinc-200 dark:border-zinc-800 text-left space-y-3 text-xs">
-              <div className="flex justify-between items-center pb-2 border-b border-zinc-200 dark:border-zinc-800">
-                <span className="text-zinc-500">Service:</span>
-                <span className="font-semibold text-zinc-900 dark:text-white">
+            <div className="max-w-md mx-auto p-5 rounded-[6px] bg-white dark:bg-[#141211] border border-[#e5e0d5] dark:border-[#2e2a26] text-left space-y-2.5 text-xs">
+              <div className="flex justify-between items-center pb-2 border-b border-[#f0ebe1] dark:border-[#272421]">
+                <span className="text-[#736d65]">Treatment:</span>
+                <span className="font-semibold text-[#1a1816] dark:text-white">
                   {bookingConfirmed.service?.name || service.name}
                 </span>
               </div>
-              <div className="flex justify-between items-center pb-2 border-b border-zinc-200 dark:border-zinc-800">
-                <span className="text-zinc-500">Date & Window:</span>
-                <span className="font-semibold text-zinc-900 dark:text-white">
+              <div className="flex justify-between items-center pb-2 border-b border-[#f0ebe1] dark:border-[#272421]">
+                <span className="text-[#736d65]">Date & Time:</span>
+                <span className="font-semibold text-[#1a1816] dark:text-white font-mono">
                   {new Date(bookingConfirmed.appointmentDate).toISOString().split('T')[0]} at{' '}
                   {bookingConfirmed.startTime} – {bookingConfirmed.endTime}
                 </span>
               </div>
-              <div className="flex justify-between items-center pb-2 border-b border-zinc-200 dark:border-zinc-800">
-                <span className="text-zinc-500">Mode:</span>
-                <Badge variant={bookingConfirmed.deliveryType === 'HOME' ? 'warning' : 'outline'}>
-                  {bookingConfirmed.deliveryType === 'HOME' ? 'Home Service' : 'In-Salon Appointment'}
+              <div className="flex justify-between items-center pb-2 border-b border-[#f0ebe1] dark:border-[#272421]">
+                <span className="text-[#736d65]">Delivery Mode:</span>
+                <Badge variant={bookingConfirmed.deliveryType === 'HOME' ? 'warning' : 'neutral'}>
+                  {bookingConfirmed.deliveryType === 'HOME' ? 'Home Service' : 'Atelier Salon Visit'}
                 </Badge>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-zinc-500">Snapshotted Total:</span>
-                <span className="font-bold text-sm text-zinc-900 dark:text-white">
+              <div className="flex justify-between items-center pt-1">
+                <span className="text-[#736d65]">Snapshotted Total:</span>
+                <span className="font-bold text-sm text-[#1a1816] dark:text-white">
                   ₹{Number(bookingConfirmed.totalAmount).toLocaleString('en-IN')}
                 </span>
               </div>
@@ -381,6 +386,7 @@ export function SlotBookingDrawer({
             <div className="flex items-center justify-center gap-3 pt-2">
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() => {
                   onClose();
                   setBookingConfirmed(null);
@@ -390,14 +396,15 @@ export function SlotBookingDrawer({
               </Button>
               <Button
                 variant="primary"
+                size="sm"
                 onClick={() => {
                   onClose();
                   router.push('/bookings');
                 }}
-                className="flex items-center gap-1.5"
+                className="flex items-center gap-1.5 font-semibold"
               >
                 <span>View My Bookings</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-3.5 h-3.5" />
               </Button>
             </div>
           </div>
@@ -405,58 +412,59 @@ export function SlotBookingDrawer({
           <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
             {/* Error / Conflict Alert */}
             {errorMessage && (
-              <div className="p-3.5 rounded-lg bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 flex items-start gap-2 text-xs text-rose-800 dark:text-rose-200">
-                <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-rose-600" />
+              <div className="p-3.5 rounded-[5px] bg-[#fdf2f2] dark:bg-[#2d0e0e] border border-[#fbc8c8] dark:border-[#541616] flex items-start gap-2 text-xs text-[#991b1b] dark:text-[#fca5a5]">
+                <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-[#dc2626]" />
                 <div className="flex-1 font-medium">{errorMessage}</div>
               </div>
             )}
 
             {/* Unauthenticated Notification */}
             {!currentUser && (
-              <div className="p-3.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 flex items-center justify-between text-xs text-amber-800 dark:text-amber-200">
+              <div className="p-3.5 rounded-[5px] bg-[#fdf6ec] dark:bg-[#291b08] border border-[#fae8c8] dark:border-[#4d3410] flex items-center justify-between text-xs text-[#854d0e] dark:text-[#fde047]">
                 <div className="flex items-center gap-2">
-                  <Info className="w-4 h-4 text-amber-600 shrink-0" />
-                  <span>Please sign in with your customer account to complete your booking.</span>
+                  <Info className="w-4 h-4 text-[#ca8a04] shrink-0" />
+                  <span>Please sign in with your customer account to complete your reservation.</span>
                 </div>
                 <Link
                   href="/login"
-                  className="font-semibold underline hover:text-amber-900 dark:hover:text-white"
+                  className="font-semibold underline hover:text-[#583307] dark:hover:text-white shrink-0 ml-2"
                 >
                   Sign In
                 </Link>
               </div>
             )}
 
-            {/* 1. Delivery Mode Selection */}
+            {/* Stage 1: Delivery Mode */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
-                1. Delivery Preference
-              </label>
+              <div className="flex items-center justify-between">
+                <label className="text-[10px] font-bold text-[#736d65] dark:text-[#a69f95] uppercase tracking-wider">
+                  Stage 1: Delivery Preference
+                </label>
+                <span className="text-[10px] text-[#736d65]">Choose venue</span>
+              </div>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
                   disabled={service.deliveryType === 'HOME'}
                   onClick={() => setDeliveryType('SALON')}
-                  className={`p-3.5 rounded-lg border text-left flex items-start gap-3 transition-all ${
+                  className={`p-3.5 rounded-[6px] border text-left flex items-start gap-3 transition-all ${
                     deliveryType === 'SALON'
-                      ? 'border-zinc-900 bg-zinc-50 dark:border-zinc-100 dark:bg-zinc-800/80 shadow-xs'
-                      : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700'
+                      ? 'border-[#1a1816] bg-white dark:border-white dark:bg-[#221f1c] shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
+                      : 'border-[#ded8cb] hover:border-[#b8b3a7] bg-white/70 dark:border-[#2e2a26] dark:bg-[#141211]'
                   } ${service.deliveryType === 'HOME' ? 'opacity-40 cursor-not-allowed' : ''}`}
                 >
                   <Building2
-                    className={`w-5 h-5 mt-0.5 shrink-0 ${
-                      deliveryType === 'SALON'
-                        ? 'text-zinc-900 dark:text-white'
-                        : 'text-zinc-400'
+                    className={`w-4 h-4 mt-0.5 shrink-0 ${
+                      deliveryType === 'SALON' ? 'text-[#1a1816] dark:text-white' : 'text-[#8c857b]'
                     }`}
                   />
                   <div>
-                    <div className="text-xs font-semibold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                      <span>Salon Visit</span>
-                      {deliveryType === 'SALON' && <Check className="w-3.5 h-3.5 text-emerald-600" />}
+                    <div className="text-xs font-bold text-[#1a1816] dark:text-white flex items-center gap-1.5">
+                      <span>Atelier Salon Visit</span>
+                      {deliveryType === 'SALON' && <Check className="w-3.5 h-3.5 text-[#274c3a]" />}
                     </div>
-                    <p className="text-[11px] text-zinc-500 mt-0.5">
-                      Relax at partner atelier workstation.
+                    <p className="text-[11px] text-[#736d65] mt-0.5">
+                      Workstation chair at partner facility.
                     </p>
                   </div>
                 </button>
@@ -465,41 +473,39 @@ export function SlotBookingDrawer({
                   type="button"
                   disabled={service.deliveryType === 'SALON'}
                   onClick={() => setDeliveryType('HOME')}
-                  className={`p-3.5 rounded-lg border text-left flex items-start gap-3 transition-all ${
+                  className={`p-3.5 rounded-[6px] border text-left flex items-start gap-3 transition-all ${
                     deliveryType === 'HOME'
-                      ? 'border-zinc-900 bg-zinc-50 dark:border-zinc-100 dark:bg-zinc-800/80 shadow-xs'
-                      : 'border-zinc-200 hover:border-zinc-300 dark:border-zinc-800 dark:hover:border-zinc-700'
+                      ? 'border-[#1a1816] bg-white dark:border-white dark:bg-[#221f1c] shadow-[0_1px_3px_rgba(0,0,0,0.06)]'
+                      : 'border-[#ded8cb] hover:border-[#b8b3a7] bg-white/70 dark:border-[#2e2a26] dark:bg-[#141211]'
                   } ${service.deliveryType === 'SALON' ? 'opacity-40 cursor-not-allowed' : ''}`}
                 >
                   <Home
-                    className={`w-5 h-5 mt-0.5 shrink-0 ${
-                      deliveryType === 'HOME'
-                        ? 'text-zinc-900 dark:text-white'
-                        : 'text-zinc-400'
+                    className={`w-4 h-4 mt-0.5 shrink-0 ${
+                      deliveryType === 'HOME' ? 'text-[#1a1816] dark:text-white' : 'text-[#8c857b]'
                     }`}
                   />
                   <div>
-                    <div className="text-xs font-semibold text-zinc-900 dark:text-white flex items-center gap-1.5">
-                      <span>Home Service</span>
-                      {deliveryType === 'HOME' && <Check className="w-3.5 h-3.5 text-emerald-600" />}
+                    <div className="text-xs font-bold text-[#1a1816] dark:text-white flex items-center gap-1.5">
+                      <span>At-Home Service</span>
+                      {deliveryType === 'HOME' && <Check className="w-3.5 h-3.5 text-[#274c3a]" />}
                     </div>
-                    <p className="text-[11px] text-zinc-500 mt-0.5">
-                      Specialist arrives at your residence.
+                    <p className="text-[11px] text-[#736d65] mt-0.5">
+                      Specialist dispatched to your address.
                     </p>
                   </div>
                 </button>
               </div>
             </div>
 
-            {/* 2. Optional Service Add-Ons */}
+            {/* Stage 2: Add-on Boosters */}
             {service.addons && service.addons.length > 0 && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
-                    2. Optional Boosters & Treatments
+                  <label className="text-[10px] font-bold text-[#736d65] dark:text-[#a69f95] uppercase tracking-wider">
+                    Stage 2: Treatment Boosters & Extensions
                   </label>
-                  <span className="text-[11px] text-zinc-500">
-                    Add-ons extend duration & calculate accurate runtime
+                  <span className="text-[10px] text-[#736d65]">
+                    Extends duration & recalibrates slots
                   </span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -510,26 +516,26 @@ export function SlotBookingDrawer({
                         key={addon.id}
                         type="button"
                         onClick={() => toggleAddon(addon.id)}
-                        className={`p-3 rounded-lg border text-left flex items-center justify-between transition-all ${
+                        className={`p-3 rounded-[5px] border text-left flex items-center justify-between transition-all ${
                           isChecked
-                            ? 'border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900 shadow'
-                            : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 bg-white dark:bg-zinc-950'
+                            ? 'border-[#1a1816] bg-[#1a1816] text-[#fafaf9] dark:border-white dark:bg-white dark:text-[#1a1816] shadow-xs'
+                            : 'border-[#ded8cb] dark:border-[#2e2a26] bg-white dark:bg-[#141211] hover:border-[#b8b3a7]'
                         }`}
                       >
                         <div>
                           <div className="text-xs font-semibold flex items-center gap-1.5">
-                            <Sparkles className="w-3.5 h-3.5 opacity-80" />
+                            <Sparkles className="w-3 h-3 opacity-80" />
                             <span>{addon.name}</span>
                           </div>
                           <span
-                            className={`text-[10px] ${
-                              isChecked ? 'text-zinc-300 dark:text-zinc-600' : 'text-zinc-500'
+                            className={`text-[10px] font-mono ${
+                              isChecked ? 'opacity-80' : 'text-[#736d65]'
                             }`}
                           >
-                            +{addon.extraDurationMinutes} mins
+                            +{addon.extraDurationMinutes}m runtime
                           </span>
                         </div>
-                        <div className="text-xs font-bold">
+                        <div className="text-xs font-bold font-mono">
                           +₹{Number(addon.price).toLocaleString('en-IN')}
                         </div>
                       </button>
@@ -539,10 +545,10 @@ export function SlotBookingDrawer({
               </div>
             )}
 
-            {/* 3. Appointment Date */}
+            {/* Stage 3: Appointment Date */}
             <div className="space-y-2">
-              <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
-                3. Choose Appointment Date
+              <label className="text-[10px] font-bold text-[#736d65] dark:text-[#a69f95] uppercase tracking-wider">
+                Stage 3: Appointment Date
               </label>
               <div className="flex flex-wrap items-center gap-2">
                 {dateOptions.map((opt) => (
@@ -550,67 +556,67 @@ export function SlotBookingDrawer({
                     key={opt.dateStr}
                     type="button"
                     onClick={() => setSelectedDate(opt.dateStr)}
-                    className={`px-3.5 py-2 rounded-lg text-xs font-medium border transition-colors ${
+                    className={`px-3 py-1.5 rounded-[4px] text-xs font-medium border transition-colors ${
                       selectedDate === opt.dateStr
-                        ? 'border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900'
-                        : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 text-zinc-700 dark:text-zinc-300'
+                        ? 'border-[#1a1816] bg-[#1a1816] text-[#fafaf9] dark:border-white dark:bg-white dark:text-[#1a1816] font-semibold'
+                        : 'border-[#ded8cb] dark:border-[#2e2a26] bg-white dark:bg-[#141211] text-[#57524b] dark:text-[#c4bdb2] hover:border-[#b8b3a7]'
                     }`}
                   >
                     <span>{opt.label}</span>
-                    <span className="block text-[10px] opacity-70">{opt.dayLabel}</span>
+                    <span className="block text-[10px] opacity-75">{opt.dayLabel}</span>
                   </button>
                 ))}
                 <div className="flex items-center gap-2 ml-auto">
-                  <Calendar className="w-4 h-4 text-zinc-400" />
+                  <Calendar className="w-3.5 h-3.5 text-[#8c857b]" />
                   <input
                     type="date"
                     value={selectedDate}
                     min={new Date().toISOString().split('T')[0]}
                     onChange={(e) => setSelectedDate(e.target.value)}
-                    className="text-xs px-2.5 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white"
+                    className="text-xs px-2.5 py-1.5 rounded-[4px] border border-[#d6d3cb] dark:border-[#383532] bg-white dark:bg-[#141211] text-[#1c1917] dark:text-white"
                   />
                 </div>
               </div>
             </div>
 
-            {/* 4. Live Available Slots */}
+            {/* Stage 4: Live Verified Slots */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">
-                  4. Available Time Slots
+                <label className="text-[10px] font-bold text-[#736d65] dark:text-[#a69f95] uppercase tracking-wider">
+                  Stage 4: Available Time Slots
                 </label>
                 {isLoadingSlots && (
-                  <span className="text-[11px] text-zinc-500 animate-pulse flex items-center gap-1">
+                  <span className="text-[10px] text-[#736d65] animate-pulse flex items-center gap-1 font-mono">
                     <Clock className="w-3 h-3 animate-spin" />
-                    <span>Querying live slots...</span>
+                    <span>Querying verified slots...</span>
                   </span>
                 )}
               </div>
 
               {isLoadingSlots ? (
-                <div className="grid grid-cols-3 gap-2.5 py-4">
+                <div className="grid grid-cols-3 gap-2.5 py-3">
                   {[1, 2, 3, 4, 5, 6].map((i) => (
                     <div
                       key={i}
-                      className="h-12 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse"
+                      className="h-12 rounded-[5px] bg-[#f0eee6] dark:bg-[#221f1c] animate-pulse border border-[#e2ded5]"
                     />
                   ))}
                 </div>
               ) : slots.length === 0 ? (
-                <div className="p-6 text-center rounded-lg border border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/30 space-y-1">
-                  <p className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
-                    No available slots on this date
+                <div className="p-6 text-center rounded-[6px] border border-dashed border-[#ded8cb] dark:border-[#2e2a26] bg-white/50 dark:bg-[#141211]/50 space-y-1">
+                  <p className="text-xs font-semibold text-[#1a1816] dark:text-white">
+                    No verified slots available on this date
                   </p>
-                  <p className="text-[11px] text-zinc-500">
-                    All specialists or chairs are booked. Try selecting an alternate date.
+                  <p className="text-[11px] text-[#736d65]">
+                    All specialist shifts or workstation chairs are reserved. Please pick an alternate date.
                   </p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {morningSlots.length > 0 && (
-                    <div className="space-y-2">
-                      <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-                        Morning Appointments (Before 12:00)
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] font-semibold text-[#8c857b] uppercase tracking-wider">
+                        Morning Windows (Before 12:00)
                       </span>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         {morningSlots.map((slot) => {
@@ -622,18 +628,18 @@ export function SlotBookingDrawer({
                               key={`${slot.providerId}-${slot.startTime}`}
                               type="button"
                               onClick={() => setSelectedSlot(slot)}
-                              className={`p-2.5 rounded-lg border text-left transition-all ${
+                              className={`p-2.5 rounded-[5px] border text-left transition-all ${
                                 isSelected
-                                  ? 'border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900 shadow'
-                                  : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 bg-white dark:bg-zinc-950'
+                                  ? 'border-[#1a1816] bg-[#1a1816] text-[#fafaf9] dark:border-white dark:bg-white dark:text-[#1a1816] shadow-xs'
+                                  : 'border-[#ded8cb] bg-white dark:border-[#2e2a26] dark:bg-[#141211] hover:border-[#b8b3a7]'
                               }`}
                             >
-                              <div className="text-xs font-bold">
+                              <div className="text-xs font-bold font-mono">
                                 {slot.startTime} – {slot.endTime}
                               </div>
                               <div
                                 className={`text-[10px] mt-0.5 truncate flex items-center gap-1 ${
-                                  isSelected ? 'text-zinc-300 dark:text-zinc-600' : 'text-zinc-500'
+                                  isSelected ? 'opacity-85' : 'text-[#736d65]'
                                 }`}
                               >
                                 <User className="w-2.5 h-2.5" />
@@ -647,9 +653,9 @@ export function SlotBookingDrawer({
                   )}
 
                   {afternoonSlots.length > 0 && (
-                    <div className="space-y-2">
-                      <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-                        Afternoon & Evening Appointments (12:00 onwards)
+                    <div className="space-y-1.5">
+                      <span className="text-[10px] font-semibold text-[#8c857b] uppercase tracking-wider">
+                        Afternoon & Evening Windows (12:00 onwards)
                       </span>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         {afternoonSlots.map((slot) => {
@@ -661,18 +667,18 @@ export function SlotBookingDrawer({
                               key={`${slot.providerId}-${slot.startTime}`}
                               type="button"
                               onClick={() => setSelectedSlot(slot)}
-                              className={`p-2.5 rounded-lg border text-left transition-all ${
+                              className={`p-2.5 rounded-[5px] border text-left transition-all ${
                                 isSelected
-                                  ? 'border-zinc-900 bg-zinc-900 text-white dark:border-zinc-100 dark:bg-zinc-100 dark:text-zinc-900 shadow'
-                                  : 'border-zinc-200 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 bg-white dark:bg-zinc-950'
+                                  ? 'border-[#1a1816] bg-[#1a1816] text-[#fafaf9] dark:border-white dark:bg-white dark:text-[#1a1816] shadow-xs'
+                                  : 'border-[#ded8cb] bg-white dark:border-[#2e2a26] dark:bg-[#141211] hover:border-[#b8b3a7]'
                               }`}
                             >
-                              <div className="text-xs font-bold">
+                              <div className="text-xs font-bold font-mono">
                                 {slot.startTime} – {slot.endTime}
                               </div>
                               <div
                                 className={`text-[10px] mt-0.5 truncate flex items-center gap-1 ${
-                                  isSelected ? 'text-zinc-300 dark:text-zinc-600' : 'text-zinc-500'
+                                  isSelected ? 'opacity-85' : 'text-[#736d65]'
                                 }`}
                               >
                                 <User className="w-2.5 h-2.5" />
@@ -688,19 +694,19 @@ export function SlotBookingDrawer({
               )}
             </div>
 
-            {/* 5. Destination Address (Home Service only) */}
+            {/* Stage 5: Residence Address (Home Service only) */}
             {deliveryType === 'HOME' && (
-              <div className="space-y-3 p-4 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/80 dark:border-amber-900/50">
+              <div className="space-y-3 p-4 rounded-[6px] bg-[#f5f2eb] dark:bg-[#1f1c19] border border-[#e2ded5] dark:border-[#38332d]">
                 <div className="flex items-center justify-between">
-                  <label className="text-xs font-semibold text-zinc-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-amber-600" />
-                    <span>5. Destination Residence Address</span>
+                  <label className="text-[10px] font-bold text-[#1a1816] dark:text-white uppercase tracking-wider flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-[#b3592c]" />
+                    <span>Destination Residence Address</span>
                   </label>
                   {!isAddingAddress && (
                     <button
                       type="button"
                       onClick={() => setIsAddingAddress(true)}
-                      className="text-[11px] font-medium text-amber-700 dark:text-amber-400 hover:underline"
+                      className="text-[11px] font-semibold text-[#b3592c] hover:underline"
                     >
                       + Add New Address
                     </button>
@@ -714,7 +720,7 @@ export function SlotBookingDrawer({
                       placeholder="Flat, Villa, Street line 1..."
                       value={newStreetAddress}
                       onChange={(e) => setNewStreetAddress(e.target.value)}
-                      className="w-full text-xs px-3 py-2 rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900"
+                      className="w-full text-xs px-3 py-2 rounded-[4px] border border-[#d6d3cb] bg-white dark:bg-[#141211]"
                     />
                     <div className="grid grid-cols-2 gap-2">
                       <input
@@ -722,14 +728,14 @@ export function SlotBookingDrawer({
                         placeholder="City"
                         value={newCity}
                         onChange={(e) => setNewCity(e.target.value)}
-                        className="text-xs px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900"
+                        className="text-xs px-3 py-1.5 rounded-[4px] border border-[#d6d3cb] bg-white dark:bg-[#141211]"
                       />
                       <input
                         type="text"
                         placeholder="PIN Code"
                         value={newPostalCode}
                         onChange={(e) => setNewPostalCode(e.target.value)}
-                        className="text-xs px-3 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900"
+                        className="text-xs px-3 py-1.5 rounded-[4px] border border-[#d6d3cb] bg-white dark:bg-[#141211]"
                       />
                     </div>
                     <div className="flex gap-2 justify-end pt-1">
@@ -750,10 +756,10 @@ export function SlotBookingDrawer({
                     {addresses.map((addr) => (
                       <label
                         key={addr.id}
-                        className={`flex items-start gap-2.5 p-2.5 rounded-md border text-xs cursor-pointer transition-colors ${
+                        className={`flex items-start gap-2.5 p-2.5 rounded-[4px] border text-xs cursor-pointer transition-colors ${
                           selectedAddressId === addr.id
-                            ? 'border-zinc-900 bg-white dark:border-zinc-100 dark:bg-zinc-900'
-                            : 'border-zinc-200 dark:border-zinc-800 bg-white/60 dark:bg-zinc-950/40'
+                            ? 'border-[#1a1816] bg-white dark:border-white dark:bg-[#141211] font-semibold'
+                            : 'border-[#ded8cb] dark:border-[#2e2a26] bg-white/60 dark:bg-[#141211]/50'
                         }`}
                       >
                         <input
@@ -764,10 +770,10 @@ export function SlotBookingDrawer({
                           className="mt-0.5"
                         />
                         <div className="leading-snug">
-                          <span className="font-semibold text-zinc-900 dark:text-white">
-                            {addr.label || 'Home'}
+                          <span className="text-[#1a1816] dark:text-white">
+                            {addr.label || 'Residence'}
                           </span>
-                          <p className="text-[11px] text-zinc-500">
+                          <p className="text-[11px] text-[#736d65] font-normal">
                             {addr.streetLine1}, {addr.city} {addr.postalCode}
                           </p>
                         </div>
@@ -775,60 +781,59 @@ export function SlotBookingDrawer({
                     ))}
                   </div>
                 ) : (
-                  <p className="text-[11px] text-zinc-500">
-                    No saved addresses found. Click &quot;Add New Address&quot; above to add your location.
+                  <p className="text-[11px] text-[#736d65]">
+                    No saved addresses found. Click &quot;Add New Address&quot; above.
                   </p>
                 )}
               </div>
             )}
 
-            {/* 6. Special Instructions */}
+            {/* Client Special Notes */}
             <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
-                <FileText className="w-3.5 h-3.5 text-zinc-400" />
-                <span>Special Instructions / Notes (Optional)</span>
+              <label className="text-[10px] font-bold text-[#736d65] dark:text-[#a69f95] uppercase tracking-wider flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 text-[#8c857b]" />
+                <span>Special Instructions or Clinical Sensitivities (Optional)</span>
               </label>
               <textarea
                 rows={2}
-                placeholder="e.g. Skin sensitivity preferences, gate passcode, or quiet appointment..."
+                placeholder="e.g. Skin allergy details, gate passcode, or quiet appointment..."
                 value={customerNotes}
                 onChange={(e) => setCustomerNotes(e.target.value)}
-                className="w-full text-xs px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-white placeholder:text-zinc-400"
+                className="w-full text-xs px-3 py-2 rounded-[5px] border border-[#d6d3cb] bg-white dark:border-[#383532] dark:bg-[#141211] text-[#1c1917] dark:text-white placeholder:text-[#a8a29e]"
               />
             </div>
 
-            {/* 7. Appointment Summary & Price Breakdown */}
-            <div className="p-4 rounded-lg bg-zinc-50 dark:bg-zinc-950/60 border border-zinc-200 dark:border-zinc-800 space-y-3">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-zinc-700 dark:text-zinc-300">
-                  Treatment Duration:
+            {/* Itemized Price Snapshot Breakdown */}
+            <div className="p-4 rounded-[6px] bg-white dark:bg-[#141211] border border-[#ded8cb] dark:border-[#2e2a26] space-y-2.5">
+              <div className="flex items-center justify-between text-xs pb-2 border-b border-[#f0ebe1] dark:border-[#272421]">
+                <span className="font-semibold text-[#1a1816] dark:text-white">
+                  Procedure Runtime:
                 </span>
-                <span className="font-mono text-zinc-900 dark:text-white">
-                  {baseDuration}m base{' '}
-                  {addonsDuration > 0 ? `+ ${addonsDuration}m boosters = ${totalDuration}m` : ''}
+                <span className="font-mono text-[#1a1816] dark:text-white">
+                  {baseDuration}m base {addonsDuration > 0 ? `+ ${addonsDuration}m boosters = ${totalDuration}m` : ''}
                 </span>
               </div>
 
-              <div className="space-y-1.5 text-xs text-zinc-600 dark:text-zinc-400 pt-2 border-t border-zinc-200 dark:border-zinc-800">
+              <div className="space-y-1 text-xs text-[#736d65] dark:text-[#a69f95]">
                 <div className="flex items-center justify-between">
                   <span>Base Procedure Fee:</span>
-                  <span>₹{basePrice.toLocaleString('en-IN')}</span>
+                  <span className="font-mono text-[#1a1816] dark:text-white">₹{basePrice.toLocaleString('en-IN')}</span>
                 </div>
                 {selectedAddons.map((addon) => (
                   <div key={addon.id} className="flex items-center justify-between text-[11px]">
-                    <span>+ {addon.name}:</span>
-                    <span>₹{Number(addon.price).toLocaleString('en-IN')}</span>
+                    <span>+ Booster: {addon.name}</span>
+                    <span className="font-mono text-[#1a1816] dark:text-white">₹{Number(addon.price).toLocaleString('en-IN')}</span>
                   </div>
                 ))}
                 <div className="flex items-center justify-between text-[11px]">
                   <span>Estimated Tax (18% GST):</span>
-                  <span>₹{estimatedTax.toLocaleString('en-IN')}</span>
+                  <span className="font-mono text-[#1a1816] dark:text-white">₹{estimatedTax.toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-2 border-t border-zinc-200 dark:border-zinc-800 text-sm font-bold text-zinc-900 dark:text-white">
-                <span>Estimated Total:</span>
-                <span className="text-base">₹{estimatedTotal.toLocaleString('en-IN')}</span>
+              <div className="flex items-center justify-between pt-2.5 border-t border-[#f0ebe1] dark:border-[#272421] text-sm font-bold text-[#1a1816] dark:text-white">
+                <span>Snapshotted Total:</span>
+                <span className="text-base font-mono">₹{estimatedTotal.toLocaleString('en-IN')}</span>
               </div>
             </div>
           </div>
@@ -836,11 +841,11 @@ export function SlotBookingDrawer({
 
         {/* Footer Actions */}
         {!bookingConfirmed && (
-          <div className="px-6 py-4 border-t border-zinc-100 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-950/40 flex items-center justify-between">
+          <div className="px-6 py-4 border-t border-[#e5e0d5] dark:border-[#272421] bg-white dark:bg-[#141211] flex items-center justify-between">
             <button
               type="button"
               onClick={onClose}
-              className="text-xs font-medium text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+              className="text-xs font-semibold text-[#736d65] hover:text-[#1a1816] dark:hover:text-white"
             >
               Cancel
             </button>
@@ -853,11 +858,11 @@ export function SlotBookingDrawer({
                 (deliveryType === 'HOME' && !selectedAddressId)
               }
               onClick={handleConfirmBooking}
-              className="flex items-center gap-1.5"
+              className="flex items-center gap-1.5 text-xs font-semibold h-9 px-5"
             >
               {isSubmitting ? (
                 <>
-                  <Clock className="w-3.5 h-3.5 animate-spin" />
+                  <Lock className="w-3.5 h-3.5 animate-spin" />
                   <span>Locking Slot & Reserving...</span>
                 </>
               ) : (
