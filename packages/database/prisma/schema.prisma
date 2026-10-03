@@ -113,6 +113,7 @@ model ProviderProfile {
   updatedAt              DateTime                   @updatedAt
 
   schedules              ProviderSchedule[]
+  timeOffEntries         ProviderTimeOff[]
   assignedBookings       Booking[]                  @relation("AssignedProvider")
   qualifiedServices      ProviderService[]
   reviews                Review[]
@@ -338,6 +339,20 @@ model ProviderSchedule {
   isActive       Boolean         @default(true)
 
   @@unique([providerId, dayOfWeek])
+}
+
+model ProviderTimeOff {
+  id         String          @id @default(uuid())
+  providerId String
+  provider   ProviderProfile @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  startDate  DateTime        @db.Date
+  endDate    DateTime        @db.Date
+  startTime  String?         // Optional HH:mm if partial day
+  endTime    String?         // Optional HH:mm if partial day
+  reason     String?
+  createdAt  DateTime        @default(now())
+
+  @@index([providerId, startDate, endDate])
 }
 
 // ==========================================

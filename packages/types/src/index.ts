@@ -248,6 +248,28 @@ export interface TimeSlot {
   salonId?: string;
 }
 
+export interface ProviderTimeOff {
+  id: string;
+  providerId: string;
+  startDate: string;
+  endDate: string;
+  startTime?: string | null;
+  endTime?: string | null;
+  reason?: string | null;
+  createdAt: string;
+}
+
+export interface AvailableSlot {
+  startTime: string; // HH:mm
+  endTime: string;   // HH:mm
+  providerId?: string;
+  providerName?: string;
+  salonId?: string;
+  salonName?: string;
+  deliveryType: ServiceDeliveryType;
+  availableChairs?: number;
+}
+
 // ==========================================
 // 7. BOOKING LIFECYCLE & STATE MACHINE (D7)
 // ==========================================

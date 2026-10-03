@@ -428,6 +428,54 @@ async function main() {
         isCertified: true,
       },
     });
+
+    // Also certify for Hydrafacial
+    await prisma.providerService.upsert({
+      where: {
+        providerId_serviceId: { providerId: specialistProfileId, serviceId: s3.id },
+      },
+      update: { isCertified: true },
+      create: {
+        providerId: specialistProfileId,
+        serviceId: s3.id,
+        isCertified: true,
+      },
+    });
+
+    // Seed weekly schedules for specialist (Monday - Saturday)
+    console.log('Seeding recurring weekly working hours for specialist...');
+    const workingDays = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+    for (const day of workingDays) {
+      await prisma.providerSchedule.upsert({
+        where: {
+          providerId_dayOfWeek: { providerId: specialistProfileId, dayOfWeek: day },
+        },
+        update: {
+          startTime: '09:00',
+          endTime: '19:00',
+          breakStartTime: '13:00',
+          breakEndTime: '14:00',
+          isActive: true,
+        },
+        create: {
+          providerId: specialistProfileId,
+          dayOfWeek: day,
+          startTime: '09:00',
+          endTime: '19:00',
+          breakStartTime: '13:00',
+          breakEndTime: '14:00',
+          isActive: true,
+        },
+      });
+    }
+
+    // Attach specialist to salon if salon exists
+    if (salon) {
+      await prisma.providerProfile.update({
+        where: { id: specialistProfileId },
+        data: { salonId: salon.id },
+      });
+    }
   }
 
   console.log('Database seeding finished successfully.');

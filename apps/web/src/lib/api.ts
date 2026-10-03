@@ -185,3 +185,56 @@ export const catalogApi = {
   },
 };
 
+export const availabilityApi = {
+  async getSlots(params: {
+    serviceId: string;
+    date: string;
+    deliveryType: 'SALON' | 'HOME';
+    salonId?: string;
+    providerId?: string;
+  }) {
+    const searchParams = new URLSearchParams();
+    searchParams.set('serviceId', params.serviceId);
+    searchParams.set('date', params.date);
+    searchParams.set('deliveryType', params.deliveryType);
+    if (params.salonId) searchParams.set('salonId', params.salonId);
+    if (params.providerId) searchParams.set('providerId', params.providerId);
+
+    return apiRequest<{
+      success: boolean;
+      data: {
+        date: string;
+        dayOfWeek: string;
+        service: {
+          id: string;
+          name: string;
+          durationMinutes: number;
+          basePrice: number;
+        };
+        deliveryType: string;
+        totalSlots: number;
+        slots: Array<{
+          startTime: string;
+          endTime: string;
+          providerId: string;
+          providerName: string;
+          salonId?: string;
+          salonName?: string;
+          deliveryType: string;
+          availableChairs?: number;
+        }>;
+      };
+    }>(`/availability/slots?${searchParams.toString()}`);
+  },
+
+  async getProviderSchedule(providerId: string) {
+    return apiRequest<{ success: boolean; data: any }>(`/availability/schedules/${providerId}`);
+  },
+
+  async getSalonCapacity(salonId: string, date: string) {
+    return apiRequest<{ success: boolean; data: any }>(
+      `/availability/salon-capacity/${salonId}?date=${date}`
+    );
+  },
+};
+
