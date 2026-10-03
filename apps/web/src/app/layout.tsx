@@ -44,6 +44,9 @@ export default function RootLayout({
               <Link href="/providers" className="hover:text-zinc-950 dark:hover:text-white transition-colors">
                 Specialists
               </Link>
+              <Link href="/bookings" className="hover:text-zinc-950 dark:hover:text-white transition-colors font-medium">
+                My Bookings
+              </Link>
               <Link href="/about" className="hover:text-zinc-950 dark:hover:text-white transition-colors">
                 About
               </Link>

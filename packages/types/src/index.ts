@@ -300,9 +300,10 @@ export interface Booking {
   id: string;
   bookingReference: string;
   customerId: string;
+  serviceId?: string | null;
+  packageId?: string | null;
   salonId?: string | null;
   providerId?: string | null;
-  serviceId: string;
   deliveryType: ServiceDeliveryType;
   addressId?: string | null;
   appointmentDate: string; // YYYY-MM-DD
@@ -320,6 +321,26 @@ export interface Booking {
   customerNotes?: string | null;
   createdAt: string;
   updatedAt: string;
+  service?: ServiceItem | null;
+  package?: ServicePackage | null;
+  salon?: Salon | null;
+  provider?: ProviderProfile | null;
+  customer?: CustomerProfile | null;
+  address?: Address | null;
+  selectedAddons?: BookingAddon[];
+  statusHistory?: BookingStatusLog[];
+}
+
+export interface BookingStatusLog {
+  id: string;
+  bookingId: string;
+  fromStatus?: BookingStatus | null;
+  toStatus: BookingStatus;
+  changedBy?: string | null;
+  notes?: string | null;
+  reason?: string | null;
+  metadata?: any | null;
+  createdAt: string;
 }
 
 // ==========================================

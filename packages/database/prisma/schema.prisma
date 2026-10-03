@@ -261,6 +261,7 @@ model ServicePackage {
   updatedAt          DateTime             @updatedAt
 
   items              ServicePackageItem[]
+  bookings           Booking[]
 
   @@index([slug])
 }
@@ -386,8 +387,10 @@ model Booking {
   bookingReference   String              @unique
   customerId         String
   customer           CustomerProfile     @relation(fields: [customerId], references: [id], onDelete: Restrict)
-  serviceId          String
-  service            ServiceItem         @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  serviceId          String?
+  service            ServiceItem?        @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  packageId          String?
+  package            ServicePackage?     @relation(fields: [packageId], references: [id], onDelete: SetNull)
   salonId            String?
   salon              Salon?              @relation(fields: [salonId], references: [id], onDelete: SetNull)
   providerId         String?
@@ -421,17 +424,20 @@ model Booking {
   @@index([providerId, appointmentDate])
   @@index([salonId, appointmentDate])
   @@index([status])
+  @@index([packageId])
 }
 
 model BookingStatusLog {
-  id        String        @id @default(uuid())
-  bookingId String
-  booking   Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  id         String        @id @default(uuid())
+  bookingId  String
+  booking    Booking       @relation(fields: [bookingId], references: [id], onDelete: Cascade)
   fromStatus BookingStatus?
-  toStatus  BookingStatus
-  changedBy String?       // User ID or SYSTEM
-  notes     String?
-  createdAt DateTime      @default(now())
+  toStatus   BookingStatus
+  changedBy  String?       // User ID or SYSTEM
+  notes      String?
+  reason     String?
+  metadata   Json?
+  createdAt  DateTime      @default(now())
 
   @@index([bookingId])
 }

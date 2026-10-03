@@ -309,3 +309,103 @@ export const providersApi = {
   },
 };
 
+export const usersApi = {
+  async getAddresses(userId: string) {
+    return apiRequest<{ success: boolean; data: any[] }>(`/users/${userId}/addresses`);
+  },
+
+  async createAddress(
+    userId: string,
+    payload: {
+      label?: string;
+      streetLine1: string;
+      streetLine2?: string;
+      city: string;
+      state: string;
+      postalCode: string;
+      country?: string;
+      isDefault?: boolean;
+    }
+  ) {
+    return apiRequest<{ success: boolean; data: any }>(`/users/${userId}/addresses`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+};
+
+export const bookingsApi = {
+  async createBooking(payload: {
+    serviceId?: string;
+    packageId?: string;
+    deliveryType: 'SALON' | 'HOME';
+    appointmentDate: string;
+    startTime: string;
+    salonId?: string;
+    providerId?: string;
+    addressId?: string;
+    addonIds?: string[];
+    customerNotes?: string;
+  }) {
+    return apiRequest<{
+      success: boolean;
+      message: string;
+      data: any;
+    }>('/bookings', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async getMyBookings(params?: {
+    status?: string;
+    date?: string;
+    page?: number;
+    limit?: number;
+  }) {
+    const searchParams = new URLSearchParams();
+    if (params?.status) searchParams.set('status', params.status);
+    if (params?.date) searchParams.set('date', params.date);
+    if (params?.page) searchParams.set('page', params.page.toString());
+    if (params?.limit) searchParams.set('limit', params.limit.toString());
+
+    const qs = searchParams.toString();
+    return apiRequest<{
+      success: boolean;
+      data: any[];
+      meta: { page: number; limit: number; total: number; totalPages: number };
+    }>(`/bookings/my${qs ? `?${qs}` : ''}`);
+  },
+
+  async getBookingById(id: string) {
+    return apiRequest<{ success: boolean; data: any }>(`/bookings/${id}`);
+  },
+
+  async cancelBooking(id: string, reason: string, notes?: string) {
+    return apiRequest<{ success: boolean; data: any }>(`/bookings/${id}/cancel`, {
+      method: 'POST',
+      body: JSON.stringify({ reason, notes }),
+    });
+  },
+
+  async rescheduleBooking(
+    id: string,
+    payload: { appointmentDate: string; startTime: string; reason?: string }
+  ) {
+    return apiRequest<{ success: boolean; data: any }>(`/bookings/${id}/reschedule`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+
+  async transitionStatus(
+    id: string,
+    payload: { status: string; reason?: string; notes?: string; metadata?: any }
+  ) {
+    return apiRequest<{ success: boolean; data: any }>(`/bookings/${id}/transition`, {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    });
+  },
+};
+
