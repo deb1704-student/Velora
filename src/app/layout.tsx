@@ -16,8 +16,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ÉLAN — Salon Service & Beauty Management",
-  description: "Curated beauty, hair, skin, and wellness experiences designed with Swiss precision.",
+  title: "ÉLAN — Haute Coiffure & Luxury Beauty",
+  description: "Curated coiffure, bespoke aesthetic care, and restorative wellness across premier metropolitan studios.",
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: [
+      { url: "/apple-icon", sizes: "180x180", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({
