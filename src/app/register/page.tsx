@@ -49,28 +49,29 @@ function RegisterForm() {
 
     setIsSuccess(true);
     setMessage(
-      "Registration successful! Please check your email to verify your account or sign in."
+      "Account registered. Check your email inbox to verify before sign in."
     );
   }
 
   return (
-    <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
-      <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-[#722F37]">
-        ÉLAN Salon & Beauty
-      </p>
+    <div className="w-full max-w-md border border-[#722F37]/20 bg-white p-8 sm:p-10">
+      <div className="mb-6 flex items-center justify-between border-b border-[#722F37]/15 pb-3 font-mono text-[11px] font-bold tracking-[0.25em] uppercase text-[#722F37]">
+        <span>REGISTRATION</span>
+        <span>ONBOARD / 02</span>
+      </div>
 
-      <h1 className="mb-2 text-3xl font-semibold text-[#302326]">
-        Create your account
+      <h1 className="text-3xl font-black uppercase tracking-tight text-[#492E2D]">
+        CREATE ACCOUNT.
       </h1>
 
-      <p className="mb-8 text-sm text-gray-600">
-        Join us to discover and book bespoke salon services.
+      <p className="mt-2 text-xs leading-relaxed text-[#776760]">
+        Establish client identity to unlock instant scheduling and private ledger records.
       </p>
 
-      <form onSubmit={handleRegister} className="space-y-5">
+      <form onSubmit={handleRegister} className="mt-8 space-y-5">
         <div>
-          <label htmlFor="name" className="mb-2 block text-sm font-medium">
-            Full name
+          <label htmlFor="name" className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-[#302326]">
+            FULL NAME / IDENTITY
           </label>
           <input
             id="name"
@@ -78,14 +79,14 @@ function RegisterForm() {
             required
             value={name}
             onChange={(event) => setName(event.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-[#722F37]"
-            placeholder="Enter your full name"
+            className="w-full border border-[#722F37]/25 bg-white px-4 py-3 font-mono text-xs text-[#302326] outline-none transition focus:border-[#722F37]"
+            placeholder="Firstname Lastname"
           />
         </div>
 
         <div>
-          <label htmlFor="email" className="mb-2 block text-sm font-medium">
-            Email address
+          <label htmlFor="email" className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-[#302326]">
+            PRIMARY EMAIL
           </label>
           <input
             id="email"
@@ -93,14 +94,14 @@ function RegisterForm() {
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-[#722F37]"
-            placeholder="you@example.com"
+            className="w-full border border-[#722F37]/25 bg-white px-4 py-3 font-mono text-xs text-[#302326] outline-none transition focus:border-[#722F37]"
+            placeholder="client@domain.com"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="mb-2 block text-sm font-medium">
-            Password
+          <label htmlFor="password" className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-[#302326]">
+            SECURITY KEY (MIN 8 CHARACTERS)
           </label>
           <input
             id="password"
@@ -109,15 +110,17 @@ function RegisterForm() {
             minLength={8}
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-[#722F37]"
-            placeholder="At least 8 characters"
+            className="w-full border border-[#722F37]/25 bg-white px-4 py-3 font-mono text-xs text-[#302326] outline-none transition focus:border-[#722F37]"
+            placeholder="••••••••••••"
           />
         </div>
 
         {message && (
           <p
-            className={`rounded-lg p-3 text-sm ${
-              isSuccess ? "bg-green-50 text-green-800" : "bg-red-50 text-red-700"
+            className={`border p-3 font-mono text-xs uppercase ${
+              isSuccess
+                ? "border-green-300 bg-green-50 text-green-800"
+                : "border-red-300 bg-red-50 text-red-700"
             }`}
           >
             {message}
@@ -127,21 +130,21 @@ function RegisterForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-[#722F37] py-3 font-semibold text-white transition hover:bg-[#57232B] disabled:opacity-50"
+          className="w-full border border-[#722F37] bg-[#722F37] py-4 font-mono text-xs font-bold tracking-[0.2em] uppercase text-white transition hover:bg-[#57232B] disabled:opacity-50"
         >
-          {loading ? "Creating account..." : "Register"}
+          {loading ? "INITIALIZING..." : "CONFIRM REGISTRATION"}
         </button>
       </form>
 
-      <p className="mt-8 text-center text-sm text-gray-600">
-        Already have an account?{" "}
+      <div className="mt-8 border-t border-[#722F37]/15 pt-5 text-center font-mono text-xs text-[#776760]">
+        EXISTING ACCOUNT?{" "}
         <Link
           href={`/login${returnUrl !== "/" ? `?returnUrl=${encodeURIComponent(returnUrl)}` : ""}`}
-          className="font-semibold text-[#722F37] underline"
+          className="font-bold text-[#722F37] underline"
         >
-          Sign in
+          SIGN IN
         </Link>
-      </p>
+      </div>
     </div>
   );
 }
@@ -149,7 +152,7 @@ function RegisterForm() {
 export default function RegisterPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#F8F4E7] px-4 py-12">
-      <Suspense fallback={<p className="text-[#722F37]">Loading...</p>}>
+      <Suspense fallback={<p className="font-mono text-xs text-[#722F37]">INITIALIZING...</p>}>
         <RegisterForm />
       </Suspense>
     </main>

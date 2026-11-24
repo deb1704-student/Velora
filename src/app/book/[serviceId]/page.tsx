@@ -155,16 +155,16 @@ async function BookingContent({
     <main className="min-h-screen bg-[#F8F4E7] px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
         {/* Header navigation */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex items-center justify-between border-b border-[#722F37]/15 pb-4">
           <Link
             href="/services"
-            className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-[#722F37] transition hover:text-[#57232B]"
+            className="flex items-center gap-2 font-mono text-[11px] font-bold tracking-[0.25em] uppercase text-[#722F37] transition hover:text-[#57232B]"
           >
-            <ArrowLeft size={16} />
-            Back to services
+            <ArrowLeft size={14} />
+            CATALOGUE
           </Link>
-          <span className="text-xs font-semibold uppercase tracking-[0.25em] text-gray-400">
-            ÉLAN Reservation
+          <span className="font-mono text-[10px] font-bold tracking-[0.25em] uppercase text-[#776760]">
+            SCHEDULE / 2026
           </span>
         </div>
 

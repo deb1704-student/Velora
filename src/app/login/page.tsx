@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { ArrowLeft } from "lucide-react";
 
 function LoginForm() {
   const router = useRouter();
@@ -39,23 +40,24 @@ function LoginForm() {
   }
 
   return (
-    <div className="w-full max-w-md rounded-2xl bg-white p-8 shadow-lg">
-      <p className="mb-2 text-sm font-semibold uppercase tracking-[0.2em] text-[#722F37]">
-        ÉLAN Salon & Beauty
-      </p>
+    <div className="w-full max-w-md border border-[#722F37]/20 bg-white p-8 sm:p-10">
+      <div className="mb-6 flex items-center justify-between border-b border-[#722F37]/15 pb-3 font-mono text-[11px] font-bold tracking-[0.25em] uppercase text-[#722F37]">
+        <span>IDENTIFICATION</span>
+        <span>AUTH / 01</span>
+      </div>
 
-      <h1 className="mb-2 text-3xl font-semibold text-[#302326]">
-        Welcome back
+      <h1 className="text-3xl font-black uppercase tracking-tight text-[#492E2D]">
+        ACCESS ACCOUNT.
       </h1>
 
-      <p className="mb-8 text-sm text-gray-600">
-        Sign in to manage and complete your salon bookings.
+      <p className="mt-2 text-xs leading-relaxed text-[#776760]">
+        Enter your registered credentials to access your booking schedule.
       </p>
 
-      <form onSubmit={handleLogin} className="space-y-5">
+      <form onSubmit={handleLogin} className="mt-8 space-y-5">
         <div>
-          <label htmlFor="email" className="mb-2 block text-sm font-medium">
-            Email address
+          <label htmlFor="email" className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-[#302326]">
+            EMAIL IDENTIFIER
           </label>
           <input
             id="email"
@@ -63,14 +65,14 @@ function LoginForm() {
             required
             value={email}
             onChange={(event) => setEmail(event.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-[#722F37]"
-            placeholder="you@example.com"
+            className="w-full border border-[#722F37]/25 bg-white px-4 py-3 font-mono text-xs text-[#302326] outline-none transition focus:border-[#722F37]"
+            placeholder="client@domain.com"
           />
         </div>
 
         <div>
-          <label htmlFor="password" className="mb-2 block text-sm font-medium">
-            Password
+          <label htmlFor="password" className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-[#302326]">
+            SECURE PASSPHRASE
           </label>
           <input
             id="password"
@@ -78,13 +80,13 @@ function LoginForm() {
             required
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 outline-none focus:border-[#722F37]"
-            placeholder="Enter your password"
+            className="w-full border border-[#722F37]/25 bg-white px-4 py-3 font-mono text-xs text-[#302326] outline-none transition focus:border-[#722F37]"
+            placeholder="••••••••••••"
           />
         </div>
 
         {message && (
-          <p className="rounded-lg bg-red-50 p-3 text-sm text-red-700">
+          <p className="border border-red-300 bg-red-50 p-3 font-mono text-xs text-red-700 uppercase">
             {message}
           </p>
         )}
@@ -92,21 +94,21 @@ function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full rounded-lg bg-[#722F37] py-3 font-semibold text-white transition hover:bg-[#57232B] disabled:opacity-50"
+          className="w-full border border-[#722F37] bg-[#722F37] py-4 font-mono text-xs font-bold tracking-[0.2em] uppercase text-white transition hover:bg-[#57232B] disabled:opacity-50"
         >
-          {loading ? "Signing in..." : "Sign In"}
+          {loading ? "AUTHENTICATING..." : "SIGN IN TO SYSTEM"}
         </button>
       </form>
 
-      <p className="mt-8 text-center text-sm text-gray-600">
-        Do not have an account?{" "}
+      <div className="mt-8 border-t border-[#722F37]/15 pt-5 text-center font-mono text-xs text-[#776760]">
+        NEW CLIENT?{" "}
         <Link
           href={`/register${returnUrl !== "/" ? `?returnUrl=${encodeURIComponent(returnUrl)}` : ""}`}
-          className="font-semibold text-[#722F37] underline"
+          className="font-bold text-[#722F37] underline"
         >
-          Create account
+          REGISTER CREDENTIALS
         </Link>
-      </p>
+      </div>
     </div>
   );
 }
@@ -114,7 +116,7 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#F8F4E7] px-4 py-12">
-      <Suspense fallback={<p className="text-[#722F37]">Loading...</p>}>
+      <Suspense fallback={<p className="font-mono text-xs text-[#722F37]">INITIALIZING...</p>}>
         <LoginForm />
       </Suspense>
     </main>

@@ -24,9 +24,9 @@ export default function CancelBookingButton({ bookingId }: { bookingId: string }
     <button
       onClick={handleCancel}
       disabled={loading}
-      className="mt-3 text-xs font-semibold text-red-600 underline hover:text-red-800 disabled:opacity-50"
+      className="mt-2 font-mono text-[10px] font-bold uppercase tracking-wider text-red-700 underline hover:text-red-900 disabled:opacity-50"
     >
-      {loading ? "Cancelling..." : "Cancel Appointment"}
+      {loading ? "CANCELING..." : "[ CANCEL APPOINTMENT ]"}
     </button>
   );
 }

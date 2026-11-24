@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -10,7 +9,6 @@ import {
   Star,
   Clock3,
   ArrowRight,
-  Scissors,
   UserRound,
 } from "lucide-react";
 import CancelBookingButton from "./CancelBookingButton";
@@ -67,26 +65,25 @@ async function DashboardContent() {
 
   if (profileError || !profile) {
     return (
-      <main className="min-h-screen bg-[#F8F4E7] px-6 py-20 text-center">
-        <h1 className="text-2xl font-semibold text-[#722F37]">
-          Profile unavailable
+      <main className="min-h-screen bg-[#F8F4E7] px-6 py-20 text-center font-mono">
+        <h1 className="text-xl font-bold uppercase text-[#722F37]">
+          [ ERROR: PROFILE_UNAVAILABLE ]
         </h1>
-        <p className="mt-3 text-gray-600">
-          We could not load your account profile. Please try signing in again.
+        <p className="mt-3 text-xs text-[#776760]">
+          We could not load your account profile. Please re-authenticate.
         </p>
-        <Link href="/login" className="mt-6 inline-block underline">
-          Return to sign in
+        <Link href="/login" className="mt-6 inline-block font-bold underline">
+          RETURN TO AUTHENTICATION
         </Link>
       </main>
     );
   }
 
-  // This is the customer dashboard, not the provider or administrator area.
   if (profile.role !== "customer") {
     redirect("/");
   }
 
-  // Load the customer's profile.
+  // Load customer profile.
   const { data: customer, error: customerError } = await supabase
     .from("customer_profiles")
     .select("id, loyalty_balance, favourite_service_ids, favourite_provider_ids")
@@ -95,19 +92,18 @@ async function DashboardContent() {
 
   if (customerError || !customer) {
     return (
-      <main className="min-h-screen bg-[#F8F4E7] px-6 py-20 text-center">
-        <h1 className="text-2xl font-semibold text-[#722F37]">
-          Customer profile unavailable
+      <main className="min-h-screen bg-[#F8F4E7] px-6 py-20 text-center font-mono">
+        <h1 className="text-xl font-bold uppercase text-[#722F37]">
+          [ ERROR: CUSTOMER_RECORD_NOT_INITIALIZED ]
         </h1>
-        <p className="mt-3 text-gray-600">
-          Your login exists, but the customer profile could not be loaded.
-          Please contact the administrator.
+        <p className="mt-3 text-xs text-[#776760]">
+          Your identity exists, but customer profile data was not allocated.
         </p>
       </main>
     );
   }
 
-  // Retrieve the customer's bookings. Row Level Security limits access.
+  // Retrieve customer bookings.
   const { data: bookings, error: bookingsError } = await supabase
     .from("bookings")
     .select(`
@@ -148,102 +144,103 @@ async function DashboardContent() {
     (customer.favourite_provider_ids?.length ?? 0);
 
   return (
-    <main className="min-h-screen bg-[#F8F4E7] text-[#302426]">
+    <main className="min-h-screen bg-[#F8F4E7] text-[#342925]">
+      {/* Header */}
       <header className="border-b border-[#722F37]/15 bg-[#F8F4E7]">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-          <Link
-            href="/"
-            className="text-2xl font-semibold tracking-[0.18em] text-[#722F37]"
-          >
-            ÉLAN
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5 sm:px-10">
+          <Link href="/" className="flex items-baseline gap-3">
+            <span className="text-2xl font-black tracking-[-0.04em] text-[#722F37]">
+              ÉLAN
+            </span>
+            <span className="font-mono text-[10px] font-bold tracking-[0.25em] text-[#776760] uppercase">
+              STUDIOS / CLIENT DASHBOARD
+            </span>
           </Link>
 
-          <nav className="flex items-center gap-5 text-sm">
-            <Link href="/" className="hover:text-[#722F37]">
-              Home
+          <nav className="flex items-center gap-6 font-mono text-xs font-bold tracking-[0.16em] uppercase">
+            <Link href="/" className="text-[#776760] hover:text-[#722F37]">
+              HOME
             </Link>
-            <span className="font-semibold text-[#722F37]">
-              My Account
-            </span>
+            <Link href="/services" className="text-[#776760] hover:text-[#722F37]">
+              CATALOGUE
+            </Link>
           </nav>
         </div>
       </header>
 
-      <section className="mx-auto max-w-7xl px-6 py-12">
-        <div className="mb-10">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#9A6870]">
-            Customer dashboard
+      {/* Main Content */}
+      <section className="mx-auto max-w-7xl px-6 py-12 sm:px-10">
+        <div className="mb-10 border-b border-[#722F37]/15 pb-6">
+          <p className="font-mono text-xs font-bold tracking-[0.3em] uppercase text-[#722F37]">
+            CLIENT IDENTIFIER: {profile.id.slice(0, 8)}...
           </p>
-          <h1 className="mt-3 text-3xl font-semibold text-[#722F37] md:text-4xl">
-            Welcome, {profile.full_name}
+          <h1 className="mt-2 text-4xl font-black uppercase tracking-tight text-[#492E2D] sm:text-5xl">
+            {profile.full_name}
           </h1>
-          <p className="mt-2 text-gray-600">
-            Manage your appointments, preferences and account.
-          </p>
-          <p className="mt-1 text-sm text-gray-500">{profile.email}</p>
+          <p className="mt-1 font-mono text-xs text-[#776760]">{profile.email}</p>
         </div>
 
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Swiss Stats Matrix */}
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 font-mono">
           <StatCard
-            icon={<CalendarDays size={22} />}
-            label="Upcoming appointments"
+            icon={<CalendarDays size={18} />}
+            code="01"
+            label="UPCOMING SESSIONS"
             value={String(upcomingBookings.length)}
           />
           <StatCard
-            icon={<Clock3 size={22} />}
-            label="Past appointments"
+            icon={<Clock3 size={18} />}
+            code="02"
+            label="HISTORICAL SESSIONS"
             value={String(pastBookings.length)}
           />
           <StatCard
-            icon={<Heart size={22} />}
-            label="Favourite items"
+            icon={<Heart size={18} />}
+            code="03"
+            label="SAVED RITUALS"
             value={String(favouriteCount)}
           />
           <StatCard
-            icon={<Star size={22} />}
-            label="Loyalty points"
+            icon={<Star size={18} />}
+            code="04"
+            label="LOYALTY BALANCE"
             value={String(customer.loyalty_balance)}
           />
         </div>
 
-        <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_300px]">
+        {/* Schedule Ledger Section */}
+        <div className="mt-12 grid gap-8 lg:grid-cols-[1fr_320px]">
           <section>
-            <div className="mb-5 flex items-center justify-between">
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-[#9A6870]">
-                  Your activity
-                </p>
-                <h2 className="mt-2 text-2xl font-semibold text-[#722F37]">
-                  Recent appointments
-                </h2>
-              </div>
-              <span className="text-sm text-gray-500">
-                Latest 10 records
-              </span>
+            <div className="mb-6 flex items-center justify-between border-b border-[#722F37]/15 pb-3 font-mono">
+              <h2 className="text-xs font-bold tracking-[0.25em] uppercase text-[#722F37]">
+                [ SCHEDULE LEDGER / 10 RECORDS ]
+              </h2>
+              <Link
+                href="/services"
+                className="text-xs font-bold uppercase tracking-wider text-[#722F37] underline hover:text-[#492E2D]"
+              >
+                + BOOK NEW SERVICE
+              </Link>
             </div>
 
             {bookingsError ? (
-              <div className="rounded-xl border border-red-200 bg-white p-6 text-sm text-red-700">
-                Booking information could not be loaded. Check the booking
-                table's customer read policy.
+              <div className="border border-red-300 bg-red-50 p-6 font-mono text-xs text-red-700 uppercase">
+                ERROR RETRIEVING BOOKINGS FROM LEDGER.
               </div>
             ) : bookingList.length === 0 ? (
-              <div className="rounded-xl border border-[#722F37]/15 bg-white p-10 text-center">
-                <CalendarDays
-                  className="mx-auto text-[#9A6870]"
-                  size={36}
-                />
-                <h3 className="mt-4 text-lg font-semibold text-[#722F37]">
-                  No appointments yet
+              <div className="border border-dashed border-[#722F37]/25 bg-white/60 p-12 text-center">
+                <CalendarDays className="mx-auto text-[#722F37]" size={36} />
+                <h3 className="mt-4 text-2xl font-black uppercase tracking-tight text-[#492E2D]">
+                  NO ACTIVE SESSIONS
                 </h3>
-                <p className="mt-2 text-sm text-gray-500">
-                  Your appointments will appear here after you make a booking.
+                <p className="mt-2 text-xs text-gray-500">
+                  Your appointment history will be documented here once committed.
                 </p>
                 <Link
                   href="/services"
-                  className="mt-6 inline-flex items-center gap-2 bg-[#722F37] px-6 py-3 text-sm font-semibold text-white hover:bg-[#57232A]"
+                  className="mt-6 inline-flex items-center gap-2 border border-[#722F37] bg-[#722F37] px-6 py-3 font-mono text-xs font-bold tracking-[0.2em] uppercase text-white hover:bg-[#57232B]"
                 >
-                  Explore services <ArrowRight size={16} />
+                  SCHEDULE SESSIONS <ArrowRight size={14} />
                 </Link>
               </div>
             ) : (
@@ -260,31 +257,34 @@ async function DashboardContent() {
                   return (
                     <article
                       key={booking.id}
-                      className="rounded-xl border border-[#722F37]/10 bg-white p-5"
+                      className="border border-[#722F37]/20 bg-white p-6 transition hover:border-[#722F37]"
                     >
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div>
-                          <h3 className="font-semibold text-[#722F37]">
+                          <div className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#722F37]">
+                            [ {booking.id.slice(0, 8)} ]
+                          </div>
+                          <h3 className="mt-1 text-xl font-black uppercase tracking-tight text-[#492E2D]">
                             {serviceName}
                           </h3>
-                          <p className="mt-1 text-sm text-gray-500">
+                          <p className="mt-1 font-mono text-xs text-[#776760]">
                             {salonName}
                           </p>
-                          <p className="mt-3 text-sm text-gray-600">
+                          <p className="mt-3 font-mono text-xs font-semibold text-[#302326]">
                             {formatDate(booking.appointment_date)} ·{" "}
                             {formatTime(booking.start_time)}
                           </p>
                         </div>
 
-                        <div className="text-right">
-                          <p className="font-semibold">
+                        <div className="text-right font-mono">
+                          <p className="text-xl font-bold text-[#722F37]">
                             ₹{Number(booking.total_amount).toFixed(2)}
                           </p>
-                          <span className="mt-2 inline-block rounded-full bg-[#F8F4E7] px-3 py-1 text-xs capitalize text-[#722F37]">
-                            {booking.booking_status.replace("_", " ")}
+                          <span className="mt-2 inline-block border border-[#722F37]/25 bg-[#F8F4E7] px-2.5 py-1 text-[10px] font-bold uppercase text-[#722F37]">
+                            {booking.booking_status}
                           </span>
-                          <p className="mt-2 text-xs capitalize text-gray-500">
-                            Payment: {booking.payment_status.replace("_", " ")}
+                          <p className="mt-2 text-[10px] uppercase text-[#776760]">
+                            PAYMENT: {booking.payment_status}
                           </p>
                           {["pending", "confirmed"].includes(
                             booking.booking_status
@@ -302,50 +302,51 @@ async function DashboardContent() {
             )}
           </section>
 
+          {/* Right Sidebar Details */}
           <aside className="space-y-5">
-            <div className="rounded-xl bg-[#722F37] p-6 text-white">
-              <UserRound size={26} />
-              <h2 className="mt-4 text-xl font-semibold">Your account</h2>
-              <p className="mt-2 text-sm leading-6 text-white/75">
-                Your account details and customer preferences are managed
-                securely.
+            <div className="border border-[#722F37] bg-[#722F37] p-6 text-white font-mono">
+              <UserRound size={22} className="text-[#D7A7B1]" />
+              <h2 className="mt-4 text-lg font-black uppercase tracking-tight">CLIENT STATUS</h2>
+              <p className="mt-2 text-xs leading-relaxed text-white/75">
+                Authentication profile secured by PostgreSQL Row Level Security protocols.
               </p>
-              <p className="mt-5 border-t border-white/20 pt-4 text-sm">
-                Account type: Customer
-              </p>
+              <div className="mt-5 border-t border-white/20 pt-4 text-xs font-bold uppercase text-[#D7A7B1]">
+                ACCOUNT ROLE: CUSTOMER
+              </div>
             </div>
 
-            <div className="rounded-xl border border-[#722F37]/10 bg-white p-6">
-              <Scissors size={24} className="text-[#722F37]" />
-              <h2 className="mt-3 font-semibold text-[#722F37]">
-                Discover ÉLAN
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-gray-500">
-                Explore salon services and find your next appointment.
+            <div className="border border-[#722F37]/20 bg-white p-6 font-mono">
+              <h3 className="text-xs font-bold tracking-[0.2em] uppercase text-[#722F37]">
+                ATELIER SUPPORT
+              </h3>
+              <p className="mt-2 text-xs leading-relaxed text-[#776760]">
+                Need custom rescheduling or special accommodation? Reach out to support.
               </p>
               <Link
-                href="/salons"
-                className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-[#722F37]"
+                href="/services"
+                className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold uppercase text-[#722F37] underline"
               >
-                Browse salons <ArrowRight size={16} />
+                OPEN DIRECTORY <ArrowRight size={13} />
               </Link>
             </div>
           </aside>
         </div>
       </section>
 
-      <footer className="border-t border-[#722F37]/15 px-6 py-6 text-center text-xs text-gray-500">
-        ÉLAN Salon & Beauty · Customer Dashboard · 2026
+      {/* Footer */}
+      <footer className="border-t border-[#722F37]/15 px-6 py-6 text-center font-mono text-[10px] uppercase tracking-wider text-[#776760]">
+        ÉLAN SYSTEM DASHBOARD · PRODUCTION 2026
       </footer>
     </main>
   );
 }
+
 export default function DashboardPage() {
   return (
     <Suspense
       fallback={
-        <main className="min-h-screen flex items-center justify-center bg-[#F8F4E7]">
-          <p className="text-[#722F37]">Loading your dashboard...</p>
+        <main className="min-h-screen flex items-center justify-center bg-[#F8F4E7] font-mono text-xs text-[#722F37]">
+          LOADING DASHBOARD RECORD...
         </main>
       }
     >
@@ -356,18 +357,25 @@ export default function DashboardPage() {
 
 function StatCard({
   icon,
+  code,
   label,
   value,
 }: {
   icon: React.ReactNode;
+  code: string;
   label: string;
   value: string;
 }) {
   return (
-    <div className="rounded-xl border border-[#722F37]/10 bg-white p-5">
-      <div className="text-[#9A6870]">{icon}</div>
-      <p className="mt-4 text-sm text-gray-500">{label}</p>
-      <p className="mt-1 text-3xl font-semibold text-[#722F37]">{value}</p>
+    <div className="border border-[#722F37]/20 bg-white p-5">
+      <div className="flex items-center justify-between text-[#722F37]">
+        <div>{icon}</div>
+        <span className="text-[10px] font-bold opacity-60">[ {code} ]</span>
+      </div>
+      <p className="mt-4 text-[10px] font-bold tracking-[0.16em] uppercase text-[#776760]">
+        {label}
+      </p>
+      <p className="mt-1 text-3xl font-black text-[#722F37]">{value}</p>
     </div>
   );
 }

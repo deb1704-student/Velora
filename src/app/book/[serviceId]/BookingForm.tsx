@@ -7,10 +7,9 @@ import {
   Clock,
   MapPin,
   Calendar,
-  Sparkles,
   ShieldCheck,
   CheckCircle2,
-  ArrowLeft,
+  ArrowRight,
   User,
 } from "lucide-react";
 import { createBookingAction } from "@/app/actions/booking";
@@ -38,15 +37,14 @@ type Props = {
 export default function BookingForm({ service, salons, userEmail }: Props) {
   const router = useRouter();
 
-  // Generate next 7 dates starting tomorrow
   const dates = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() + i + 1);
     return {
       iso: d.toISOString().slice(0, 10),
-      dayName: d.toLocaleDateString("en-IN", { weekday: "short" }),
-      dayNumber: d.getDate(),
-      month: d.toLocaleDateString("en-IN", { month: "short" }),
+      dayName: d.toLocaleDateString("en-IN", { weekday: "short" }).toUpperCase(),
+      dayNumber: String(d.getDate()).padStart(2, "0"),
+      month: d.toLocaleDateString("en-IN", { month: "short" }).toUpperCase(),
     };
   });
 
@@ -69,7 +67,6 @@ export default function BookingForm({ service, salons, userEmail }: Props) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
-  // Price calculations
   const basePrice = Number(service.base_price);
   const gst = Math.round(basePrice * 0.18);
   const platformFee = 50;
@@ -82,7 +79,6 @@ export default function BookingForm({ service, salons, userEmail }: Props) {
       maximumFractionDigits: 0,
     }).format(amount);
 
-  // Calculate end time
   function computeEndTime(startTimeStr: string, durationMinutes: number) {
     const [h, m] = startTimeStr.split(":").map(Number);
     const date = new Date();
@@ -124,53 +120,53 @@ export default function BookingForm({ service, salons, userEmail }: Props) {
 
   if (bookingSuccess) {
     return (
-      <div className="mx-auto max-w-xl rounded-3xl bg-white p-8 text-center shadow-xl sm:p-12">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#EBD9D9] text-[#722F37]">
-          <CheckCircle2 size={36} />
+      <div className="mx-auto max-w-xl border border-[#722F37]/20 bg-white p-8 text-center sm:p-12">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center border border-[#722F37] bg-[#722F37] text-white">
+          <CheckCircle2 size={32} />
         </div>
-        <p className="mt-6 text-xs font-semibold uppercase tracking-[0.25em] text-[#722F37]">
-          Appointment Confirmed
+        <p className="mt-6 font-mono text-xs font-bold tracking-[0.3em] uppercase text-[#722F37]">
+          [ CONFIRMATION CODE: 200_OK ]
         </p>
-        <h2 className="mt-2 font-serif text-3xl text-[#302326]">
-          We look forward to welcoming you
+        <h2 className="mt-2 text-3xl font-black uppercase tracking-tight text-[#492E2D]">
+          APPOINTMENT RESERVED.
         </h2>
-        <p className="mt-3 text-sm text-gray-600">
-          Your reservation for{" "}
-          <strong className="text-[#722F37]">{service.service_name}</strong> has
-          been recorded.
+        <p className="mt-3 text-xs leading-relaxed text-[#776760]">
+          Your schedule for{" "}
+          <strong className="text-[#722F37] uppercase">{service.service_name}</strong> has
+          been committed to the system ledger.
         </p>
 
-        <div className="mt-8 rounded-2xl bg-[#F8F4E7] p-6 text-left text-sm text-[#302326]">
+        <div className="mt-8 border border-[#722F37]/15 bg-[#F8F4E7] p-6 text-left font-mono text-xs text-[#302326]">
           <div className="flex justify-between border-b border-[#722F37]/10 pb-3">
-            <span className="text-gray-500">Date</span>
-            <span className="font-semibold">{selectedDate}</span>
+            <span className="text-[#776760] uppercase">SCHEDULE DATE</span>
+            <span className="font-bold">{selectedDate}</span>
           </div>
           <div className="flex justify-between border-b border-[#722F37]/10 py-3">
-            <span className="text-gray-500">Time</span>
-            <span className="font-semibold">{selectedSlot.label}</span>
+            <span className="text-[#776760] uppercase">START INTERVAL</span>
+            <span className="font-bold">{selectedSlot.label}</span>
           </div>
           <div className="flex justify-between border-b border-[#722F37]/10 py-3">
-            <span className="text-gray-500">Duration</span>
-            <span className="font-semibold">{service.duration_minutes} mins</span>
+            <span className="text-[#776760] uppercase">ESTIMATED DURATION</span>
+            <span className="font-bold">{service.duration_minutes} MIN</span>
           </div>
-          <div className="flex justify-between pt-3 font-semibold text-[#722F37]">
-            <span>Total Payable at Salon</span>
-            <span>{formatPrice(grandTotal)}</span>
+          <div className="flex justify-between pt-3 font-bold text-[#722F37]">
+            <span className="uppercase">TOTAL PAYABLE AT ATELIER</span>
+            <span className="text-sm font-bold">{formatPrice(grandTotal)}</span>
           </div>
         </div>
 
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center font-mono">
           <Link
             href="/dashboard"
-            className="rounded-full bg-[#722F37] px-8 py-3.5 text-sm font-semibold text-white transition hover:bg-[#57232B]"
+            className="border border-[#722F37] bg-[#722F37] px-8 py-3.5 text-xs font-bold tracking-[0.2em] uppercase text-white transition hover:bg-[#57232B]"
           >
-            Go to My Dashboard
+            OPEN DASHBOARD
           </Link>
           <Link
             href="/services"
-            className="rounded-full border border-[#722F37] px-8 py-3.5 text-sm font-semibold text-[#722F37] transition hover:bg-[#722F37]/5"
+            className="border border-[#722F37]/30 px-8 py-3.5 text-xs font-bold tracking-[0.2em] uppercase text-[#722F37] transition hover:border-[#722F37]"
           >
-            Explore More Services
+            INDEX CATALOGUE
           </Link>
         </div>
       </div>
@@ -182,10 +178,12 @@ export default function BookingForm({ service, salons, userEmail }: Props) {
       {/* Left Column: Booking Options */}
       <div className="space-y-8 lg:col-span-7">
         {/* Salon Selection */}
-        <section className="rounded-2xl bg-white p-6 shadow-sm md:p-8">
-          <div className="mb-5 flex items-center gap-2.5 text-[#722F37]">
-            <MapPin size={20} />
-            <h3 className="font-serif text-xl">Select Location</h3>
+        <section className="border border-[#722F37]/20 bg-white p-7 sm:p-9">
+          <div className="mb-6 flex items-center justify-between border-b border-[#722F37]/10 pb-3">
+            <h3 className="font-mono text-xs font-bold tracking-[0.25em] uppercase text-[#722F37]">
+              [ 01 ] SELECT LOCATION
+            </h3>
+            <MapPin size={16} className="text-[#722F37]" />
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {salons.map((salon) => (
@@ -193,24 +191,26 @@ export default function BookingForm({ service, salons, userEmail }: Props) {
                 key={salon.id}
                 type="button"
                 onClick={() => setSelectedSalonId(salon.id)}
-                className={`rounded-xl border p-4 text-left transition ${
+                className={`border p-4 text-left transition ${
                   selectedSalonId === salon.id
-                    ? "border-[#722F37] bg-[#722F37]/5 ring-2 ring-[#722F37]/20"
+                    ? "border-[#722F37] bg-[#722F37]/5 ring-1 ring-[#722F37]"
                     : "border-gray-200 hover:border-[#722F37]/40"
                 }`}
               >
-                <p className="font-semibold text-[#302326]">{salon.business_name}</p>
-                <p className="mt-1 text-xs text-gray-500">{salon.location}</p>
+                <p className="font-bold text-[#302326]">{salon.business_name}</p>
+                <p className="mt-1 font-mono text-[11px] text-[#776760]">{salon.location}</p>
               </button>
             ))}
           </div>
         </section>
 
         {/* Date Selection */}
-        <section className="rounded-2xl bg-white p-6 shadow-sm md:p-8">
-          <div className="mb-5 flex items-center gap-2.5 text-[#722F37]">
-            <Calendar size={20} />
-            <h3 className="font-serif text-xl">Choose Date</h3>
+        <section className="border border-[#722F37]/20 bg-white p-7 sm:p-9">
+          <div className="mb-6 flex items-center justify-between border-b border-[#722F37]/10 pb-3">
+            <h3 className="font-mono text-xs font-bold tracking-[0.25em] uppercase text-[#722F37]">
+              [ 02 ] CHOOSE DATE
+            </h3>
+            <Calendar size={16} className="text-[#722F37]" />
           </div>
           <div className="grid grid-cols-3 gap-2 sm:grid-cols-7">
             {dates.map((d) => (
@@ -218,40 +218,42 @@ export default function BookingForm({ service, salons, userEmail }: Props) {
                 key={d.iso}
                 type="button"
                 onClick={() => setSelectedDate(d.iso)}
-                className={`flex flex-col items-center rounded-xl border py-3 transition ${
+                className={`flex flex-col items-center border py-3.5 transition ${
                   selectedDate === d.iso
-                    ? "border-[#722F37] bg-[#722F37] text-white shadow-md"
-                    : "border-gray-200 text-[#302326] hover:border-[#722F37]/40 hover:bg-[#F8F4E7]/40"
+                    ? "border-[#722F37] bg-[#722F37] text-white"
+                    : "border-gray-200 text-[#302326] hover:border-[#722F37]"
                 }`}
               >
-                <span className="text-[11px] uppercase tracking-wider opacity-80">
+                <span className="font-mono text-[10px] font-semibold tracking-wider opacity-75">
                   {d.dayName}
                 </span>
-                <span className="mt-1 font-serif text-xl font-semibold">
+                <span className="mt-1 font-mono text-xl font-black">
                   {d.dayNumber}
                 </span>
-                <span className="text-[10px] opacity-75">{d.month}</span>
+                <span className="font-mono text-[9px] opacity-75">{d.month}</span>
               </button>
             ))}
           </div>
         </section>
 
         {/* Time Slot Selection */}
-        <section className="rounded-2xl bg-white p-6 shadow-sm md:p-8">
-          <div className="mb-5 flex items-center gap-2.5 text-[#722F37]">
-            <Clock size={20} />
-            <h3 className="font-serif text-xl">Select Time Slot</h3>
+        <section className="border border-[#722F37]/20 bg-white p-7 sm:p-9">
+          <div className="mb-6 flex items-center justify-between border-b border-[#722F37]/10 pb-3">
+            <h3 className="font-mono text-xs font-bold tracking-[0.25em] uppercase text-[#722F37]">
+              [ 03 ] TIME INTERVAL
+            </h3>
+            <Clock size={16} className="text-[#722F37]" />
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 font-mono">
             {timeSlots.map((slot) => (
               <button
                 key={slot.time}
                 type="button"
                 onClick={() => setSelectedSlot(slot)}
-                className={`rounded-xl border py-3 text-center text-sm font-medium transition ${
+                className={`border py-3 text-center text-xs font-bold tracking-wider transition ${
                   selectedSlot.time === slot.time
-                    ? "border-[#722F37] bg-[#722F37] text-white shadow-md"
-                    : "border-gray-200 text-[#302326] hover:border-[#722F37]/40 hover:bg-[#F8F4E7]/40"
+                    ? "border-[#722F37] bg-[#722F37] text-white"
+                    : "border-gray-200 text-[#302326] hover:border-[#722F37]"
                 }`}
               >
                 {slot.label}
@@ -263,89 +265,86 @@ export default function BookingForm({ service, salons, userEmail }: Props) {
 
       {/* Right Column: Order Summary & Checkout */}
       <div className="lg:col-span-5">
-        <div className="sticky top-28 rounded-3xl bg-white p-6 shadow-lg sm:p-8">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#722F37]">
-            Reservation Summary
-          </p>
-          <h3 className="mt-2 font-serif text-2xl text-[#302326]">
+        <div className="sticky top-28 border border-[#722F37]/20 bg-white p-7 sm:p-8">
+          <div className="flex items-center justify-between border-b border-[#722F37]/15 pb-3 font-mono text-[11px] font-bold tracking-[0.25em] uppercase text-[#722F37]">
+            <span>ORDER LEDGER</span>
+            <span>SPEC. 2026</span>
+          </div>
+
+          <h3 className="mt-4 text-2xl font-black uppercase tracking-tight text-[#492E2D]">
             {service.service_name}
           </h3>
-          <p className="mt-1 text-xs text-gray-500">
-            {service.description || "Experience bespoke luxury care."}
+          <p className="mt-2 text-xs leading-relaxed text-[#776760]">
+            {service.description || "Precision salon treatment."}
           </p>
 
-          <div className="mt-6 flex items-center gap-4 border-y border-[#F0E5E3] py-4 text-xs text-[#302326]">
-            <div className="flex items-center gap-1.5">
-              <Clock size={15} className="text-[#722F37]" />
-              <span>{service.duration_minutes} minutes</span>
+          <div className="mt-6 flex items-center gap-4 border-y border-[#722F37]/10 py-3.5 font-mono text-xs text-[#302326]">
+            <div className="flex items-center gap-1.5 font-semibold">
+              <Clock size={14} className="text-[#722F37]" />
+              <span>{service.duration_minutes} MIN</span>
             </div>
-            <div className="flex items-center gap-1.5">
-              <Sparkles size={15} className="text-[#722F37]" />
-              <span>Sanitized Suite</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <ShieldCheck size={15} className="text-[#722F37]" />
-              <span>Expert Stylist</span>
+            <div className="flex items-center gap-1.5 font-semibold">
+              <ShieldCheck size={14} className="text-[#722F37]" />
+              <span>VERIFIED ATELIER</span>
             </div>
           </div>
 
           {/* Pricing breakdown */}
-          <div className="mt-6 space-y-3 text-sm">
-            <div className="flex justify-between text-gray-600">
-              <span>Service Charge</span>
-              <span>{formatPrice(basePrice)}</span>
+          <div className="mt-6 space-y-3 font-mono text-xs">
+            <div className="flex justify-between text-[#776760]">
+              <span className="uppercase">SERVICE BASE</span>
+              <span className="font-bold text-[#302326]">{formatPrice(basePrice)}</span>
             </div>
-            <div className="flex justify-between text-gray-600">
-              <span>GST & Taxes (18%)</span>
-              <span>{formatPrice(gst)}</span>
+            <div className="flex justify-between text-[#776760]">
+              <span className="uppercase">TAX & GST (18%)</span>
+              <span className="font-bold text-[#302326]">{formatPrice(gst)}</span>
             </div>
-            <div className="flex justify-between text-gray-600">
-              <span>Hygiene & Platform Fee</span>
-              <span>{formatPrice(platformFee)}</span>
+            <div className="flex justify-between text-[#776760]">
+              <span className="uppercase">PLATFORM PROTOCOL</span>
+              <span className="font-bold text-[#302326]">{formatPrice(platformFee)}</span>
             </div>
-            <div className="flex justify-between border-t border-[#F0E5E3] pt-3 text-base font-semibold text-[#722F37]">
-              <span>Grand Total</span>
-              <span className="font-serif text-2xl">{formatPrice(grandTotal)}</span>
+            <div className="flex justify-between border-t border-[#722F37]/20 pt-4 text-sm font-bold text-[#722F37]">
+              <span className="uppercase">TOTAL COMMITMENT</span>
+              <span className="text-xl font-black">{formatPrice(grandTotal)}</span>
             </div>
           </div>
 
-          <div className="mt-6 rounded-xl bg-[#F8F4E7] p-4 text-xs leading-5 text-[#655650]">
-            💳 <strong>Payment Method:</strong> Pay on arrival at the salon via Cash,
-            UPI, or Card. No advance charge required.
+          <div className="mt-6 border border-[#722F37]/15 bg-[#F8F4E7] p-3.5 font-mono text-[11px] leading-relaxed text-[#655650]">
+            PAYMENT SETTLEMENT: ATELIER DESK VIA CARD / UPI / CASH. NO ADVANCE RETENTION.
           </div>
 
           {errorMsg && (
-            <div className="mt-4 rounded-xl bg-red-50 p-3 text-xs text-red-700">
+            <div className="mt-4 border border-red-300 bg-red-50 p-3 font-mono text-xs text-red-700 uppercase">
               {errorMsg}
             </div>
           )}
 
-          <div className="mt-6">
+          <div className="mt-6 font-mono">
             {userEmail ? (
               <button
                 type="button"
                 disabled={submitting}
                 onClick={handleConfirmBooking}
-                className="w-full rounded-full bg-[#722F37] py-4 text-sm font-semibold tracking-wider text-white shadow-md transition hover:bg-[#57232B] disabled:opacity-50"
+                className="w-full border border-[#722F37] bg-[#722F37] py-4 text-xs font-bold tracking-[0.2em] uppercase text-white transition hover:bg-[#57232B] disabled:opacity-50"
               >
-                {submitting ? "CONFIRMING RESERVATION..." : "CONFIRM & RESERVE"}
+                {submitting ? "CONFIRMING..." : "COMMIT RESERVATION"}
               </button>
             ) : (
               <div className="space-y-3">
                 <Link
                   href={`/login?returnUrl=/book/${service.id}`}
-                  className="flex w-full items-center justify-center gap-2 rounded-full bg-[#722F37] py-4 text-sm font-semibold tracking-wider text-white transition hover:bg-[#57232B]"
+                  className="flex w-full items-center justify-center gap-2 border border-[#722F37] bg-[#722F37] py-4 text-xs font-bold tracking-[0.2em] uppercase text-white transition hover:bg-[#57232B]"
                 >
-                  <User size={16} />
-                  SIGN IN TO COMPLETE BOOKING
+                  <User size={15} />
+                  SIGN IN TO COMMIT
                 </Link>
-                <p className="text-center text-xs text-gray-500">
-                  New client?{" "}
+                <p className="text-center font-mono text-[11px] text-[#776760]">
+                  NEW CLIENT?{" "}
                   <Link
                     href={`/register?returnUrl=/book/${service.id}`}
-                    className="font-semibold text-[#722F37] underline"
+                    className="font-bold text-[#722F37] underline"
                   >
-                    Create account
+                    REGISTER ACCOUNT
                   </Link>
                 </p>
               </div>
