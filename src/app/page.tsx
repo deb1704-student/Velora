@@ -226,13 +226,14 @@ export default function Home() {
             {/* Right Asymmetrical Visual Block */}
             <div className="lg:col-span-4">
               <div className="relative border border-[#722F37]/20 bg-[#F1E8DC] p-3">
-                <div
-                  className="aspect-[3/4] w-full bg-cover bg-center grayscale contrast-125 transition duration-500 hover:grayscale-0"
-                  style={{
-                    backgroundImage:
-                      "url('https://images.unsplash.com/photo-1633681926022-84c23e8cb2d5?auto=format&fit=crop&w=1200&q=90')",
-                  }}
-                />
+                <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#EBD9D9]">
+                  <img
+                    src="https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=1200&q=85"
+                    alt="ÉLAN Form & Texture — Salon Styling"
+                    className="h-full w-full object-cover grayscale contrast-125 transition duration-500 hover:grayscale-0"
+                    loading="eager"
+                  />
+                </div>
                 <div className="mt-3 flex items-center justify-between border-t border-[#722F37]/15 pt-2.5 font-mono text-[10px] tracking-[0.2em] uppercase text-[#722F37]">
                   <span>FIG. 01 — FORM & TEXTURE</span>
                   <span>EST. 2026</span>
@@ -346,10 +347,11 @@ export default function Home() {
               <div className="mt-10">
                 <Link
                   href="/services"
-                  className="inline-flex items-center gap-3 border border-white bg-white px-8 py-4 font-mono text-xs font-bold tracking-[0.2em] uppercase text-[#722F37] transition hover:bg-[#F8F4E7]"
+                  className="inline-flex items-center gap-3 border-2 border-[#F8F4E7] bg-[#F8F4E7] px-8 py-4 font-mono text-xs font-black tracking-[0.2em] uppercase transition hover:bg-transparent hover:!text-[#F8F4E7]"
+                  style={{ color: "#492E2D" }}
                 >
-                  EXPLORE THE DIRECTORY
-                  <ArrowRight size={16} />
+                  <span className="font-black text-[#492E2D] hover:text-inherit">EXPLORE THE DIRECTORY</span>
+                  <ArrowRight size={16} className="text-[#492E2D] hover:text-inherit" />
                 </Link>
               </div>
             </div>
