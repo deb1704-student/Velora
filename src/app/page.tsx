@@ -15,24 +15,9 @@ import {
   Clock,
   ShieldCheck,
 } from "lucide-react";
+import Hero3DVideo from "./components/Hero3DVideo";
 
-const heroImages = [
-  {
-    id: "01",
-    tag: "FIG. 01 — HAIRCRAFT & TEXTURE",
-    url: "https://images.unsplash.com/photo-1560869713-7d0a29430803?auto=format&fit=crop&w=1200&q=85",
-  },
-  {
-    id: "02",
-    tag: "FIG. 02 — CLINICAL HYDRATION",
-    url: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1200&q=85",
-  },
-  {
-    id: "03",
-    tag: "FIG. 03 — STRUCTURAL FORM",
-    url: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=85",
-  },
-];
+
 
 const services = [
   {
@@ -127,7 +112,6 @@ export default function Home() {
   const [signingOut, setSigningOut] = useState(false);
 
   // Interactive state
-  const [activeHeroImageIndex, setActiveHeroImageIndex] = useState(0);
   const [activeSalonIndex, setActiveSalonIndex] = useState(0);
   const [openProtocolIndex, setOpenProtocolIndex] = useState<number | null>(0);
 
@@ -335,48 +319,9 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* Right Column: Hero Visual with Full-Height Cover and Interactive Switcher */}
+            {/* Right Column: Hero Visual with 3D Video Viewfinder & Motion Experience */}
             <div className="lg:col-span-5">
-              <div className="relative border border-[#722F37]/20 bg-[#F1E8DC] p-3 shadow-sm">
-                {/* 100% Filled Container using absolute inset-0 */}
-                <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#302326]">
-                  <AnimatePresence mode="wait">
-                    <motion.img
-                      key={heroImages[activeHeroImageIndex].url}
-                      src={heroImages[activeHeroImageIndex].url}
-                      alt="ÉLAN Form & Texture"
-                      initial={{ opacity: 0, scale: 1.05 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.98 }}
-                      transition={{ duration: 0.5, ease: "easeInOut" }}
-                      className="absolute inset-0 h-full w-full object-cover grayscale contrast-125 transition duration-700 hover:grayscale-0 hover:scale-105"
-                      loading="eager"
-                    />
-                  </AnimatePresence>
-                </div>
-
-                {/* Interactive Figure Switcher Tabs */}
-                <div className="mt-3 flex items-center justify-between border-t border-[#722F37]/15 pt-3 font-mono text-[10px] font-bold uppercase tracking-wider text-[#722F37]">
-                  <span className="truncate pr-2">
-                    {heroImages[activeHeroImageIndex].tag}
-                  </span>
-                  <div className="flex gap-1.5 shrink-0">
-                    {heroImages.map((img, idx) => (
-                      <button
-                        key={img.id}
-                        onClick={() => setActiveHeroImageIndex(idx)}
-                        className={`px-2 py-0.5 border transition ${
-                          activeHeroImageIndex === idx
-                            ? "border-[#722F37] bg-[#722F37] text-white"
-                            : "border-[#722F37]/30 hover:border-[#722F37]"
-                        }`}
-                      >
-                        {img.id}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              <Hero3DVideo />
             </div>
           </div>
         </div>
