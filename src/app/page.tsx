@@ -86,21 +86,21 @@ const salons = [
 const protocols = [
   {
     id: "01",
-    title: "TIERED SPECIALIST ALLOCATION",
-    summary: "Every booking matches customer hair and skin profiles to certified senior practitioners with verified portfolios.",
-    detail: "Practitioners are vetted against a 24-point clinical checklist including chemical safety, product pharmacology, and sanitary hygiene compliance. Assignments are committed through cryptographic ledger procedures.",
+    title: "BESPOKE CONSULTATION & EXPERT ARTISTRY",
+    summary: "Every appointment begins with a personal consultation to understand your hair texture, skin needs, and personal style.",
+    detail: "Your dedicated master colorist or aesthetic specialist tailors custom formulations and treatments designed to accentuate your natural beauty and lifestyle.",
   },
   {
     id: "02",
-    title: "STERILIZATION & CLEAN ENVIRONMENT GUARANTEE",
-    summary: "Medical-grade autoclaving of metal instruments and single-use sealed botanicals for each treatment session.",
-    detail: "Ateliers maintain continuous air purification, sanitized workstation turnover between clients, and hypoallergenic consumables sourced exclusively from audited European partners.",
+    title: "SERENE SUITES & CLEAN BOTANICAL FORMULAS",
+    summary: "Impeccably sanitized private suites, calming aromatherapy, and clean luxury botanicals free of harsh sulfates or parabens.",
+    detail: "We cultivate a tranquil haven with unhurried appointments, European organic hair and skin lines, and hospitality-grade cleanliness for complete peace of mind.",
   },
   {
     id: "03",
-    title: "TRANSPARENT LEDGER & ZERO SURPRISE PRICING",
-    summary: "Clear fee structure with itemized taxes and base rates with no hidden gratuity or forced add-ons.",
-    detail: "Prices shown in the catalogue represent the total commitment payable upon arrival via UPI, Card, or Cash. Cancellations processed up to 2 hours prior carry zero retention fees.",
+    title: "HONEST LUXURY & TRANSPARENT PRICING",
+    summary: "All-inclusive pricing with complete transparency—no hidden service fees, unexpected surcharges, or forced gratuity.",
+    detail: "The rate you see is the rate you settle upon completion at the atelier via UPI, Card, or Cash. Enjoy flexible scheduling with complimentary cancellations up to 2 hours prior.",
   },
 ];
 
@@ -168,31 +168,31 @@ export default function Home() {
           className="flex whitespace-nowrap"
         >
           <span className="flex items-center gap-8 px-4">
-            <span>PRECISION CARE</span>
+            <span>HAUTE COIFFURE</span>
             <span>·</span>
-            <span>SWISS SYSTEM SPECIFICATION</span>
+            <span>BESPOKE BEAUTY RITUALS</span>
             <span>·</span>
-            <span>VERIFIED ATELIERS</span>
+            <span>CURATED ATELIERS</span>
             <span>·</span>
-            <span>SCHEDULED RESERVATIONS</span>
+            <span>SIGNATURE STYLING</span>
             <span>·</span>
-            <span>ZERO SURPRISE PRICING</span>
+            <span>EFFORTLESS BOOKING</span>
             <span>·</span>
-            <span>BESPOKE RITUALS</span>
+            <span>TIMELESS ELEGANCE</span>
             <span>·</span>
           </span>
           <span className="flex items-center gap-8 px-4">
-            <span>PRECISION CARE</span>
+            <span>HAUTE COIFFURE</span>
             <span>·</span>
-            <span>SWISS SYSTEM SPECIFICATION</span>
+            <span>BESPOKE BEAUTY RITUALS</span>
             <span>·</span>
-            <span>VERIFIED ATELIERS</span>
+            <span>CURATED ATELIERS</span>
             <span>·</span>
-            <span>SCHEDULED RESERVATIONS</span>
+            <span>SIGNATURE STYLING</span>
             <span>·</span>
-            <span>ZERO SURPRISE PRICING</span>
+            <span>EFFORTLESS BOOKING</span>
             <span>·</span>
-            <span>BESPOKE RITUALS</span>
+            <span>TIMELESS ELEGANCE</span>
             <span>·</span>
           </span>
         </motion.div>
@@ -218,10 +218,10 @@ export default function Home() {
               ATELIERS
             </a>
             <a href="#protocols" className="transition hover:text-[#722F37]">
-              PROTOCOLS
+              PROMISE
             </a>
             <a href="#manifesto" className="transition hover:text-[#722F37]">
-              MANIFESTO
+              PHILOSOPHY
             </a>
           </div>
 
@@ -280,22 +280,22 @@ export default function Home() {
               <div className="mb-6 flex items-center gap-3">
                 <span className="h-2 w-2 bg-[#722F37]" />
                 <p className="font-mono text-xs font-bold tracking-[0.3em] uppercase text-[#722F37]">
-                  SYSTEM SPECIFICATION / 01
+                  THE 2026 COLLECTION / 01
                 </p>
               </div>
 
               <h1 className="text-5xl font-black tracking-[-0.04em] uppercase text-[#492E2D] sm:text-7xl lg:text-8xl leading-[0.92]">
-                BEAUTY AS
+                HAUTE COIFFURE.
                 <br />
-                ARCHITECTURE.
+                TIMELESS BEAUTY.
                 <br />
-                <span className="text-[#722F37]">PRECISION CARE.</span>
+                <span className="text-[#722F37]">BESPOKE CARE.</span>
               </h1>
 
               <p className="mt-8 max-w-lg text-base font-normal leading-relaxed text-[#655650] sm:text-lg">
-                A structured management network linking refined salons, verified
-                specialists, and discerning clients. Pure form, zero friction,
-                and meticulous execution.
+                A curated sanctuary of master stylists, bespoke colorists, and
+                rejuvenating aesthetic rituals. Designed for discerning clients
+                seeking effortless elegance and transformative care.
               </p>
 
               <div className="mt-10 flex flex-wrap items-center gap-4">
@@ -304,7 +304,7 @@ export default function Home() {
                     href="/services"
                     className="group flex items-center gap-3 border border-[#722F37] bg-[#722F37] px-8 py-4 font-mono text-xs font-bold tracking-[0.2em] uppercase text-white transition hover:bg-[#57232B]"
                   >
-                    VIEW CATALOGUE
+                    EXPLORE RITUALS
                     <ArrowRight size={16} className="transition group-hover:translate-x-1" />
                   </Link>
                 </motion.div>
@@ -314,7 +314,7 @@ export default function Home() {
                   href="#ateliers"
                   className="border border-[#722F37]/30 px-7 py-4 font-mono text-xs font-bold tracking-[0.2em] uppercase text-[#722F37] transition hover:border-[#722F37] hover:bg-white/40"
                 >
-                  LOCATIONS
+                  OUR ATELIERS
                 </motion.a>
               </div>
             </motion.div>
@@ -330,9 +330,9 @@ export default function Home() {
       {/* Structural Data Grid (3-Columns) */}
       <section className="grid grid-cols-1 border-b border-[#722F37]/15 bg-[#F1E8DC] sm:grid-cols-3">
         {[
-          ["01", "CURATED CRITERIA", "Every studio verified under strict hygiene, aesthetic, and professional audit."],
-          ["02", "VERIFIED MASTERY", "Direct access to licensed master colorists, skin clinicians, and massage therapists."],
-          ["03", "INSTANT RESERVATION", "Real-time calendar scheduling with transparent, zero-surprise invoices."],
+          ["01", "CURATED EXCELLENCE", "Handpicked luxury ateliers selected for exceptional artistry, serene ambiance, and unparalleled hospitality."],
+          ["02", "MASTER ARTISANS", "Direct access to leading master colorists, clinical facialists, and restorative wellness practitioners."],
+          ["03", "EFFORTLESS RESERVATIONS", "Instant calendar scheduling with guaranteed appointments, zero wait times, and transparent pricing."],
         ].map(([index, title, detail]) => (
           <motion.div
             key={title}
@@ -343,7 +343,7 @@ export default function Home() {
             <div className="flex items-center justify-between font-mono text-xs font-bold text-[#722F37]">
               <span>[ {index} ]</span>
               <span className="text-[10px] tracking-[0.2em] uppercase opacity-60">
-                CRITERION
+                PILLAR
               </span>
             </div>
             <div className="mt-8">
@@ -363,17 +363,17 @@ export default function Home() {
         <div className="mb-12 flex flex-col justify-between gap-4 border-b border-[#722F37]/20 pb-6 md:flex-row md:items-end">
           <div>
             <span className="font-mono text-xs font-bold tracking-[0.3em] uppercase text-[#722F37]">
-              DISCIPLINES / 02
+              SIGNATURE SERVICES / 02
             </span>
             <h2 className="mt-2 text-4xl font-black tracking-[-0.03em] uppercase text-[#492E2D] sm:text-5xl">
-              CURATED RITUALS.
+              THE BEAUTY COLLECTION.
             </h2>
           </div>
           <Link
             href="/services"
             className="group flex items-center gap-2 font-mono text-xs font-bold tracking-[0.2em] uppercase text-[#722F37] hover:text-[#492E2D]"
           >
-            <span>VIEW FULL CATALOGUE [ 08 ]</span>
+            <span>EXPLORE FULL MENU [ 08 RITUALS ]</span>
             <ArrowUpRight
               size={16}
               className="transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
@@ -438,10 +438,10 @@ export default function Home() {
           <div className="mb-10 flex flex-col justify-between gap-4 border-b border-[#722F37]/20 pb-6 md:flex-row md:items-end">
             <div>
               <span className="font-mono text-xs font-bold tracking-[0.3em] uppercase text-[#722F37]">
-                SPATIAL ATELIERS / 03
+                OUR SANCTUARIES / 03
               </span>
               <h2 className="mt-2 text-4xl font-black tracking-[-0.03em] uppercase text-[#492E2D] sm:text-5xl">
-                STUDIO DIRECTORY.
+                PREMIER ATELIERS.
               </h2>
             </div>
             {/* Interactive City Selector Pills */}
@@ -483,7 +483,7 @@ export default function Home() {
                   <div className="flex items-start gap-3">
                     <MapPin size={16} className="text-[#722F37] mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-[10px] text-[#776760] uppercase">ADDRESS</p>
+                      <p className="text-[10px] text-[#776760] uppercase">ATELIER LOCATION</p>
                       <p className="font-bold text-[#302326]">{salons[activeSalonIndex].address}</p>
                     </div>
                   </div>
@@ -491,7 +491,7 @@ export default function Home() {
                   <div className="flex items-start gap-3">
                     <Clock size={16} className="text-[#722F37] mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-[10px] text-[#776760] uppercase">HOURS OF OPERATION</p>
+                      <p className="text-[10px] text-[#776760] uppercase">OPENING HOURS</p>
                       <p className="font-bold text-[#302326]">{salons[activeSalonIndex].hours}</p>
                     </div>
                   </div>
@@ -499,7 +499,7 @@ export default function Home() {
                   <div className="flex items-start gap-3">
                     <ShieldCheck size={16} className="text-[#722F37] mt-0.5 shrink-0" />
                     <div>
-                      <p className="text-[10px] text-[#776760] uppercase">FACILITY CAPACITY</p>
+                      <p className="text-[10px] text-[#776760] uppercase">SUITE AMENITIES</p>
                       <p className="font-bold text-[#302326]">{salons[activeSalonIndex].capacity}</p>
                     </div>
                   </div>
@@ -511,7 +511,7 @@ export default function Home() {
                   href="/services"
                   className="flex items-center justify-center gap-3 border border-[#722F37] bg-[#722F37] py-4 text-center font-mono text-xs font-bold tracking-[0.2em] uppercase text-white transition hover:bg-[#57232B]"
                 >
-                  SCHEDULE AT {salons[activeSalonIndex].name.toUpperCase()}
+                  RESERVE AT {salons[activeSalonIndex].name.toUpperCase()}
                   <ArrowRight size={15} />
                 </Link>
               </div>
@@ -532,7 +532,7 @@ export default function Home() {
                 />
               </AnimatePresence>
               <div className="absolute bottom-4 right-4 bg-black/80 px-3 py-1 font-mono text-[10px] font-bold text-white uppercase tracking-wider">
-                ARCHITECTURAL VIEW
+                ATELIER INTERIOR
               </div>
             </div>
           </div>
@@ -543,13 +543,13 @@ export default function Home() {
       <section id="protocols" className="mx-auto max-w-7xl px-6 py-24 sm:px-10">
         <div className="mb-12 border-b border-[#722F37]/20 pb-6">
           <span className="font-mono text-xs font-bold tracking-[0.3em] uppercase text-[#722F37]">
-            OPERATING STANDARDS / 04
+            THE ÉLAN STANDARD / 04
           </span>
           <h2 className="mt-2 text-4xl font-black tracking-[-0.03em] uppercase text-[#492E2D] sm:text-5xl">
-            SYSTEM PROTOCOLS.
+            OUR GUEST PROMISE.
           </h2>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-[#776760]">
-            Click any protocol module to inspect verification standards and customer protections.
+            Click any promise to learn how we personalize every detail of your salon journey.
           </p>
         </div>
 
@@ -611,17 +611,17 @@ export default function Home() {
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
             <div className="lg:col-span-8">
               <span className="font-mono text-xs font-bold tracking-[0.3em] uppercase text-[#D7A7B1]">
-                MANIFESTO / 05
+                OUR PHILOSOPHY / 05
               </span>
               <h2 className="mt-4 text-4xl font-black tracking-[-0.035em] uppercase text-white sm:text-6xl leading-[0.94]">
-                ORDER. FORM.
+                PURPOSEFUL LUXURY.
                 <br />
-                ELEVATION.
+                UNHURRIED BEAUTY.
               </h2>
               <p className="mt-8 max-w-2xl text-base font-normal leading-relaxed text-[#F8F4E7]/80 sm:text-lg">
-                Self-care is not indulgence; it is structural balance. We reject
-                ornamental noise in favor of high-performing professionals,
-                intentional formulas, and uncompromised precision in every single ritual.
+                True beauty is an intentional ritual of restoration. We reject
+                hurried appointments and impersonal salons in favor of master craftsmanship,
+                quiet luxury, and extraordinary care in every touch.
               </p>
               <div className="mt-10">
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
@@ -630,7 +630,7 @@ export default function Home() {
                     className="inline-flex items-center gap-3 border-2 border-[#F8F4E7] bg-[#F8F4E7] px-8 py-4 font-mono text-xs font-black tracking-[0.2em] uppercase transition hover:bg-transparent hover:!text-[#F8F4E7]"
                     style={{ color: "#492E2D" }}
                   >
-                    <span className="font-black text-[#492E2D]">EXPLORE THE DIRECTORY</span>
+                    <span className="font-black text-[#492E2D]">DISCOVER OUR SERVICES</span>
                     <ArrowRight size={16} className="text-[#492E2D]" />
                   </Link>
                 </motion.div>
@@ -639,16 +639,16 @@ export default function Home() {
 
             <div className="space-y-4 lg:col-span-4 font-mono text-xs border-t lg:border-t-0 lg:border-l border-white/20 pt-8 lg:pt-0 lg:pl-10">
               <div className="border-b border-white/15 pb-4">
-                <p className="text-[10px] tracking-[0.25em] text-[#D7A7B1] uppercase">LOCATION SCOPE</p>
+                <p className="text-[10px] tracking-[0.25em] text-[#D7A7B1] uppercase">PREMIER DESTINATIONS</p>
                 <p className="mt-1 text-sm font-semibold">METROPOLITAN HUBS</p>
               </div>
               <div className="border-b border-white/15 pb-4">
-                <p className="text-[10px] tracking-[0.25em] text-[#D7A7B1] uppercase">VERIFIED PARTNERS</p>
-                <p className="mt-1 text-sm font-semibold">SELECTED ATELIERS</p>
+                <p className="text-[10px] tracking-[0.25em] text-[#D7A7B1] uppercase">HANDPICKED SALONS</p>
+                <p className="mt-1 text-sm font-semibold">BOUTIQUE ATELIERS</p>
               </div>
               <div className="pb-2">
-                <p className="text-[10px] tracking-[0.25em] text-[#D7A7B1] uppercase">PROTOCOL</p>
-                <p className="mt-1 text-sm font-semibold">SCHEDULED RESERVATION</p>
+                <p className="text-[10px] tracking-[0.25em] text-[#D7A7B1] uppercase">EXPERIENCE</p>
+                <p className="mt-1 text-sm font-semibold">BESPOKE VIP SESSIONS</p>
               </div>
             </div>
           </div>
@@ -661,43 +661,43 @@ export default function Home() {
           <div className="sm:col-span-2">
             <h2 className="text-3xl font-black tracking-[-0.04em]">ÉLAN</h2>
             <p className="mt-3 max-w-sm text-xs leading-relaxed text-[#F8F4E7]/70">
-              Swiss-engineered salon management and booking framework. Designed
-              with strict typographic harmony, structural clarity, and purposeful luxury.
+              A curated luxury coiffure and aesthetic wellness destination. Unhurried
+              treatments, master practitioners, and effortless salon reservations.
             </p>
             <p className="mt-6 font-mono text-[10px] tracking-[0.2em] text-[#D7A7B1] uppercase">
-              VERSION 2.4.0 — PRODUCTION
+              HAUTE COIFFURE & LUXURY SALONS · 2026
             </p>
           </div>
 
           <div>
             <h3 className="font-mono text-[10px] font-bold tracking-[0.25em] text-[#D7A7B1] uppercase">
-              NAVIGATION
+              EXPERIENCES
             </h3>
             <div className="mt-4 flex flex-col gap-2.5 font-mono text-xs text-[#F8F4E7]/80">
-              <Link href="/services" className="hover:text-white">SERVICES</Link>
-              <Link href="/services" className="hover:text-white">ATELIERS</Link>
-              <Link href="/dashboard" className="hover:text-white">DASHBOARD</Link>
+              <Link href="/services" className="hover:text-white">SIGNATURE SERVICES</Link>
+              <Link href="/#ateliers" className="hover:text-white">OUR ATELIERS</Link>
+              <Link href="/dashboard" className="hover:text-white">MY APPOINTMENTS</Link>
               <Link href="/login" className="hover:text-white">SIGN IN</Link>
             </div>
           </div>
 
           <div>
             <h3 className="font-mono text-[10px] font-bold tracking-[0.25em] text-[#D7A7B1] uppercase">
-              LEGAL & AUDIT
+              GUEST CONCIERGE
             </h3>
             <p className="mt-4 font-mono text-xs leading-relaxed text-[#F8F4E7]/70">
-              SRS REFERENCE: SSMS-2026
+              OPENING HOURS: 09:30 — 20:30
               <br />
-              DATA STORES: D01–D19
+              CONCIERGE@ELANSTUDIOS.COM
               <br />
-              SECURITY: POSTGRES RLS
+              PRIVATE SESSIONS AVAILABLE
             </p>
           </div>
         </div>
 
         <div className="mx-auto mt-16 flex max-w-7xl flex-col justify-between border-t border-white/10 pt-6 font-mono text-[10px] tracking-[0.16em] uppercase text-white/40 sm:flex-row">
           <span>© 2026 ÉLAN STUDIOS. ALL RIGHTS RESERVED.</span>
-          <span>SWISS TYPOGRAPHY & DESIGN SYSTEM</span>
+          <span>HAUTE BEAUTÉ & WELLNESS</span>
         </div>
       </footer>
     </main>

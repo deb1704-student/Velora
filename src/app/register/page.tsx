@@ -56,22 +56,22 @@ function RegisterForm() {
   return (
     <div className="w-full max-w-md border border-[#722F37]/20 bg-white p-8 sm:p-10">
       <div className="mb-6 flex items-center justify-between border-b border-[#722F37]/15 pb-3 font-mono text-[11px] font-bold tracking-[0.25em] uppercase text-[#722F37]">
-        <span>REGISTRATION</span>
-        <span>ONBOARD / 02</span>
+        <span>MEMBERSHIP PRIVILEGE</span>
+        <span>ÉLAN STUDIOS</span>
       </div>
 
       <h1 className="text-3xl font-black uppercase tracking-tight text-[#492E2D]">
-        CREATE ACCOUNT.
+        JOIN ÉLAN.
       </h1>
 
       <p className="mt-2 text-xs leading-relaxed text-[#776760]">
-        Establish client identity to unlock instant scheduling and private ledger records.
+        Create your membership to enjoy seamless salon bookings, private suite appointments, and loyalty rewards.
       </p>
 
       <form onSubmit={handleRegister} className="mt-8 space-y-5">
         <div>
           <label htmlFor="name" className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-[#302326]">
-            FULL NAME / IDENTITY
+            FULL NAME
           </label>
           <input
             id="name"
@@ -80,13 +80,13 @@ function RegisterForm() {
             value={name}
             onChange={(event) => setName(event.target.value)}
             className="w-full border border-[#722F37]/25 bg-white px-4 py-3 font-mono text-xs text-[#302326] outline-none transition focus:border-[#722F37]"
-            placeholder="Firstname Lastname"
+            placeholder="Jane Doe"
           />
         </div>
 
         <div>
           <label htmlFor="email" className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-[#302326]">
-            PRIMARY EMAIL
+            EMAIL ADDRESS
           </label>
           <input
             id="email"
@@ -95,13 +95,13 @@ function RegisterForm() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             className="w-full border border-[#722F37]/25 bg-white px-4 py-3 font-mono text-xs text-[#302326] outline-none transition focus:border-[#722F37]"
-            placeholder="client@domain.com"
+            placeholder="jane@example.com"
           />
         </div>
 
         <div>
           <label htmlFor="password" className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-[#302326]">
-            SECURITY KEY (MIN 8 CHARACTERS)
+            PASSWORD (MIN 8 CHARACTERS)
           </label>
           <input
             id="password"
@@ -132,7 +132,7 @@ function RegisterForm() {
           disabled={loading}
           className="w-full border border-[#722F37] bg-[#722F37] py-4 font-mono text-xs font-bold tracking-[0.2em] uppercase text-white transition hover:bg-[#57232B] disabled:opacity-50"
         >
-          {loading ? "INITIALIZING..." : "CONFIRM REGISTRATION"}
+          {loading ? "CREATING ACCOUNT..." : "CREATE ACCOUNT"}
         </button>
       </form>
 

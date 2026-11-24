@@ -15,23 +15,23 @@ interface Scene {
 const scenes: Scene[] = [
   {
     id: "01",
-    tag: "SCENE 01 / PRECISION HAIRCRAFT",
+    tag: "LOOK 01 · PRECISION HAIRCRAFT & BLOWOUT",
     location: "BANDRA ATELIER",
-    specs: "35MM · F/1.8 · 60 FPS",
+    specs: "HAUTE COIFFURE · PARISIAN SHINE",
     url: "https://images.unsplash.com/photo-1560869713-7d0a29430803?auto=format&fit=crop&w=1200&q=85",
   },
   {
     id: "02",
-    tag: "SCENE 02 / BOTANICAL HYDRA-FACIAL",
+    tag: "LOOK 02 · BOTANICAL HYDRA-FACIAL",
     location: "INDIRANAGAR SUITE",
-    specs: "50MM · F/2.0 · 60 FPS",
+    specs: "GLASS SKIN · ORGANIC GLOW",
     url: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?auto=format&fit=crop&w=1200&q=85",
   },
   {
     id: "03",
-    tag: "SCENE 03 / BESPOKE GLOSS & FINISH",
+    tag: "LOOK 03 · BESPOKE COUTURE GLOSS",
     location: "SOUTH EXTENSION",
-    specs: "85MM · F/1.4 · 60 FPS",
+    specs: "VELVET COLOUR · BALAYAGE FINISH",
     url: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1200&q=85",
   },
 ];
@@ -167,7 +167,7 @@ export default function Hero3DVideo() {
                     isPlaying ? "bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.8)]" : "bg-gray-400"
                   }`}
                 />
-                <span>{isPlaying ? "REC · 4K" : "PAUSED"}</span>
+                <span>{isPlaying ? "LOOKBOOK · LIVE" : "PAUSED"}</span>
               </div>
 
               {/* Optical Shutter & ISO Telemetry */}
@@ -242,7 +242,7 @@ export default function Hero3DVideo() {
 
           {/* Scene Angle Switchers */}
           <div className="flex items-center gap-1.5">
-            <span className="text-[9px] text-[#776760] tracking-wider hidden sm:inline">ANGLE:</span>
+            <span className="text-[9px] text-[#776760] tracking-wider hidden sm:inline">LOOK:</span>
             {scenes.map((s, idx) => (
               <button
                 key={s.id}

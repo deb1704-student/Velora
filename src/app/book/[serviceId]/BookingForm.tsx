@@ -125,32 +125,32 @@ export default function BookingForm({ service, salons, userEmail }: Props) {
           <CheckCircle2 size={32} />
         </div>
         <p className="mt-6 font-mono text-xs font-bold tracking-[0.3em] uppercase text-[#722F37]">
-          [ CONFIRMATION CODE: 200_OK ]
+          [ CONFIRMATION #ELAN-BOOKING ]
         </p>
         <h2 className="mt-2 text-3xl font-black uppercase tracking-tight text-[#492E2D]">
-          APPOINTMENT RESERVED.
+          APPOINTMENT CONFIRMED.
         </h2>
         <p className="mt-3 text-xs leading-relaxed text-[#776760]">
-          Your schedule for{" "}
+          Your appointment for{" "}
           <strong className="text-[#722F37] uppercase">{service.service_name}</strong> has
-          been committed to the system ledger.
+          been reserved. We look forward to welcoming you to the atelier.
         </p>
 
         <div className="mt-8 border border-[#722F37]/15 bg-[#F8F4E7] p-6 text-left font-mono text-xs text-[#302326]">
           <div className="flex justify-between border-b border-[#722F37]/10 pb-3">
-            <span className="text-[#776760] uppercase">SCHEDULE DATE</span>
+            <span className="text-[#776760] uppercase">APPOINTMENT DATE</span>
             <span className="font-bold">{selectedDate}</span>
           </div>
           <div className="flex justify-between border-b border-[#722F37]/10 py-3">
-            <span className="text-[#776760] uppercase">START INTERVAL</span>
+            <span className="text-[#776760] uppercase">TIME</span>
             <span className="font-bold">{selectedSlot.label}</span>
           </div>
           <div className="flex justify-between border-b border-[#722F37]/10 py-3">
-            <span className="text-[#776760] uppercase">ESTIMATED DURATION</span>
+            <span className="text-[#776760] uppercase">DURATION</span>
             <span className="font-bold">{service.duration_minutes} MIN</span>
           </div>
           <div className="flex justify-between pt-3 font-bold text-[#722F37]">
-            <span className="uppercase">TOTAL PAYABLE AT ATELIER</span>
+            <span className="uppercase">TOTAL PAYABLE AT SALON</span>
             <span className="text-sm font-bold">{formatPrice(grandTotal)}</span>
           </div>
         </div>
@@ -160,13 +160,13 @@ export default function BookingForm({ service, salons, userEmail }: Props) {
             href="/dashboard"
             className="border border-[#722F37] bg-[#722F37] px-8 py-3.5 text-xs font-bold tracking-[0.2em] uppercase text-white transition hover:bg-[#57232B]"
           >
-            OPEN DASHBOARD
+            VIEW MY APPOINTMENTS
           </Link>
           <Link
             href="/services"
             className="border border-[#722F37]/30 px-8 py-3.5 text-xs font-bold tracking-[0.2em] uppercase text-[#722F37] transition hover:border-[#722F37]"
           >
-            INDEX CATALOGUE
+            EXPLORE MORE TREATMENTS
           </Link>
         </div>
       </div>
@@ -181,7 +181,7 @@ export default function BookingForm({ service, salons, userEmail }: Props) {
         <section className="border border-[#722F37]/20 bg-white p-7 sm:p-9">
           <div className="mb-6 flex items-center justify-between border-b border-[#722F37]/10 pb-3">
             <h3 className="font-mono text-xs font-bold tracking-[0.25em] uppercase text-[#722F37]">
-              [ 01 ] SELECT LOCATION
+              [ 01 ] SELECT ATELIER
             </h3>
             <MapPin size={16} className="text-[#722F37]" />
           </div>
@@ -208,7 +208,7 @@ export default function BookingForm({ service, salons, userEmail }: Props) {
         <section className="border border-[#722F37]/20 bg-white p-7 sm:p-9">
           <div className="mb-6 flex items-center justify-between border-b border-[#722F37]/10 pb-3">
             <h3 className="font-mono text-xs font-bold tracking-[0.25em] uppercase text-[#722F37]">
-              [ 02 ] CHOOSE DATE
+              [ 02 ] SELECT YOUR PREFERRED DATE
             </h3>
             <Calendar size={16} className="text-[#722F37]" />
           </div>
@@ -240,7 +240,7 @@ export default function BookingForm({ service, salons, userEmail }: Props) {
         <section className="border border-[#722F37]/20 bg-white p-7 sm:p-9">
           <div className="mb-6 flex items-center justify-between border-b border-[#722F37]/10 pb-3">
             <h3 className="font-mono text-xs font-bold tracking-[0.25em] uppercase text-[#722F37]">
-              [ 03 ] TIME INTERVAL
+              [ 03 ] PREFERRED TIME
             </h3>
             <Clock size={16} className="text-[#722F37]" />
           </div>
@@ -267,15 +267,15 @@ export default function BookingForm({ service, salons, userEmail }: Props) {
       <div className="lg:col-span-5">
         <div className="sticky top-28 border border-[#722F37]/20 bg-white p-7 sm:p-8">
           <div className="flex items-center justify-between border-b border-[#722F37]/15 pb-3 font-mono text-[11px] font-bold tracking-[0.25em] uppercase text-[#722F37]">
-            <span>ORDER LEDGER</span>
-            <span>SPEC. 2026</span>
+            <span>APPOINTMENT SUMMARY</span>
+            <span>THE 2026 COLLECTION</span>
           </div>
 
           <h3 className="mt-4 text-2xl font-black uppercase tracking-tight text-[#492E2D]">
             {service.service_name}
           </h3>
           <p className="mt-2 text-xs leading-relaxed text-[#776760]">
-            {service.description || "Precision salon treatment."}
+            {service.description || "Luxury coiffure & bespoke aesthetic treatment."}
           </p>
 
           <div className="mt-6 flex items-center gap-4 border-y border-[#722F37]/10 py-3.5 font-mono text-xs text-[#302326]">
@@ -285,14 +285,14 @@ export default function BookingForm({ service, salons, userEmail }: Props) {
             </div>
             <div className="flex items-center gap-1.5 font-semibold">
               <ShieldCheck size={14} className="text-[#722F37]" />
-              <span>VERIFIED ATELIER</span>
+              <span>PRIVATE LUXURY SUITE</span>
             </div>
           </div>
 
           {/* Pricing breakdown */}
           <div className="mt-6 space-y-3 font-mono text-xs">
             <div className="flex justify-between text-[#776760]">
-              <span className="uppercase">SERVICE BASE</span>
+              <span className="uppercase">TREATMENT RATE</span>
               <span className="font-bold text-[#302326]">{formatPrice(basePrice)}</span>
             </div>
             <div className="flex justify-between text-[#776760]">
@@ -300,17 +300,17 @@ export default function BookingForm({ service, salons, userEmail }: Props) {
               <span className="font-bold text-[#302326]">{formatPrice(gst)}</span>
             </div>
             <div className="flex justify-between text-[#776760]">
-              <span className="uppercase">PLATFORM PROTOCOL</span>
+              <span className="uppercase">CONCIERGE & AMENITIES</span>
               <span className="font-bold text-[#302326]">{formatPrice(platformFee)}</span>
             </div>
             <div className="flex justify-between border-t border-[#722F37]/20 pt-4 text-sm font-bold text-[#722F37]">
-              <span className="uppercase">TOTAL COMMITMENT</span>
+              <span className="uppercase">TOTAL PAYABLE AT SALON</span>
               <span className="text-xl font-black">{formatPrice(grandTotal)}</span>
             </div>
           </div>
 
           <div className="mt-6 border border-[#722F37]/15 bg-[#F8F4E7] p-3.5 font-mono text-[11px] leading-relaxed text-[#655650]">
-            PAYMENT SETTLEMENT: ATELIER DESK VIA CARD / UPI / CASH. NO ADVANCE RETENTION.
+            PAYMENT: AT THE ATELIER DESK AFTER YOUR SESSION VIA CARD, UPI, OR CASH. NO ADVANCE DEPOSIT REQUIRED.
           </div>
 
           {errorMsg && (
@@ -327,7 +327,7 @@ export default function BookingForm({ service, salons, userEmail }: Props) {
                 onClick={handleConfirmBooking}
                 className="w-full border border-[#722F37] bg-[#722F37] py-4 text-xs font-bold tracking-[0.2em] uppercase text-white transition hover:bg-[#57232B] disabled:opacity-50"
               >
-                {submitting ? "CONFIRMING..." : "COMMIT RESERVATION"}
+                {submitting ? "CONFIRMING..." : "CONFIRM APPOINTMENT"}
               </button>
             ) : (
               <div className="space-y-3">
@@ -336,7 +336,7 @@ export default function BookingForm({ service, salons, userEmail }: Props) {
                   className="flex w-full items-center justify-center gap-2 border border-[#722F37] bg-[#722F37] py-4 text-xs font-bold tracking-[0.2em] uppercase text-white transition hover:bg-[#57232B]"
                 >
                   <User size={15} />
-                  SIGN IN TO COMMIT
+                  SIGN IN TO BOOK
                 </Link>
                 <p className="text-center font-mono text-[11px] text-[#776760]">
                   NEW CLIENT?{" "}

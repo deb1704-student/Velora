@@ -69,16 +69,16 @@ export default function ServicesCatalog({ categories, services }: Props) {
           <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
             <div>
               <p className="font-mono text-xs font-bold tracking-[0.3em] uppercase text-[#D7A7B1]">
-                DIRECTORY INDEX · 2026
+                THE 2026 COLLECTION
               </p>
               <h1 className="mt-3 text-4xl font-black tracking-[-0.035em] uppercase sm:text-6xl lg:text-7xl leading-none">
-                SERVICES CATALOGUE.
+                SIGNATURE EXPERIENCES.
               </h1>
             </div>
             <p className="max-w-md font-mono text-xs leading-relaxed text-[#F8F4E7]/80 uppercase tracking-wider">
-              TOTAL VERIFIED RITUALS: {services.length} UNITS
+              EXPLORE {services.length} BESPOKE TREATMENTS
               <br />
-              DIRECT SCHEDULE RESERVATION ENABLED
+              COMPLIMENTARY CONSULTATION INCLUDED
             </p>
           </div>
         </div>
@@ -129,7 +129,7 @@ export default function ServicesCatalog({ categories, services }: Props) {
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="SEARCH BY KEYWORD..."
+              placeholder="SEARCH BY TREATMENT OR STYLE..."
               className="w-full border border-[#722F37]/25 bg-white py-3 pl-11 pr-4 font-mono text-xs uppercase tracking-wider text-[#302326] outline-none transition focus:border-[#722F37]"
             />
           </div>
@@ -161,7 +161,7 @@ export default function ServicesCatalog({ categories, services }: Props) {
 
                       <p className="mt-3 text-xs leading-relaxed text-[#776760]">
                         {service.description ||
-                          "Standardized high-performance beauty formulation."}
+                          "An indulgent, bespoke treatment crafted for lasting radiance and vitality."}
                       </p>
                     </div>
 
@@ -169,7 +169,7 @@ export default function ServicesCatalog({ categories, services }: Props) {
                       <div className="flex items-end justify-between font-mono">
                         <div>
                           <p className="text-[10px] tracking-[0.2em] uppercase text-[#776760]">
-                            BASE RATE
+                            TREATMENT PRICE
                           </p>
                           <p className="mt-1 text-2xl font-bold text-[#722F37]">
                             {formatPrice(service.base_price)}
@@ -186,7 +186,7 @@ export default function ServicesCatalog({ categories, services }: Props) {
                           href={`/book/${service.id}`}
                           className="group flex w-full items-center justify-center gap-2 border border-[#722F37] bg-[#722F37] py-3.5 text-center font-mono text-xs font-bold tracking-[0.2em] uppercase text-white transition hover:bg-[#57232B]"
                         >
-                          <span>RESERVE TIME</span>
+                          <span>BOOK APPOINTMENT</span>
                           <ArrowRight
                             size={14}
                             className="transition group-hover:translate-x-1"
@@ -201,13 +201,13 @@ export default function ServicesCatalog({ categories, services }: Props) {
           ) : (
             <div className="border border-dashed border-[#722F37]/30 bg-white/50 p-16 text-center">
               <p className="font-mono text-xs font-bold tracking-[0.25em] uppercase text-[#722F37]">
-                ZERO RESULTS IDENTIFIED
+                NO TREATMENTS FOUND
               </p>
               <h3 className="mt-3 text-3xl font-black uppercase text-[#492E2D]">
-                NO MATCHING CRITERIA
+                TRY ANOTHER SEARCH
               </h3>
               <p className="mt-2 text-xs text-gray-500">
-                Please refine your search keywords or reset category filters.
+                Try searching for blowout, facial, balayage, or manicure.
               </p>
               <button
                 onClick={() => {
@@ -216,7 +216,7 @@ export default function ServicesCatalog({ categories, services }: Props) {
                 }}
                 className="mt-6 border border-[#722F37] px-6 py-2.5 font-mono text-xs font-bold tracking-[0.18em] uppercase text-[#722F37] transition hover:bg-[#722F37] hover:text-white"
               >
-                CLEAR SELECTION
+                VIEW ALL TREATMENTS
               </button>
             </div>
           )}

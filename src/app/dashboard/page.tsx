@@ -67,13 +67,13 @@ async function DashboardContent() {
     return (
       <main className="min-h-screen bg-[#F8F4E7] px-6 py-20 text-center font-mono">
         <h1 className="text-xl font-bold uppercase text-[#722F37]">
-          [ ERROR: PROFILE_UNAVAILABLE ]
+          PROFILE TEMPORARILY UNAVAILABLE
         </h1>
         <p className="mt-3 text-xs text-[#776760]">
-          We could not load your account profile. Please re-authenticate.
+          We could not load your account profile. Please sign in again.
         </p>
         <Link href="/login" className="mt-6 inline-block font-bold underline">
-          RETURN TO AUTHENTICATION
+          SIGN IN AGAIN
         </Link>
       </main>
     );
@@ -94,11 +94,14 @@ async function DashboardContent() {
     return (
       <main className="min-h-screen bg-[#F8F4E7] px-6 py-20 text-center font-mono">
         <h1 className="text-xl font-bold uppercase text-[#722F37]">
-          [ ERROR: CUSTOMER_RECORD_NOT_INITIALIZED ]
+          WELCOME TO ÉLAN
         </h1>
         <p className="mt-3 text-xs text-[#776760]">
-          Your identity exists, but customer profile data was not allocated.
+          Your membership profile is ready. Select a signature treatment to book your first appointment.
         </p>
+        <Link href="/services" className="mt-6 inline-block font-bold underline">
+          EXPLORE SERVICES
+        </Link>
       </main>
     );
   }
@@ -172,7 +175,7 @@ async function DashboardContent() {
       <section className="mx-auto max-w-7xl px-6 py-12 sm:px-10">
         <div className="mb-10 border-b border-[#722F37]/15 pb-6">
           <p className="font-mono text-xs font-bold tracking-[0.3em] uppercase text-[#722F37]">
-            CLIENT IDENTIFIER: {profile.id.slice(0, 8)}...
+            ÉLAN PRIVILEGE MEMBER
           </p>
           <h1 className="mt-2 text-4xl font-black uppercase tracking-tight text-[#492E2D] sm:text-5xl">
             {profile.full_name}
@@ -185,25 +188,25 @@ async function DashboardContent() {
           <StatCard
             icon={<CalendarDays size={18} />}
             code="01"
-            label="UPCOMING SESSIONS"
+            label="UPCOMING APPOINTMENTS"
             value={String(upcomingBookings.length)}
           />
           <StatCard
             icon={<Clock3 size={18} />}
             code="02"
-            label="HISTORICAL SESSIONS"
+            label="PAST VISITS"
             value={String(pastBookings.length)}
           />
           <StatCard
             icon={<Heart size={18} />}
             code="03"
-            label="SAVED RITUALS"
+            label="SAVED TREATMENTS"
             value={String(favouriteCount)}
           />
           <StatCard
             icon={<Star size={18} />}
             code="04"
-            label="LOYALTY BALANCE"
+            label="REWARD POINTS"
             value={String(customer.loyalty_balance)}
           />
         </div>
@@ -213,34 +216,34 @@ async function DashboardContent() {
           <section>
             <div className="mb-6 flex items-center justify-between border-b border-[#722F37]/15 pb-3 font-mono">
               <h2 className="text-xs font-bold tracking-[0.25em] uppercase text-[#722F37]">
-                [ SCHEDULE LEDGER / 10 RECORDS ]
+                MY APPOINTMENTS
               </h2>
               <Link
                 href="/services"
                 className="text-xs font-bold uppercase tracking-wider text-[#722F37] underline hover:text-[#492E2D]"
               >
-                + BOOK NEW SERVICE
+                + BOOK A TREATMENT
               </Link>
             </div>
 
             {bookingsError ? (
               <div className="border border-red-300 bg-red-50 p-6 font-mono text-xs text-red-700 uppercase">
-                ERROR RETRIEVING BOOKINGS FROM LEDGER.
+                UNABLE TO LOAD APPOINTMENTS AT THIS TIME.
               </div>
             ) : bookingList.length === 0 ? (
               <div className="border border-dashed border-[#722F37]/25 bg-white/60 p-12 text-center">
                 <CalendarDays className="mx-auto text-[#722F37]" size={36} />
                 <h3 className="mt-4 text-2xl font-black uppercase tracking-tight text-[#492E2D]">
-                  NO ACTIVE SESSIONS
+                  NO UPCOMING APPOINTMENTS
                 </h3>
                 <p className="mt-2 text-xs text-gray-500">
-                  Your appointment history will be documented here once committed.
+                  Treat yourself to a styling session, rejuvenating facial, or relaxing massage.
                 </p>
                 <Link
                   href="/services"
                   className="mt-6 inline-flex items-center gap-2 border border-[#722F37] bg-[#722F37] px-6 py-3 font-mono text-xs font-bold tracking-[0.2em] uppercase text-white hover:bg-[#57232B]"
                 >
-                  SCHEDULE SESSIONS <ArrowRight size={14} />
+                  EXPLORE TREATMENTS <ArrowRight size={14} />
                 </Link>
               </div>
             ) : (

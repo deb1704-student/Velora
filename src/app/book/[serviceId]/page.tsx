@@ -161,10 +161,10 @@ async function BookingContent({
             className="flex items-center gap-2 font-mono text-[11px] font-bold tracking-[0.25em] uppercase text-[#722F37] transition hover:text-[#57232B]"
           >
             <ArrowLeft size={14} />
-            CATALOGUE
+            BACK TO RITUALS
           </Link>
           <span className="font-mono text-[10px] font-bold tracking-[0.25em] uppercase text-[#776760]">
-            SCHEDULE / 2026
+            BESPOKE RESERVATION · 2026
           </span>
         </div>
 

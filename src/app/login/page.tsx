@@ -42,22 +42,22 @@ function LoginForm() {
   return (
     <div className="w-full max-w-md border border-[#722F37]/20 bg-white p-8 sm:p-10">
       <div className="mb-6 flex items-center justify-between border-b border-[#722F37]/15 pb-3 font-mono text-[11px] font-bold tracking-[0.25em] uppercase text-[#722F37]">
-        <span>IDENTIFICATION</span>
-        <span>AUTH / 01</span>
+        <span>CLIENT ACCESS</span>
+        <span>ÉLAN STUDIOS</span>
       </div>
 
       <h1 className="text-3xl font-black uppercase tracking-tight text-[#492E2D]">
-        ACCESS ACCOUNT.
+        WELCOME BACK.
       </h1>
 
       <p className="mt-2 text-xs leading-relaxed text-[#776760]">
-        Enter your registered credentials to access your booking schedule.
+        Sign in to view your appointments, explore signature rituals, and manage your profile.
       </p>
 
       <form onSubmit={handleLogin} className="mt-8 space-y-5">
         <div>
           <label htmlFor="email" className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-[#302326]">
-            EMAIL IDENTIFIER
+            EMAIL ADDRESS
           </label>
           <input
             id="email"
@@ -66,13 +66,13 @@ function LoginForm() {
             value={email}
             onChange={(event) => setEmail(event.target.value)}
             className="w-full border border-[#722F37]/25 bg-white px-4 py-3 font-mono text-xs text-[#302326] outline-none transition focus:border-[#722F37]"
-            placeholder="client@domain.com"
+            placeholder="name@domain.com"
           />
         </div>
 
         <div>
           <label htmlFor="password" className="mb-2 block font-mono text-xs font-bold uppercase tracking-wider text-[#302326]">
-            SECURE PASSPHRASE
+            PASSWORD
           </label>
           <input
             id="password"
@@ -96,7 +96,7 @@ function LoginForm() {
           disabled={loading}
           className="w-full border border-[#722F37] bg-[#722F37] py-4 font-mono text-xs font-bold tracking-[0.2em] uppercase text-white transition hover:bg-[#57232B] disabled:opacity-50"
         >
-          {loading ? "AUTHENTICATING..." : "SIGN IN TO SYSTEM"}
+          {loading ? "SIGNING IN..." : "SIGN IN"}
         </button>
       </form>
 
