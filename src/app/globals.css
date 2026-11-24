@@ -1,26 +1,111 @@
+
 @import "tailwindcss";
 
+/* =========================================
+   ÉLAN — SALON MANAGEMENT DESIGN SYSTEM
+   ========================================= */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --burgundy: #722F37;
+  --burgundy-dark: #492E2D;
+  --burgundy-deep: #57232B;
+
+  --cream: #F8F4E7;
+  --cream-dark: #F1E8DC;
+
+  --dusty-pink: #D7A7B1;
+  --dusty-pink-dark: #C58F9B;
+
+  --text-primary: #342925;
+  --text-secondary: #776760;
+  --white: #FFFFFF;
+
+  --background: var(--cream);
+  --foreground: var(--text-primary);
+
+  --border: rgba(114, 47, 55, 0.14);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --color-burgundy: var(--burgundy);
+  --color-burgundy-dark: var(--burgundy-dark);
+  --color-cream: var(--cream);
+  --color-dusty-pink: var(--dusty-pink);
+
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-serif: Georgia, "Times New Roman", serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
 }
 
 body {
+  min-height: 100vh;
+  margin: 0;
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+::selection {
+  background: var(--dusty-pink);
+  color: var(--burgundy-dark);
+}
+
+/* Consistent keyboard accessibility */
+
+:focus-visible {
+  outline: 2px solid var(--burgundy);
+  outline-offset: 3px;
+}
+
+/* Image defaults */
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Reduced motion accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
