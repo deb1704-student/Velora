@@ -10,7 +10,8 @@
 ALTER TABLE public.bookings 
 ALTER COLUMN provider_id DROP NOT NULL;
 
--- 2. Allow customers to insert bookings for their own profile
+-- 2. Idempotent Customer Booking Policies
+DROP POLICY IF EXISTS "Customers can create bookings" ON public.bookings;
 CREATE POLICY "Customers can create bookings"
 ON public.bookings
 FOR INSERT
@@ -23,6 +24,7 @@ WITH CHECK (
   )
 );
 
+DROP POLICY IF EXISTS "Customers can cancel own pending bookings" ON public.bookings;
 CREATE POLICY "Customers can cancel own pending bookings"
 ON public.bookings
 FOR UPDATE
@@ -44,7 +46,7 @@ WITH CHECK (
 
 GRANT INSERT, UPDATE ON public.bookings TO authenticated;
 
--- 3. Deterministic Seed Data for Categories
+-- 3. Deterministic Seed Data for Categories (All valid hexadecimal UUIDs)
 INSERT INTO public.service_categories (id, category_name, description, is_active)
 VALUES
   ('c1000000-0000-0000-0000-000000000001', 'Hair Styling & Care', 'Cuts, custom colour, balayage & luxury styling rituals', TRUE),
@@ -54,14 +56,14 @@ VALUES
 ON CONFLICT (category_name) DO UPDATE 
 SET description = EXCLUDED.description, is_active = EXCLUDED.is_active;
 
--- 4. Seed Subcategories
+-- 4. Seed Subcategories (Using valid hex UUID prefix d1000000)
 INSERT INTO public.service_subcategories (id, category_id, subcategory_name, description, is_active)
 VALUES
-  ('s1000000-0000-0000-0000-000000000001', 'c1000000-0000-0000-0000-000000000001', 'Haircuts & Blowdry', 'Precision cuts and salon-finish blowouts', TRUE),
-  ('s1000000-0000-0000-0000-000000000002', 'c1000000-0000-0000-0000-000000000001', 'Colour & Highlights', 'Balayage, glossing, and bespoke coloring', TRUE),
-  ('s1000000-0000-0000-0000-000000000003', 'c1000000-0000-0000-0000-000000000002', 'Facial Therapies', 'Hydration and anti-aging treatments', TRUE),
-  ('s1000000-0000-0000-0000-000000000004', 'c1000000-0000-0000-0000-000000000003', 'Signature Nails', 'Manicures and gel polish', TRUE),
-  ('s1000000-0000-0000-0000-000000000005', 'c1000000-0000-0000-0000-000000000004', 'Body Therapies', 'Relaxation and revitalisation massages', TRUE)
+  ('d1000000-0000-0000-0000-000000000001', 'c1000000-0000-0000-0000-000000000001', 'Haircuts & Blowdry', 'Precision cuts and salon-finish blowouts', TRUE),
+  ('d1000000-0000-0000-0000-000000000002', 'c1000000-0000-0000-0000-000000000001', 'Colour & Highlights', 'Balayage, glossing, and bespoke coloring', TRUE),
+  ('d1000000-0000-0000-0000-000000000003', 'c1000000-0000-0000-0000-000000000002', 'Facial Therapies', 'Hydration and anti-aging treatments', TRUE),
+  ('d1000000-0000-0000-0000-000000000004', 'c1000000-0000-0000-0000-000000000003', 'Signature Nails', 'Manicures and gel polish', TRUE),
+  ('d1000000-0000-0000-0000-000000000005', 'c1000000-0000-0000-0000-000000000004', 'Body Therapies', 'Relaxation and revitalisation massages', TRUE)
 ON CONFLICT (category_id, subcategory_name) DO NOTHING;
 
 -- 5. Seed Services Catalog
@@ -70,7 +72,7 @@ VALUES
   (
     'e1000000-0000-0000-0000-000000000001',
     'c1000000-0000-0000-0000-000000000001',
-    's1000000-0000-0000-0000-000000000001',
+    'd1000000-0000-0000-0000-000000000001',
     'Signature Silk Blowout',
     'Wash, deep conditioning masque, and bespoke blowout with silky finish.',
     45,
@@ -80,7 +82,7 @@ VALUES
   (
     'e1000000-0000-0000-0000-000000000002',
     'c1000000-0000-0000-0000-000000000001',
-    's1000000-0000-0000-0000-000000000002',
+    'd1000000-0000-0000-0000-000000000002',
     'Balayage & Gloss Finish',
     'Hand-painted dimensional highlights paired with a nourishing tone gloss.',
     120,
@@ -90,7 +92,7 @@ VALUES
   (
     'e1000000-0000-0000-0000-000000000003',
     'c1000000-0000-0000-0000-000000000002',
-    's1000000-0000-0000-0000-000000000003',
+    'd1000000-0000-0000-0000-000000000003',
     'Radiance Hydra-Facial',
     'Multi-step facial infusing botanical serums, gentle extraction & lymphatic drainage.',
     60,
@@ -100,7 +102,7 @@ VALUES
   (
     'e1000000-0000-0000-0000-000000000004',
     'c1000000-0000-0000-0000-000000000002',
-    's1000000-0000-0000-0000-000000000003',
+    'd1000000-0000-0000-0000-000000000003',
     'Collagen Glow Skin Ritual',
     'Firming peptide massage followed by a cooling algae mask for supple glow.',
     75,
@@ -110,7 +112,7 @@ VALUES
   (
     'e1000000-0000-0000-0000-000000000005',
     'c1000000-0000-0000-0000-000000000003',
-    's1000000-0000-0000-0000-000000000004',
+    'd1000000-0000-0000-0000-000000000004',
     'Artisan Gel Manicure',
     'Precision cuticle care, botanical exfoliation, and chip-free gel application.',
     50,
@@ -120,7 +122,7 @@ VALUES
   (
     'e1000000-0000-0000-0000-000000000006',
     'c1000000-0000-0000-0000-000000000003',
-    's1000000-0000-0000-0000-000000000004',
+    'd1000000-0000-0000-0000-000000000004',
     'Rose Petal Spa Pedicure',
     'Warm mineral soak, Himalayan salt scrub, hot stone massage, and polish.',
     60,
@@ -130,7 +132,7 @@ VALUES
   (
     'e1000000-0000-0000-0000-000000000007',
     'c1000000-0000-0000-0000-000000000004',
-    's1000000-0000-0000-0000-000000000005',
+    'd1000000-0000-0000-0000-000000000005',
     'Aromatherapy Deep Relax Massage',
     'Full body Swedish massage utilizing essential oils to soothe muscular tension.',
     60,
@@ -140,7 +142,7 @@ VALUES
   (
     'e1000000-0000-0000-0000-000000000008',
     'c1000000-0000-0000-0000-000000000004',
-    's1000000-0000-0000-0000-000000000005',
+    'd1000000-0000-0000-0000-000000000005',
     'Hot Stone Harmony Ritual',
     'Heated volcanic stones placed along meridian points for deep tranquility.',
     75,
