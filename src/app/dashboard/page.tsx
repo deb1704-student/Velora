@@ -13,6 +13,7 @@ import {
   Scissors,
   UserRound,
 } from "lucide-react";
+import CancelBookingButton from "./CancelBookingButton";
 
 type Booking = {
   id: string;
@@ -21,8 +22,8 @@ type Booking = {
   booking_status: string;
   payment_status: string;
   total_amount: number;
-  services: { service_name: string }[] | null;
-  salons: { business_name: string }[] | null;
+  services: any;
+  salons: any;
 };
 
 function formatDate(date: string) {
@@ -247,39 +248,56 @@ async function DashboardContent() {
               </div>
             ) : (
               <div className="space-y-4">
-                {bookingList.map((booking) => (
-                  <article
-                    key={booking.id}
-                    className="rounded-xl border border-[#722F37]/10 bg-white p-5"
-                  >
-                    <div className="flex flex-wrap items-start justify-between gap-4">
-                      <div>
-                        <h3 className="font-semibold text-[#722F37]">
-                          {booking.services?.[0]?.service_name ?? "Salon service"}
-                        </h3>
-                        <p className="mt-1 text-sm text-gray-500">
-                          {booking.salons?.[0]?.business_name ?? "Salon not specified"}
-                        </p>
-                        <p className="mt-3 text-sm text-gray-600">
-                          {formatDate(booking.appointment_date)} ·{" "}
-                          {formatTime(booking.start_time)}
-                        </p>
-                      </div>
+                {bookingList.map((booking) => {
+                  const serviceName = Array.isArray(booking.services)
+                    ? booking.services[0]?.service_name
+                    : booking.services?.service_name ?? "Salon service";
 
-                      <div className="text-right">
-                        <p className="font-semibold">
-                          ₹{Number(booking.total_amount).toFixed(2)}
-                        </p>
-                        <span className="mt-2 inline-block rounded-full bg-[#F8F4E7] px-3 py-1 text-xs capitalize text-[#722F37]">
-                          {booking.booking_status.replace("_", " ")}
-                        </span>
-                        <p className="mt-2 text-xs capitalize text-gray-500">
-                          Payment: {booking.payment_status.replace("_", " ")}
-                        </p>
+                  const salonName = Array.isArray(booking.salons)
+                    ? booking.salons[0]?.business_name
+                    : booking.salons?.business_name ?? "ÉLAN Partner Salon";
+
+                  return (
+                    <article
+                      key={booking.id}
+                      className="rounded-xl border border-[#722F37]/10 bg-white p-5"
+                    >
+                      <div className="flex flex-wrap items-start justify-between gap-4">
+                        <div>
+                          <h3 className="font-semibold text-[#722F37]">
+                            {serviceName}
+                          </h3>
+                          <p className="mt-1 text-sm text-gray-500">
+                            {salonName}
+                          </p>
+                          <p className="mt-3 text-sm text-gray-600">
+                            {formatDate(booking.appointment_date)} ·{" "}
+                            {formatTime(booking.start_time)}
+                          </p>
+                        </div>
+
+                        <div className="text-right">
+                          <p className="font-semibold">
+                            ₹{Number(booking.total_amount).toFixed(2)}
+                          </p>
+                          <span className="mt-2 inline-block rounded-full bg-[#F8F4E7] px-3 py-1 text-xs capitalize text-[#722F37]">
+                            {booking.booking_status.replace("_", " ")}
+                          </span>
+                          <p className="mt-2 text-xs capitalize text-gray-500">
+                            Payment: {booking.payment_status.replace("_", " ")}
+                          </p>
+                          {["pending", "confirmed"].includes(
+                            booking.booking_status
+                          ) && (
+                            <div>
+                              <CancelBookingButton bookingId={booking.id} />
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </article>
-                ))}
+                    </article>
+                  );
+                })}
               </div>
             )}
           </section>

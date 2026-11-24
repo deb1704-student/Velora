@@ -173,6 +173,15 @@ export default function ServicesCatalog({
                       {service.duration_minutes} min
                     </div>
                   </div>
+
+                  <div className="mt-5 pt-2">
+                    <Link
+                      href={`/book/${service.id}`}
+                      className="block w-full rounded-full bg-[#722F37] py-3 text-center text-xs font-semibold tracking-wider text-white transition hover:bg-[#57232B]"
+                    >
+                      BOOK APPOINTMENT
+                    </Link>
+                  </div>
                 </article>
               );
             })}

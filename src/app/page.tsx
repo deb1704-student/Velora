@@ -334,7 +334,7 @@ export default function Home() {
               </div>
               <h3 className="mt-2 font-serif text-2xl text-[#492E2D]">{salon.name}</h3>
               <p className="mt-2 text-xs text-[#776760]">{salon.location}</p>
-              <Link href="/salons" className="mt-4 inline-block border-b border-[#722F37]/50 pb-1 text-[9px] tracking-[0.15em] text-[#722F37]">
+              <Link href="/services" className="mt-4 inline-block border-b border-[#722F37]/50 pb-1 text-[9px] tracking-[0.15em] text-[#722F37]">
                 EXPLORE SALON →
               </Link>
             </article>
